@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+.font-h {
+  font-family: "Archivo", sans-serif;
+}
+.font-t {
+  font-family: "Inter", sans-serif;
+}
+
+.container-fixed {
+  max-width: 1600px;
+  padding: 100px 50px;
+}
+.container-fluid {
+  max-width: 1600px;
+  padding: 0px 50px;
+}
+
+.bg-primary {
+  background: #273be2;
+}
+.text-primary {
+  color: #273be2;
+}
+.bg-secondary {
+  background: #939fff;
+}
+.text-secondary {
+  color: #939fff;
+}
+
+.h1 {
+  font-size: clamp(40px, 5vw, 70px);
+  line-height: 110%;
+}
+.h2 {
+  font-size: clamp(40px, 5vw, 70px);
+  line-height: 110%;
+}
+.h3 {
+  font-size: clamp(40px, 5vw, 70px);
+  line-height: 110%;
+}
+.body-t {
+  font-size: clamp(40px, 5vw, 70px);
+  line-height: 110%;
+}
+
+/* Apply CSS For Laptop View and Less */
+@media screen and (max-width:992px) {
+    
+}
+/* Apply CSS For Tab View and Less */
+@media screen and (max-width:768px) {
+    
+}
+
+/* Apply CSS For Mobile View and Less */
+@media screen and (max-width:576px) {
+    
+}
