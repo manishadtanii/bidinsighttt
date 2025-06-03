@@ -2,24 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-
 .font-h {
   font-family: "Archivo", sans-serif;
 }
+
 .font-t {
   font-family: "Inter", sans-serif;
 }
-
+.nav-link {
+  font-family: "Archivo", sans-serif;
+}
 .container-fixed {
   max-width: 1600px;
-  padding: 100px 50px;
+  /* padding: 100px 50px; */
+  margin: auto;
 }
-.container-fluid {
+.container-section {
   max-width: 1600px;
-  padding: 0px 50px;
+  padding: 80px 40px;
+  margin: auto;
 }
-
+header{
+  transition: .5s;
+}
+header.active{
+  background-color: #0000006e;
+}
+.bg-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 .bg-primary {
   background: #273be2;
 }
@@ -32,34 +45,82 @@
 .text-secondary {
   color: #939fff;
 }
-
+.btn {
+  overflow: hidden;
+  transition: 0.5s;
+  position: relative;
+  height: 60px;
+}
+.btn-arrow {
+  width: 56px;
+  height: 56px;
+  line-height: 56px;
+  transition: 0.5s;
+  position: absolute;
+}
+.btn-text {
+  transition: 0.5s;
+  margin-left: 56px;
+}
+.btn:hover .btn-text {
+  transform: translateX(100%);
+}
+.btn:hover .btn-arrow {
+  width: 96.5%;
+}
 .h1 {
   font-size: clamp(40px, 5vw, 70px);
   line-height: 110%;
 }
 .h2 {
-  font-size: clamp(40px, 5vw, 70px);
+  font-size: clamp(24px, 5vw, 60px);
   line-height: 110%;
 }
 .h3 {
-  font-size: clamp(40px, 5vw, 70px);
+  font-size: clamp(16px, 5vw, 40px);
   line-height: 110%;
 }
 .body-t {
-  font-size: clamp(40px, 5vw, 70px);
+  font-size: clamp(14px, 5vw, 24px);
   line-height: 110%;
 }
-
+p {
+  font-size: clamp(14px, 5vw, 24px);
+  line-height: 110%;
+}
+.text-g {
+  background: linear-gradient(
+    180deg,
+    #ffffff -225.33%,
+    #ffffff 14.04%,
+    #3b50ff 230.72%,
+    #0e1550 288.95%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 /* Apply CSS For Laptop View and Less */
-@media screen and (max-width:992px) {
-    
+@media screen and (max-width: 992px) {
 }
 /* Apply CSS For Tab View and Less */
-@media screen and (max-width:768px) {
-    
+@media screen and (max-width: 768px) {
+  .btn {
+  height: 44px;
+}
+.btn-arrow {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+.btn-text {
+  margin-left: 40px;
+}
 }
 
 /* Apply CSS For Mobile View and Less */
-@media screen and (max-width:576px) {
-    
+@media screen and (max-width: 576px) {
 }
+
+/* Home Page Start =================== */
+
+/* =================== Home Page End =================== */
