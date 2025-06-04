@@ -23,10 +23,17 @@
   margin: auto;
 }
 header{
+  z-index: 100;
   transition: .5s;
 }
-header.active{
+/* header.active{
   background-color: #0000006e;
+} */
+ .bg-blue {
+  background-image: url('bg.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .bg-image {
   background-position: center;

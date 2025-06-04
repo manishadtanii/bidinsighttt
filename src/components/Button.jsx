@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-function Button({text, link}) {
+function Button({text, link, btnBg, arrowBg, }) {
   return (
-    <Link to={link} className='btn flex justify-between items-center bg-white rounded-full p-1'>
-        <div className="btn-arrow rounded-full bg-primary text-center ">
-            <i class="far fa-long-arrow-right text-white"></i>
+    <Link to={link} className={`btn flex justify-between items-center rounded-full p-1 ${btnBg}`}>
+        <div className={`btn-arrow rounded-full text-center ${arrowBg}`}>
+            <i class="far fa-long-arrow-right"></i>
         </div>
         <div className="btn-text font-h text-black px-4 body-t">{text}</div>
     </Link>

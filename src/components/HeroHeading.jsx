@@ -10,7 +10,7 @@ function HeroHeading({ data }) {
         {para && <p className="mt-5 mb-8 text-gray-200">{para}</p>}
         {btnText && (
           <div className="flex justify-center">
-            <Button text={btnText} link={btnLink} />
+            <Button text={btnText} link={btnLink} arrowBg={"bg-primary text-white"}  btnBg={"bg-white"}/>
           </div>
         )}
       </div>
