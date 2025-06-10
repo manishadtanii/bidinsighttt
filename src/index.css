@@ -22,15 +22,15 @@
   padding: 80px 40px;
   margin: auto;
 }
-header{
+header {
   z-index: 100;
-  transition: .5s;
+  transition: 0.5s;
 }
 /* header.active{
   background-color: #0000006e;
 } */
- .bg-blue {
-  background-image: url('bg.jpg');
+.bg-blue {
+  background-image: url("bg.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -57,10 +57,11 @@ header{
   transition: 0.5s;
   position: relative;
   height: 60px;
+  border: 1px solid #273be2;
 }
 .btn-arrow {
-  width: 56px;
-  height: 56px;
+  width: 55px;
+  height: 55px;
   line-height: 56px;
   transition: 0.5s;
   position: absolute;
@@ -106,22 +107,28 @@ p {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.pricing-btn-bg{
+  background-image: url("pricing-btn-bg.png");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 /* Apply CSS For Laptop View and Less */
 @media screen and (max-width: 992px) {
 }
 /* Apply CSS For Tab View and Less */
 @media screen and (max-width: 768px) {
   .btn {
-  height: 44px;
-}
-.btn-arrow {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-}
-.btn-text {
-  margin-left: 40px;
-}
+    height: 44px;
+  }
+  .btn-arrow {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .btn-text {
+    margin-left: 40px;
+  }
 }
 
 /* Apply CSS For Mobile View and Less */
@@ -129,5 +136,55 @@ p {
 }
 
 /* Home Page Start =================== */
+/* .comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  grid-template-rows: 220px 255px 210px; 
+  gap: 20px;
+}
+.grid-item {
+  border-radius: 20px;
+  position: relative;
+  border: 1px solid white;
+  overflow: hidden;
 
+}
+.grid-item::after,
+.grid-item::before{
+  content: "";
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: rgba(81, 98, 230, 0.719) 0px 30px 90px;
+}
+.grid-item::after{
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+.grid-item::before{
+  bottom: 0;
+  right: 0;
+  transform: translate(50%, 50%);
+}
+#grid-item-1 {
+  grid-row: 1 / 3;
+}
+#grid-item-2 {
+  grid-column: 2/4;
+}
+#grid-item-3 {
+}
+#grid-item-4 {
+  grid-row: 2/4;
+}
+#grid-item-5 {
+  grid-column: 3/5;
+}
+#grid-item-6 {
+}
+#grid-item-7 {
+  grid-column: 3/5;
+} */
 /* =================== Home Page End =================== */
