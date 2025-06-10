@@ -35,7 +35,7 @@ function HowItWorks() {
   ]
   return (
     <div className="how-it-works">
-      <div className="let-show bg-image bg-[url('line-bg.png')]">
+      <div className="let-show bg-image bg-[url('https://bid-insight.vercel.app/line-bg.png')]">
         <div className="container-fixed">
           <div className="flex flex-col md:flex-row justify-center items-center h-screen gap-4">
             <Heading

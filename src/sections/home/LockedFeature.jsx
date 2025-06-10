@@ -36,7 +36,7 @@ function LockedFeature() {
       </div>
       <div className="locked-content w-full overflow-x-scroll">
         <div className="flex w-[200%]">
-          <div className="locked-blue bg-[url('bg.jpg')] bg-image py-14 px-14 flex gap-5   w-[150%]">
+          <div className="locked-blue bg-blue py-14 px-14 flex gap-5 w-[150%]">
             {data.map((item, key) => (
               <div
                 key={key}

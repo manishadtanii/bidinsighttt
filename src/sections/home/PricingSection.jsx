@@ -38,7 +38,7 @@ function PricingSection() {
   ];
 
   return (
-    <section className="py-16 px-4 bg-[url('pricing-bg.jpg')] bg-no-repeat bg-center bg-cover text-center">
+    <section className="py-16 px-4 bg-[url('https://bid-insight.vercel.app/pricing-bg.jpg')] bg-no-repeat bg-center bg-cover text-center">
       <div className="mb-4">
         <Heading
           textAlign={"text-center"}

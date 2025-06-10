@@ -8,7 +8,7 @@ function KeyValuePro() {
     containter: "max-w-5xl mx-auto text-center",
   };
   return (
-    <div className="key-value-pro bg-[url('bg.jpg')] bg-image">
+    <div className="key-value-pro bg-blue">
       <div className="container-section">
         <HeroHeading data={data}/>
         <img src="key-value-img.png" className="w-full mt-10" alt="" />
