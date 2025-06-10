@@ -107,7 +107,7 @@ p {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.pricing-btn-bg{
+.pricing-btn-bg {
   background-image: url("pricing-btn-bg.png");
   background-size: cover;
   background-position: center center;
@@ -129,6 +129,16 @@ p {
   .btn-text {
     margin-left: 40px;
   }
+  .container-section {
+    padding: 40px 20px !important;
+  }
+  .h1 {
+    font-size: clamp(32px, 5vw, 70px);
+}
+p {
+    font-size: clamp(14px, 5vw, 16px) !important;
+    line-height: 110%;
+}
 }
 
 /* Apply CSS For Mobile View and Less */

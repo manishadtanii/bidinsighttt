@@ -27,7 +27,7 @@ function LockedFeature() {
   return (
     <div className="locked-feature">
       <div className="container-section">
-        <div className="locked-head flex justify-between items-center py-16">
+        <div className="locked-head flex justify-between flex-col  md:flex-row items-center gap-5 md:py-16">
           <div className="">
             <Heading textD={"A Glance At"} textL={"The A.I. Magic!"} />
           </div>
@@ -68,7 +68,7 @@ function LockedFeature() {
               textL={"functionality"}
               textAlign={"text-center"}
             />
-            <Arrow link={'/'} customclass={"w-16 h-16 body-t"} />
+            <Arrow link={'/'} customclass={"w-10  h-10 md:w-16 md:h-16 body-t"} />
           </div>
         </div>
       </div>
