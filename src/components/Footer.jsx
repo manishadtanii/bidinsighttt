@@ -54,16 +54,16 @@ const Footer = () => {
           <div className="mt-12 border-t border-white/20 pt-4 flex flex-col md:flex-row justify-between items-center gap-3" >
             <Link
               to="/terms"
-              className="hover:text-white mb-2 md:mb-0 font-t body-t"
+              className="hover:text-white mb-2 md:mb-0 font-t text-lg"
             >
               Terms & Condition
             </Link>
-            <span className="text-center font-t body-t">
+            <span className="text-center font-t text-lg">
               @2025 BidInsight - All Rights Reserved
             </span>
             <Link
               to="/privacy"
-              className="hover:text-white mt-2 md:mt-0 font-t body-t"
+              className="hover:text-white mt-2 md:mt-0 font-t text-lg"
             >
               Privacy Policy
             </Link>
