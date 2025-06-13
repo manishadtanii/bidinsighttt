@@ -20,22 +20,21 @@ function HowItWorks() {
 
   //   ScrollTrigger.refresh();
   // }, []);
-  useGSAP(()=>{
+  useGSAP(() => {
     let sections = gsap.utils.toArray(".work-item");
-sections.forEach((container, i) => {
-  let pin = i === sections.length - 1
-  console.log(pin)
-  
-  ScrollTrigger.create({
-    trigger: container,
-    start: "top top",
-    pin: true,
-    pinSpacing: pin,
-    // markers: true,
-  });
-});
+    sections.forEach((container, i) => {
+      let pin = i === sections.length - 1;
+      console.log(pin);
 
-  })
+      ScrollTrigger.create({
+        trigger: container,
+        start: "top top",
+        pin: true,
+        pinSpacing: pin,
+        // markers: true,
+      });
+    });
+  });
 
   const data = [
     {
