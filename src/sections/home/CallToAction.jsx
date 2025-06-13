@@ -14,7 +14,7 @@ function CallToAction() {
           opportunities tailored to you, risk-free.
         </p>
         <div className="" data-aos="fade-up" data-aos-delay="200">
-        <Button btnBg={"bg-white"} text={"Get Started"} arrowBg={"bg-primary"}  />
+        <Button btnBg={"bg-white text-black"} text={"Get Started"} arrowBg={"bg-primary text-white"}  />
         </div>
         </div>
       </div>

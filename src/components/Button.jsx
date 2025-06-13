@@ -10,7 +10,7 @@ function Button({ text, link, btnBg, arrowBg }) {
       <div className={`btn-arrow rounded-full text-center ${arrowBg}`}>
         <i class="far fa-long-arrow-right"></i>
       </div>
-      <div className="btn-text font-h text-black px-4 body-t">{text}</div>
+      <div className={`btn-text font-h  px-4 body-t`}>{text}</div>
     </Link>
   );
 }
