@@ -31,7 +31,7 @@ sections.forEach((container, i) => {
     start: "top top",
     pin: true,
     pinSpacing: pin,
-    markers: true,
+    // markers: true,
   });
 });
 
