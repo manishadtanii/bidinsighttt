@@ -48,10 +48,10 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="mt-[120px]">
-          <h1 className="text-g h1 font-black font-h max-w-2xl">
+          <h1 className="text-g text-6xl lg:text-8xl font-black font-h max-w-4xl" data-aos="fade-up" data-aos-delay="">
             Your next government contract awaits!
           </h1>
-          <div className="mt-12 border-t border-white/20 pt-4 flex flex-col md:flex-row justify-between items-center gap-3">
+          <div className="mt-12 border-t border-white/20 pt-4 flex flex-col md:flex-row justify-between items-center gap-3" >
             <Link
               to="/terms"
               className="hover:text-white mb-2 md:mb-0 font-t body-t"
