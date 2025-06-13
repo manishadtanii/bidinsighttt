@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-blue text-white px-6 py-12">
+    <footer className="bg-blue text-white px-6 py-12 overflow-hidden">
       <div className="container-fixed">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
           {/* Left Section: Logo + CTA */}
           <div>
-            <div className="">
+            <div className="" data-aos="fade-right" >
               <Link to="/" className="">
                 <img src="logo.png" className="max-w-xs w-full" />
               </Link>
@@ -19,13 +19,13 @@ const Footer = () => {
           {/* Middle Section: Navigation */}
           <div className="flex flex-wrap flex-col sm:flex-row gap-8 md:gap-12 xl:gap-16 xl:justify-end md:col-span-2">
             {[
-              { title: "Home", links: ["Lorem", "Lorem", "Lorem", "Lorem"] },
-              { title: "AI Toolset", links: ["Lorem"] },
-              { title: "Bids", links: ["Lorem", "Lorem", "Lorem"] },
-              { title: "About Us", links: ["Lorem", "Lorem"] },
-              { title: "Help Center", links: ["Lorem", "Lorem"] },
+              { title: "Home", links: ["Lorem", "Lorem", "Lorem", "Lorem"], delay:"100" },
+              { title: "AI Toolset", links: ["Lorem"], delay:"200" },
+              { title: "Bids", links: ["Lorem", "Lorem", "Lorem"], delay:"300" },
+              { title: "About Us", links: ["Lorem", "Lorem"], delay:"400" },
+              { title: "Help Center", links: ["Lorem", "Lorem"], delay:"500" },
             ].map((section, idx) => (
-              <div key={idx}>
+              <div key={idx} data-aos="fade-left" data-aos-delay={section.delay}>
                 <h3 className="font-semibold mb-2 font-t body-t">
                   {section.title}
                 </h3>

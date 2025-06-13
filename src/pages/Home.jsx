@@ -9,7 +9,7 @@ import ComparisonGrid from '../sections/home/ComparisonGrid'
 
 function Home() {
   return (
-    <div>
+    <div className='overflow-x-hidden'>
      <Hero/>
      <KeyValuePro/>
      <LockedFeature />

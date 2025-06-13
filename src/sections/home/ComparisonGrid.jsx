@@ -4,12 +4,12 @@ const ComparisonGrid = () => {
   return (
     <section className="comparison bg-blue">
       <div className="container-section">
-        <h1 className="h1 font-black text-center font-h text-g mb-5">
+        <h1 className="h1 font-black text-center font-h text-g mb-5" data-aos="fade-up" >
           Are We Really Better? You Decide!
         </h1>
 
         <div className="">
-          <img src="you-decide.png" className="w-full" alt="" />
+          <img src="you-decide.png" className="w-full" alt="" data-aos="fade-up" data-aos-delay="200"  />
           {/* <div className="comparison-grid">
             <div className="grid-item" id="grid-item-1">
             </div>

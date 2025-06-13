@@ -5,7 +5,16 @@ import Home from "./pages/Home";
 import Error404 from "./pages/Error404";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useEffect } from "react";
 function App() {
+   useEffect(() => {
+    AOS.init({
+      duration: 1000, // animation duration
+      once: true,     // whether animation should happen only once - while scrolling down
+    });
+  }, []);
   return (
     <>
       <Router>

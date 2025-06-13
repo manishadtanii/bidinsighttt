@@ -16,6 +16,7 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      delay:"200"
     },
     {
       title: "Essentials",
@@ -25,6 +26,7 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      delay:"300"
     },
     {
       title: "A.I. Powerhouse",
@@ -34,12 +36,13 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      delay:"400"
     },
   ];
 
   return (
     <section className="py-16 px-4 bg-[url('https://bid-insight.vercel.app/pricing-bg.jpg')] bg-no-repeat bg-center bg-cover text-center">
-      <div className="mb-4">
+      <div className="mb-4" data-aos="fade-up">
         <Heading
           textAlign={"text-center"}
           textD={"Here’s What"}
@@ -48,7 +51,7 @@ function PricingSection() {
       </div>
 
       {/* Toggle */}
-      <div className="bg-blue inline-flex items-center bg-gradient-to-r from-[#0f123f] to-[#131866] p-3 rounded-full mb-12 text-sm">
+      <div className="bg-blue inline-flex items-center bg-gradient-to-r from-[#0f123f] to-[#131866] p-3 rounded-full mb-12 text-sm" data-aos="fade-up" data-aos-delay="100">
         <button
           onClick={() => setBillingCycle("Annual")}
           className={`px-2 py-4 rounded-full transition ${
@@ -81,7 +84,7 @@ function PricingSection() {
         ))}
       </div>
 
-      <p className="mt-10 text-[22px]  font-t">
+      <p className="mt-10 text-[22px]  font-t" data-aos="fade-up" data-aos-delay="300">
         Know Everything There Is! <br />
         <Link
           to="/pricing"
