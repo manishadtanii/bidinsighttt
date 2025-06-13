@@ -1,10 +1,10 @@
-import React from "react";
+import React, { use } from "react";
 import Heading from "../../components/Heading";
 import Button from "../../components/Button";
-// import { useGSAP } from "@gsap/react";
-// import gsap from "gsap";
-// import { ScrollTrigger } from "gsap/all";
-// gsap.registerPlugin(ScrollTrigger);
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
+gsap.registerPlugin(ScrollTrigger);
 
 function HowItWorks() {
   //   useGSAP(() => {
@@ -20,6 +20,22 @@ function HowItWorks() {
 
   //   ScrollTrigger.refresh();
   // }, []);
+  useGSAP(()=>{
+    let sections = gsap.utils.toArray(".work-item");
+sections.forEach((container, i) => {
+  let pin = i === sections.length - 1
+  console.log(pin)
+  
+  ScrollTrigger.create({
+    trigger: container,
+    start: "top top",
+    pin: true,
+    pinSpacing: pin,
+    markers: true,
+  });
+});
+
+  })
 
   const data = [
     {
