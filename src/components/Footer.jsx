@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-blue text-white px-6 py-12 overflow-hidden">
-      <div className="container-fixed">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+    <footer className="bg-blue text-white px-6 py-12 overflow-hidden h-[100vh]">
+      <div className="container-fixed h-full">
+       <div className="flex flex-col justify-between h-full">
+         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
           {/* Left Section: Logo + CTA */}
           <div>
             <div className="" data-aos="fade-right" >
@@ -47,7 +48,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-[120px]">
+        <div className="">
           <h1 className="text-g text-6xl lg:text-8xl font-black font-h max-w-4xl" data-aos="fade-up" data-aos-delay="">
             Your next government contract awaits!
           </h1>
@@ -69,6 +70,7 @@ const Footer = () => {
             </Link>
           </div>
         </div>
+       </div>
       </div>
     </footer>
   );

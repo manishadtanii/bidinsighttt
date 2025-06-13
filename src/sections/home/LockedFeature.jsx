@@ -64,16 +64,16 @@ function LockedFeature() {
 
       <div className="locked-content w-full overflow-hidden">
         <div
-          className="locked-content-inner bg-blue h-[100vh] ps-14 flex w-[200%] justify-stretch gap-5"
+          className="locked-content-inner bg-blue h-[100vh]  ps-14 flex w-[400%] lg:w-[200%] justify-stretch gap-5"
           ref={containerRef}
         >
           {data.map((item, index) => (
-            <div key={index} className="panel my-14 h-full flex-[50%]">
+            <div key={index} className="panel my-14 rounded-[30px] bg-white max-h-[670px] h-full flex-[50%]">
               <div className="locked-item bg-white rounded-[30px]">
                 <div className="locked-img">
                   <img src={item.img} alt="" />
                 </div>
-                <div className="locked-text p-5">
+                <div className="locked-text h-full p-5">
                   <div className="locked-title font-h font-semibold text-black mb-3 h3">
                     {item.title}
                   </div>

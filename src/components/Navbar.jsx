@@ -34,7 +34,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden md:flex items-center gap-4 xl:gap-6 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md">
+        <ul className="hidden md:flex items-center gap-4 xl:gap-10 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-xl">
           {navItems.map((item) => (
             <li key={item.path}>
               <Link
