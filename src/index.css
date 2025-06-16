@@ -220,3 +220,28 @@ p {
   color: white;
 }
 /* =================== Form Page End =================== */
+.forn-container {
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+/* Chrome, Edge, Safari */
+.forn-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.forn-container::-webkit-scrollbar-track {
+  background: transparent; /* Tailwind's gray-200 */
+  border-radius: 10px;
+}
+
+.forn-container::-webkit-scrollbar-thumb {
+  background-color: #273BE2; /* Your brand blue */
+  border-radius: 10px;
+  /* border: 2px solid transparent; */
+  background-clip: content-box;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #fff;
+}

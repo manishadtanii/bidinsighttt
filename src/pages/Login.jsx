@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
+import FormField from "../components/FormField";
+import FormPassword from "../components/FormPassword";
 
 function Login() {
   const data = {
@@ -11,7 +13,13 @@ function Login() {
     btnLink: false,
     container: "max-w-4xl mx-auto text-left",
   };
-  const [passToggle, setPassToggle] = useState(false);
+  const formHeader = {
+    title: "Signup",
+    link: "/register",
+    steps: false,
+    activeStep: 0,
+  };
+
   return (
     <>
       <div className="login bg-blue  w-screen px-5 md:px-10">
@@ -19,44 +27,22 @@ function Login() {
           <div className="form-container py-10 h-screen grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="form-left flex flex-col  justify-between">
               <div className="">
-                <FormHeader />
+                <FormHeader {...formHeader} />
 
                 <HeroHeading data={data} />
                 <form action="" method="post">
-                  <div className="form-field flex flex-col mb-6 max-w-[540px]">
-                    <label className="form-label font-t mb-3" htmlFor="email">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="form-input font-t p-3 rounded-[20px] bg-transparent"
-                      required
-                      placeholder="e.g. jopseph.mark12@gmail.com"
-                    />
-                  </div>
-                  <div className="form-field flex flex-col mb-6 max-w-[540px]">
-                    <label className="form-label font-t mb-3" htmlFor="email">
-                      Password
-                    </label>
-                    <div className="form-input-box relative">
-                      <input
-                        type={passToggle ? "text" : "password"}
-                        id="email"
-                        name="email"
-                        className="form-input font-t p-3 rounded-[20px] bg-transparent w-full"
-                        required
-                        placeholder="e.g. m@rkJos6ph"
-                      />
-                      <i
-                        className={`far text-white fa-eye absolute top-[50%] right-4 transform -translate-y-1/2 cursor-pointer ${
-                          passToggle ? "fa-eye-slash" : "fa-eye"
-                        }`}
-                        onClick={() => setPassToggle(!passToggle)}
-                      ></i>
-                    </div>
-                  </div>
+                  <FormField
+                    label="Email"
+                    type={"email"}
+                    name="email"
+                    placeholder="e.g. jopseph.mark12@gmail.com"
+                  />
+                  <FormPassword
+                    label="Password"
+                    placeholder="e.g. m@rkJos6ph"
+                    name="password"
+                    id="password"
+                  />
                 </form>
               </div>
               <FormFooter />

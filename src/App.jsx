@@ -10,12 +10,13 @@ import Home from "./pages/Home";
 import Error404 from "./pages/Error404";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Register from "./pages/Register";
 
 function AppLayout() {
   const location = useLocation();
 
   // List of routes where header/footer should be hidden
-  const hiddenRoutes = ["/login", "/signup"];
+  const hiddenRoutes = ["/login", "/signup", "/register"];
   const isHidden = hiddenRoutes.includes(location.pathname);
 
   return (
@@ -24,7 +25,7 @@ function AppLayout() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/*" element={<Error404 />} />
       </Routes>
       {!isHidden && <Footer />}
