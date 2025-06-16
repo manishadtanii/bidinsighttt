@@ -6,8 +6,8 @@ function Hero() {
     title: "Bidding made easier. Insights made smarter.",
     para: "Revolutionizing government bidding. Powered by A.I. Fueled by Analytics.",
     btnText: "Get Started",
-    btnLink: "/apply",
-    containter: "max-w-4xl mx-auto text-center",
+    // btnLink: "/apply",
+    container: "max-w-4xl mx-auto text-center",
   };
   return (
     <div className="hero-home bg-[url('https://bid-insight.vercel.app/hero-bg.jpg')] bg-image  md:pt-36 pb-20">

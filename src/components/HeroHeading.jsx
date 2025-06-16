@@ -8,16 +8,16 @@ import SplitType from "split-type";
 gsap.registerPlugin(ScrollTrigger);
 
 function HeroHeading({ data }) {
-  const { title, para, btnText, btnLink, containter } = data;
+  const { title, para, btnText, btnLink, container } = data;
 
   const headingRef = useRef();
   const containerRef = useRef();
  
   return (
     <div className="hero-heading" ref={containerRef}>
-      <div className={`${containter}`}>
+      <div className={`${container}`}>
         {title && (
-          <h1 className="h1 font-bold text-g" data-aos="fade-up">
+          <h1 className="h1 font-bold text-g font-h" data-aos="fade-up">
             {title}
           </h1>
         )}
