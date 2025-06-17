@@ -22,7 +22,17 @@ function Register() {
     steps: 6,
     activeStep: 0,
   };
-
+  const formFooter = {
+    back: {
+      text: "Back",
+      link: "/login",
+    },
+    next: {
+      text: "Next",
+      link: "/company-build",
+    },
+    
+  };
   return (
     <>
       <div className="login bg-blue  w-screen px-5 md:px-10">
@@ -33,7 +43,11 @@ function Register() {
                 <FormHeader {...formHeader} />
 
                 <HeroHeading data={data} />
-                <form action="" method="post" className="forn-container flex flex-col gap-6 h-full justify-between max-h-[100%]">
+                <form
+                  action=""
+                  method="post"
+                  className="forn-container flex flex-col  h-full justify-between max-h-[100%]"
+                >
                   <div className="">
                     <FormField
                       label="Full Name"
@@ -50,32 +64,47 @@ function Register() {
                       delay={100}
                     />
                     <FormPassword
-                    label="Password"
-                    placeholder="e.g. m@rkJos6ph"
-                    name="password"
-                    id="password"
-                    delay={100}
-                  />
-                  <FormPassword
-                    label="Confirm password"
-                    placeholder="e.g. m@rkJos6ph"
-                    name="password"
-                    id="password"
-                    delay={100}
-                  />
+                      label="Password"
+                      placeholder="e.g. m@rkJos6ph"
+                      name="password"
+                      id="password"
+                      delay={100}
+                    />
+                    <FormPassword
+                      label="Confirm password"
+                      placeholder="e.g. m@rkJos6ph"
+                      name="password"
+                      id="password"
+                      delay={100}
+                    />
                   </div>
 
                   <div className="accept">
                     <label className="flex items-center text-white font-t font-normal">
-                      <input type="checkbox" className="mr-2" />
-                      I accept the
-                      <Link className="underline" to="/policy">Privacy Policy </Link>,  &nsbp;
-                      <Link className="underline" to="/terms">T&C </Link>,  &nsbp;
-                      <Link className="underline" to="/member-terms">Member Terms </Link> and &nsbp;
-                      <Link className="underline" to="/disclaimer"> Disclaimer &nsbp; </Link>.
+                      <input type="checkbox" className="mr-2" />I accept the
+                      <Link className="underline" to="/policy">
+                        {" "}
+                        Privacy Policy{" "}
+                      </Link>
+                      ,
+                      <Link className="underline" to="/terms">
+                        {" "}
+                        T&C{" "}
+                      </Link>
+                      ,
+                      <Link className="underline" to="/member-terms">
+                        {" "}
+                        Member Terms{" "}
+                      </Link>{" "}
+                      and
+                      <Link className="underline" to="/disclaimer">
+                        {" "}
+                        Disclaimer{" "}
+                      </Link>
+                      .
                     </label>
                   </div>
-                  <FormFooter />
+                  <FormFooter data={formFooter} />
                 </form>
               </div>
             </div>

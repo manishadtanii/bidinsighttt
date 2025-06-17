@@ -28,7 +28,7 @@ function FormHeader({ title, link, steps = 0, activeStep = 0 }) {
 
       {/* Progress Bar */}
       {steps && (
-        <div className="process-line flex items-center justify-between mt-5 h-10 gap-4 w-full">
+        <div className="process-line flex items-center justify-between mt-3 h-10 gap-4 w-full">
           {Array.from({ length: steps }).map((_, index) => (
             <div
               key={index}

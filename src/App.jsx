@@ -11,12 +11,16 @@ import Error404 from "./pages/Error404";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Register from "./pages/Register";
+import CompanyBuild from "./pages/CompanyBuild";
+import GeographicCoverage from "./pages/GeographicCoverage";
+import HelpOurAi from "./pages/HelpOurAi";
+import IndustryCategories from "./pages/IndustryCategories";
 
 function AppLayout() {
   const location = useLocation();
 
   // List of routes where header/footer should be hidden
-  const hiddenRoutes = ["/login", "/signup", "/register"];
+  const hiddenRoutes = ["/login", "/signup", "/register", "/company-build", "/geographic-coverage", "/help-our-ai", "/industry-categories"];
   const isHidden = hiddenRoutes.includes(location.pathname);
 
   return (
@@ -26,6 +30,11 @@ function AppLayout() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/company-build" element={<CompanyBuild />} />
+        <Route path="/geographic-coverage" element={<GeographicCoverage />} />
+        <Route path="/help-our-ai" element={<HelpOurAi />} />
+        <Route path="/industry-categories" element={<IndustryCategories />} />
+        <Route path="/industry-categories" element={<IndustryCategories />} />
         <Route path="/*" element={<Error404 />} />
       </Routes>
       {!isHidden && <Footer />}

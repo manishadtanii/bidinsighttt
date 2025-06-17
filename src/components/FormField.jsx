@@ -30,8 +30,8 @@ function FormField({ label, type = "text", name, placeholder, delay = 100 }) {
   const validationProps = getValidationProps(type);
 
   return (
-    <div className="form-field flex flex-col mb-4 max-w-[540px]" data-aos="fade-up" data-aos-delay={delay}>
-      <label className="form-label font-t mb-3" htmlFor={name}>
+    <div className="form-field flex flex-col mb-3 max-w-[540px]" data-aos="fade-up" data-aos-delay={delay}>
+      <label className="form-label font-t mb-2" htmlFor={name}>
         {label}
       </label>
       <input

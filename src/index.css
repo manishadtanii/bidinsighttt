@@ -201,10 +201,10 @@ p {
 
 /* Form Page Start =================== */
 .form-img {
-  background-image: url("/form-img-bg.png");
+  /* background-image: url("/form-img-bg.png"); */
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
 }
 .form-label {
   font-size: 16px;
@@ -222,7 +222,7 @@ p {
 /* =================== Form Page End =================== */
 .forn-container {
   overflow-y: auto;
-  max-height: 600px;
+  max-height: 650px;
 }
 
 /* Chrome, Edge, Safari */
@@ -233,7 +233,7 @@ p {
 .forn-container::-webkit-scrollbar-track {
   background: transparent; /* Tailwind's gray-200 */
   border-radius: 10px;
-}
+} 
 
 .forn-container::-webkit-scrollbar-thumb {
   background-color: #273BE2; /* Your brand blue */
@@ -242,6 +242,10 @@ p {
   background-clip: content-box;
 }
 .form-input:focus {
+  outline: none;
+  border-color: #fff;
+}
+.form-select:focus {
   outline: none;
   border-color: #fff;
 }
