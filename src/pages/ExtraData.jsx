@@ -18,7 +18,7 @@ function ExtraData() {
     title: "Log In",
     link: "/login",
     steps: 6,
-    activeStep: 1,
+    activeStep: 5,
   };
   const formFooter = {
     back: {
