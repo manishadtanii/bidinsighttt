@@ -151,7 +151,9 @@ function CompanyBuild() {
                         className="form-input font-t p-3 rounded-[20px] bg-transparent border border-gray-300 focus:ring-0 opacity-0 absolute pointer-events-none"
                       />
                     </div>
+                    <div className="text-white font-t"><b>NOTE:</b> The capability statement is essential for building your company’s profile, as providing comprehensive information is crucial to achieving optimal AI results</div>
                   </div>
+                  
 
                   <FormFooter data={formFooter} />
                 </form>

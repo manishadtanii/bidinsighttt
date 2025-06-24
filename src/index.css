@@ -40,7 +40,7 @@ header {
   background-repeat: no-repeat;
   background-size: cover;
 }
-.bg-primary {
+/* .bg-primary {
   background: #273be2;
 }
 .text-primary {
@@ -51,7 +51,7 @@ header {
 }
 .text-secondary {
   color: #939fff;
-}
+} */
 .btn {
   overflow: hidden;
   transition: 0.5s;

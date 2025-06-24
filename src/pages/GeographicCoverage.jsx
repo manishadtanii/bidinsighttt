@@ -22,7 +22,7 @@ function GeographicCoverage() {
     title: "Log In",
     link: "/login",
     steps: 6,
-    activeStep: 1,
+    activeStep: 2,
   };
   const formFooter = {
     back: {
@@ -64,13 +64,13 @@ function GeographicCoverage() {
                 >
                   <div className="">
                     <FormRadio
-                   label="Nationwide"
-  type="radio"
-  name="region"
-  value="Nationwide"
-  delay={100}
-  selectedValue={selectedRegion}
-  onChange={(e) => setSelectedRegion(e.target.value)}
+                      label="Nationwide"
+                      type="radio"
+                      name="region"
+                      value="Nationwide"
+                      delay={100}
+                      selectedValue={selectedRegion}
+                      onChange={(e) => setSelectedRegion(e.target.value)}
                     />
                     <div className="form-label font-t my-10" htmlFor="upload">
                       Select region wise

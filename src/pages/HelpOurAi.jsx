@@ -9,8 +9,8 @@ import FormSelect from "../components/FormSelect";
 
 function HelpOurAi() {
   const data = {
-    title: "Lorem ipsum dolor sit ",
-    para: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+    title: "Help Our A.I. Get Smarter!",
+    para: "The more context you provide, the smarter our compatibility engine gets!",
     btnText: false,
     btnLink: false,
     container: "max-w-4xl mx-auto text-left",
@@ -26,15 +26,15 @@ function HelpOurAi() {
   const formFooter = {
     back: {
       text: "Back",
-      link: "/login",
+      link: "/industry-categories",
     },
     next: {
-      text: "Log In",
-      link: "/login",
+      text: "Next",
+      link: "/extra-data",
     },
     skip: {
       text: "Skip",
-      link: "/login",
+      link: "/extra-data",
     },
   };
   return (
@@ -53,30 +53,9 @@ function HelpOurAi() {
                   className="forn-container flex flex-col  h-full justify-between max-h-[100%]"
                 >
                   <div className="">
-                    <FormField
-                      label="Company name"
-                      type={"text"}
-                      name="companyName"
-                      placeholder="e.g. BidInsight "
-                      delay={100}
-                    />
-                    <FormField
-                      label="Company FIEN or SSN"
-                      type={"text"}
-                      name="companyFienOrSsn"
-                      placeholder="e.g. XX-XXXXXXX"
-                      delay={100}
-                    />
-                    <FormField
-                      label="Company website"
-                      type={"text"}
-                      name="companyWebsite"
-                      placeholder="e.g. www.mark-jospeh.com"
-                      delay={100}
-                    />
-                    <div className="flex max-w-[540px] gap-4">
+                    <div className="flex  gap-4">
                       <FormSelect
-                        label="Year in business"
+                        label="Workers compensation"
                         name="yearInBusiness"
                         options={[
                           { value: "llc", label: "LLC" },
@@ -89,7 +68,7 @@ function HelpOurAi() {
                         delay={100}
                       />
                       <FormSelect
-                        label="No. of employees"
+                        label="General liability insurance"
                         name="numberOfEmployees"
                         options={[
                           { value: "llc", label: "LLC" },
@@ -102,9 +81,9 @@ function HelpOurAi() {
                         delay={100}
                       />
                     </div>
-                    <div className="flex max-w-[540px] gap-4">
+                    <div className="flex  gap-4">
                       <FormSelect
-                        label="State"
+                        label="Automobile liability insurance"
                         name="state"
                         options={[
                           { value: "llc", label: "LLC" },
@@ -117,7 +96,35 @@ function HelpOurAi() {
                         delay={100}
                       />
                       <FormSelect
-                        label="Target contract size"
+                        label="Medical/ Professional/ ESO liability insurance"
+                        name="targetContractSize"
+                        options={[
+                          { value: "llc", label: "LLC" },
+                          { value: "corporation", label: "Corporation" },
+                          {
+                            value: "sole-proprietorship",
+                            label: "Sole Proprietorship",
+                          },
+                        ]}
+                        delay={100}
+                      />
+                    </div>
+                    <div className="flex  gap-4">
+                      <FormSelect
+                        label="Cybersecurity insurance"
+                        name="state"
+                        options={[
+                          { value: "llc", label: "LLC" },
+                          { value: "corporation", label: "Corporation" },
+                          {
+                            value: "sole-proprietorship",
+                            label: "Sole Proprietorship",
+                          },
+                        ]}
+                        delay={100}
+                      />
+                      <FormSelect
+                        label="Environmental insurance"
                         name="targetContractSize"
                         options={[
                           { value: "llc", label: "LLC" },

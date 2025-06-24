@@ -17,11 +17,12 @@ function FormSelect({
       <label className="form-label font-t mb-2" htmlFor={name}>
         {label}
       </label>
-      <select
+      <div className="font-t p-3 py-5 rounded-[20px]  border border-gray-300 text-white">
+<select
         id={name}
         name={name}
         required={required}
-        className="form-select font-t p-3 py-5 rounded-[20px] bg-transparent border border-gray-300 text-white focus:ring-0"
+        className="form-select bg-transparent w-full focus:ring-0"
       >
         <option value=""  disabled selected>
           {placeholder}
@@ -32,6 +33,8 @@ function FormSelect({
           </option>
         ))}
       </select>
+      </div>
+      
     </div>
   );
 }

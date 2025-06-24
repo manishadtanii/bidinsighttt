@@ -2,15 +2,12 @@ import React from "react";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
-import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
-import { Link } from "react-router-dom";
-import FormSelect from "../components/FormSelect";
 
 function ExtraData() {
   const data = {
-    title: "Lorem ipsum dolor sit ",
-    para: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+    title: "Extra Data, Maximum Compatibility",
+    para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
     btnText: false,
     btnLink: false,
     container: "max-w-4xl mx-auto text-left",
@@ -26,16 +23,13 @@ function ExtraData() {
   const formFooter = {
     back: {
       text: "Back",
-      link: "/login",
+      link: "/help-our-ai",
     },
     next: {
-      text: "Log In",
-      link: "/login",
+      text: "Submit",
+      link: "",
     },
-    skip: {
-      text: "Skip",
-      link: "/login",
-    },
+    skip:"" 
   };
   return (
     <>
@@ -54,82 +48,41 @@ function ExtraData() {
                 >
                   <div className="">
                     <FormField
-                      label="Company name"
+                      label="General liability insurance amount per occurrence & per aggregate"
                       type={"text"}
                       name="companyName"
-                      placeholder="e.g. BidInsight "
+                      placeholder="e.g. Value  "
                       delay={100}
                     />
                     <FormField
-                      label="Company FIEN or SSN"
+                      label="Automobile liability insurance amount per occurrence & per aggregate"
                       type={"text"}
                       name="companyFienOrSsn"
-                      placeholder="e.g. XX-XXXXXXX"
+                      placeholder="e.g. Value"
                       delay={100}
                     />
                     <FormField
-                      label="Company website"
+                      label="Medical/ Professional/ ESO liability insurance amount per occurrence & per aggregate"
                       type={"text"}
                       name="companyWebsite"
-                      placeholder="e.g. www.mark-jospeh.com"
+                      placeholder="e.g. Value"
                       delay={100}
                     />
-                    <div className="flex max-w-[540px] gap-4">
-                      <FormSelect
-                        label="Year in business"
-                        name="yearInBusiness"
-                        options={[
-                          { value: "llc", label: "LLC" },
-                          { value: "corporation", label: "Corporation" },
-                          {
-                            value: "sole-proprietorship",
-                            label: "Sole Proprietorship",
-                          },
-                        ]}
-                        delay={100}
-                      />
-                      <FormSelect
-                        label="No. of employees"
-                        name="numberOfEmployees"
-                        options={[
-                          { value: "llc", label: "LLC" },
-                          { value: "corporation", label: "Corporation" },
-                          {
-                            value: "sole-proprietorship",
-                            label: "Sole Proprietorship",
-                          },
-                        ]}
-                        delay={100}
-                      />
-                    </div>
-                    <div className="flex max-w-[540px] gap-4">
-                      <FormSelect
-                        label="State"
-                        name="state"
-                        options={[
-                          { value: "llc", label: "LLC" },
-                          { value: "corporation", label: "Corporation" },
-                          {
-                            value: "sole-proprietorship",
-                            label: "Sole Proprietorship",
-                          },
-                        ]}
-                        delay={100}
-                      />
-                      <FormSelect
-                        label="Target contract size"
-                        name="targetContractSize"
-                        options={[
-                          { value: "llc", label: "LLC" },
-                          { value: "corporation", label: "Corporation" },
-                          {
-                            value: "sole-proprietorship",
-                            label: "Sole Proprietorship",
-                          },
-                        ]}
-                        delay={100}
-                      />
-                    </div>
+                    <FormField
+                      label="Environment insurance amount per occurrence & per aggregate"
+                      type={"text"}
+                      name="companyWebsite"
+                      placeholder="e.g. Value"
+                      delay={100}
+                    />
+                    <FormField
+                      label="Cybersecurity insurance amount per occurrence & per aggregate"
+                      type={"text"}
+                      name="companyWebsite"
+                      placeholder="e.g. Value"
+                      delay={100}
+                    />
+
                   </div>
 
                   <FormFooter data={formFooter} />

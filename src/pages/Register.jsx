@@ -108,7 +108,7 @@ function Register() {
                 </form>
               </div>
             </div>
-            <div className="form-right hidden lg:block overflow-hidden rounded-[50px]">
+            <div className="form-right hidden lg:block overflow-hidden ">
               <div className="form-img flex items-center justify-center ">
                 <img src="/login-img.png" className="h-full" alt="" />
               </div>
