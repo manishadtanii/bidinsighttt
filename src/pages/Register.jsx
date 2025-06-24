@@ -31,13 +31,12 @@ function Register() {
       text: "Next",
       link: "/company-build",
     },
-    
   };
   return (
     <>
       <div className="login bg-blue  w-screen px-5 md:px-10">
         <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="form-left flex flex-col  justify-between  ">
               <div className="pe-3">
                 <FormHeader {...formHeader} />
@@ -109,7 +108,7 @@ function Register() {
               </div>
             </div>
             <div className="form-right hidden lg:block overflow-hidden ">
-              <div className="form-img flex items-center justify-center ">
+              <div className="form-img">
                 <img src="/login-img.png" className="h-full" alt="" />
               </div>
             </div>
