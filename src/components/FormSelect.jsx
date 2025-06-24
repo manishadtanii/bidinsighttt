@@ -10,7 +10,7 @@ function FormSelect({
 }) {
   return (
     <div
-      className="form-field flex flex-col mb-3 max-w-[540px] w-full"
+      className="form-field flex flex-col mb-3 w-[100%] md:w-[90%]"
       data-aos="fade-up"
       data-aos-delay={delay}
     >
@@ -18,23 +18,22 @@ function FormSelect({
         {label}
       </label>
       <div className="font-t p-3 py-5 rounded-[20px]  border border-gray-300 text-white">
-<select
-        id={name}
-        name={name}
-        required={required}
-        className="form-select bg-transparent w-full focus:ring-0"
-      >
-        <option value=""  disabled selected>
-          {placeholder}
-        </option>
-        {options.map((opt, i) => (
-          <option key={i} value={opt.value} className="text-black">
-            {opt.label}
+        <select
+          id={name}
+          name={name}
+          required={required}
+          className="form-select bg-transparent w-full focus:ring-0"
+        >
+          <option value="" disabled selected>
+            {placeholder}
           </option>
-        ))}
-      </select>
+          {options.map((opt, i) => (
+            <option key={i} value={opt.value} className="text-black">
+              {opt.label}
+            </option>
+          ))}
+        </select>
       </div>
-      
     </div>
   );
 }

@@ -74,7 +74,7 @@ function CompanyBuild() {
                       placeholder="e.g. www.mark-jospeh.com"
                       delay={100}
                     />
-                    <div className="flex max-w-[540px] gap-4">
+                    <div className="flex w-[100%] md:w-[90%] gap-4">
                       <FormSelect
                         label="Year in business"
                         name="yearInBusiness"
@@ -102,7 +102,7 @@ function CompanyBuild() {
                         delay={100}
                       />
                     </div>
-                    <div className="flex max-w-[540px] gap-4">
+                    <div className="flex w-[100%] md:w-[90%] gap-4">
                       <FormSelect
                         label="State"
                         name="state"
@@ -131,7 +131,7 @@ function CompanyBuild() {
                       />
                     </div>
                     <div
-                      className="form-field flex flex-col mb-3 max-w-[540px]"
+                      className="form-field flex flex-col mb-3 w-[100%] md:w-[90%]"
                       data-aos="fade-up"
                       data-aos-delay={100}
                     >

@@ -12,7 +12,7 @@ function FormPassword({
   return (
     <div>
       <div
-        className="form-field flex flex-col mb-6 max-w-[540px]"
+        className="form-field flex flex-col mb-6 w-[100%] md:w-[90%]"
         data-aos="fade-up"
         data-aos-delay={delay}
       >

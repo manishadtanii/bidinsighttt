@@ -12,7 +12,7 @@ function FormRadio({
 
   return (
     <div
-      className={`form-radio flex justify-between items-center mb-3 rounded-[20px] max-w-[345px] p-4 border transition-all duration-300 ${
+      className={`form-radio flex justify-between items-center mb-3 rounded-[20px] w-[100%] md:w-[90%] p-4 border transition-all duration-300 ${
         isSelected
           ? "bg-gradient-to-r from-[#132EC9] to-[#2D54E7] text-white border-transparent border-s-0"
           : "bg-transparent text-gray-700"

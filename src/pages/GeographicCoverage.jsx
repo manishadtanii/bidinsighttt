@@ -52,7 +52,7 @@ function GeographicCoverage() {
       <div className="login bg-blue  w-screen px-5 md:px-10">
         <div className="container-fixed">
           <div className="form-container py-10 h-screen grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="form-left flex flex-col  justify-between  ">
+            <div className="form-left flex flex-col justify-between">
               <div className="pe-3">
                 <FormHeader {...formHeader} />
 
@@ -60,9 +60,9 @@ function GeographicCoverage() {
                 <form
                   action=""
                   method="post"
-                  className="forn-container flex flex-col  h-full justify-between max-h-[100%]"
+                  className="forn-container flex flex-col h-full justify-between max-h-[100%]"
                 >
-                  <div className="">
+                  <div className="w-[100%] md:w-[90%]">
                     <FormRadio
                       label="Nationwide"
                       type="radio"

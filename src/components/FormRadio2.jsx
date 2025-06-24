@@ -13,7 +13,7 @@ function FormRadio2({
   return (
     <label
       htmlFor={`${name}-${value}`}
-      className={`form-radio block cursor-pointer rounded-[20px] max-w-[345px] p-4 mb-3 transition-all duration-300 border ${
+      className={`form-radio block cursor-pointer rounded-[20px] w-[100%] md:w-[90%] p-4 mb-3 transition-all duration-300 border ${
         isSelected
           ? "bg-gradient-to-r from-[#132EC9] to-[#2D54E7] text-white border-transparent"
           : "bg-transparent text-white border-gray-300"
