@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 function FormFooter({ data }) {
   const { back, next, skip } = data;
   return (
-    <div className="flex flex-col xl:flex-row justify-between items-center gap-5 mt-5">
-      <div className="flex flex-col text-center md:flex-row justify-between gap-2 w-full md:w-auto">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-5 mt-5">
+      <div className="flex flex-col text-center md:flex-row gap-2 w-full lg:w-auto">
         {back && (
           <Link
           to={back.link}
@@ -23,7 +23,8 @@ function FormFooter({ data }) {
           </Link>
         )}
       </div>
-      {skip && (
+     <div className="">
+       {skip && (
         <Link
           to={skip.link}
           className="  text-white text-lg p-3 lg:p-4 font-h transition-all duration-300"
@@ -31,6 +32,7 @@ function FormFooter({ data }) {
           {skip.text}
         </Link>
       )}
+     </div>
     </div>
   );
 }
