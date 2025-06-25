@@ -5,6 +5,7 @@ import FormField from "../components/FormField";
 import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
 import { Link } from "react-router-dom";
+import FormImg from "../components/FormImg";
 
 function Register() {
   const data = {
@@ -40,16 +41,18 @@ function Register() {
     <>
       <div className="login bg-blue">
         <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-scroll">
-            <div className="form-left flex flex-col  justify-between  ">
-              <div className="pe-3">
-                <FormHeader {...formHeader} />
+          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
+            <div className="form-left">
+              <div className="pe-3 flex flex-col justify-between h-full">
+                <div className="">
+                  <FormHeader {...formHeader} />
+                  <HeroHeading data={data} />
+                </div>
 
-                <HeroHeading data={data} />
                 <form
                   action=""
                   method="post"
-                  className="forn-container flex flex-col  h-full justify-between max-h-[100%]"
+                  className="forn-container flex flex-col  h-full justify-between"
                 >
                   <div className="">
                     <FormField
@@ -81,40 +84,35 @@ function Register() {
                       delay={100}
                     />
                   </div>
-
                   <div className="">
                     <div className="accept">
-                    <label className="flex items-center text-white font-t font-normal">
-                      <input type="checkbox" className="mr-2" />I accept the &nbsp;
-                      <Link className="underline" to="/policy">Privacy Policy </Link>
-                      ,&nbsp;
-                      <Link className="underline" to="/terms">
-                        
-                        T&C
-                      </Link>
-                      ,&nbsp;
-                      <Link className="underline" to="/member-terms">
-                        
-                        Member Terms
-                      </Link>
-                      &nbsp;and&nbsp;
-                      <Link className="underline" to="/disclaimer">
-                        
-                        Disclaimer
-                      </Link>
-                      .
-                    </label>
-                  </div>
-                  <FormFooter data={formFooter} />
+                      <label className="flex items-center text-white font-t font-normal">
+                        <input type="checkbox" className="mr-2" />I accept the
+                        &nbsp;
+                        <Link className="underline" to="/policy">
+                          Privacy Policy{" "}
+                        </Link>
+                        ,&nbsp;
+                        <Link className="underline" to="/terms">
+                          T&C
+                        </Link>
+                        ,&nbsp;
+                        <Link className="underline" to="/member-terms">
+                          Member Terms
+                        </Link>
+                        &nbsp;and&nbsp;
+                        <Link className="underline" to="/disclaimer">
+                          Disclaimer
+                        </Link>
+                        .
+                      </label>
+                    </div>
+                    <FormFooter data={formFooter} />
                   </div>
                 </form>
               </div>
             </div>
-            <div className="form-right hidden lg:block overflow-hidden ">
-              <div className="form-img">
-                <img src="/login-img.png" className="h-full" alt="" />
-              </div>
-            </div>
+            <FormImg src={"login-img.png"} />
           </div>
         </div>
       </div>

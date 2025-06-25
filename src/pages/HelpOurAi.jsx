@@ -6,6 +6,7 @@ import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
 import { Link } from "react-router-dom";
 import FormSelect from "../components/FormSelect";
+import FormImg from "../components/FormImg";
 
 function HelpOurAi() {
   const data = {
@@ -21,7 +22,7 @@ function HelpOurAi() {
     title: "Log In",
     link: "/login",
     steps: 6,
-    activeStep: 1,
+    activeStep: 4,
   };
   const formFooter = {
     back: {
@@ -39,18 +40,19 @@ function HelpOurAi() {
   };
   return (
     <>
-      <div className="login bg-blue  w-screen px-5 md:px-10">
+      <div className="login bg-blue">
         <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="form-left flex flex-col  justify-between  ">
-              <div className="pe-3">
-                <FormHeader {...formHeader} />
-
+          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
+            <div className="form-left">
+              <div className="pe-3 flex flex-col justify-between h-full">
+                <div className="">
+                  <FormHeader {...formHeader} />
                 <HeroHeading data={data} />
+                </div>
                 <form
                   action=""
                   method="post"
-                  className="forn-container flex flex-col  h-full justify-between max-h-[100%]"
+                  className="forn-container flex flex-col  h-full justify-between"
                 >
                   <div className="">
                     <div className="flex  gap-4">
@@ -143,11 +145,7 @@ function HelpOurAi() {
                 </form>
               </div>
             </div>
-            <div className="form-right hidden lg:block overflow-hidden rounded-[50px]">
-              <div className="form-img flex items-center justify-center ">
-                <img src="/register.png" className="max-h-full" alt="" />
-              </div>
-            </div>
+            <FormImg src={"help-ai.png"} />
           </div>
         </div>
       </div>

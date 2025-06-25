@@ -222,14 +222,16 @@ p {
 /* =================== Form Page End =================== */
 .forn-container {
   overflow-y: auto;
-  max-height: 650px;
+  /* max-height: 650px; */
 }
 
 /* Chrome, Edge, Safari */
 .forn-container::-webkit-scrollbar {
   width: 8px;
 }
-
+.login{
+  position: relative;
+}
 .forn-container::-webkit-scrollbar-track {
   background: transparent; /* Tailwind's gray-200 */
   border-radius: 10px;
@@ -248,4 +250,19 @@ p {
 .form-select:focus {
   outline: none;
   border-color: #fff;
+}
+
+.form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: transparent; 
+} 
+
+.form-container::-webkit-scrollbar-thumb {
+  background-color: transparent; 
+  border-radius: 10px;
+  /* border: 2px solid transparent; */
+  background-clip: content-box;
 }

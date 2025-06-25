@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function FormFooter({ data }) {
   const { back, next, skip } = data;
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center gap-5 mt-5">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-5 mt-5 mb-3">
       <div className="flex flex-col text-center md:flex-row gap-2 w-full lg:w-auto">
         {back && (
           <Link
