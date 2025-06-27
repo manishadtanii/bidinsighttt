@@ -11,8 +11,6 @@ function FormSelect({
   return (
     <div
       className="form-field flex flex-col mb-3 w-[100%] md:w-[90%]"
-      data-aos="fade-up"
-      data-aos-delay={delay}
     >
       <label className="form-label font-t mb-2" htmlFor={name}>
         {label}
