@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import {BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LayoutWrapper from "./LayoutWrapper";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -24,23 +24,24 @@ const App = () => {
   }, []);
   return (
     <Router>
-    <LayoutWrapper>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/company-build" element={<CompanyBuild />} />
-        <Route path="/geographic-coverage" element={<GeographicCoverage />} />
-        <Route path="/help-our-ai" element={<HelpOurAi />} />
-        <Route path="/industry-categories" element={<IndustryCategories />} />
-        <Route path="/extra-data" element={<ExtraData />} />
-        <Route path="/email-verification" element={<EmailVerification />} />
-        <Route path="/verification" element={<Verification />} />
-        <Route path="/*" element={<Error404 />} />
-      </Routes>
-    </LayoutWrapper>
+      <LayoutWrapper>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/company-build" element={<CompanyBuild />} />
+          <Route path="/geographic-coverage" element={<GeographicCoverage />} />
+          <Route path="/help-our-ai" element={<HelpOurAi />} />
+          <Route path="/industry-categories" element={<IndustryCategories />} />
+          <Route path="/extra-data" element={<ExtraData />} />
+          <Route path="/email-verification" element={<EmailVerification />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route path="/*" element={<Error404 />} />
+        </Routes>
+      </LayoutWrapper>
     </Router>
   );
 };
 
+// hello
 export default App;
