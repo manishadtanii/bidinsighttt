@@ -266,3 +266,19 @@ p {
   /* border: 2px solid transparent; */
   background-clip: content-box;
 }
+
+.css-dlk9k9-control{
+  background-color: transparent !important;
+}
+.css-1jqq78o-placeholder{
+  color: white !important;
+}
+.select_menu{
+  background-color: transparent !important;
+}
+.css-1p3m7a8-multiValue{
+  background-color: white !important;
+}
+.css-v7duua{
+ color: rgb(224, 224, 224) !important; 
+}

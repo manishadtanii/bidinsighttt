@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import FormSelect from "../components/FormSelect";
 import FormRadio from "../components/FormRadio";
 import FormImg from "../components/FormImg";
+import FormMultiSelect from "../components/FormMultiSelect";
 
 function GeographicCoverage() {
   const data = {
@@ -74,7 +75,7 @@ function GeographicCoverage() {
                       selectedValue={selectedRegion}
                       onChange={(e) => setSelectedRegion(e.target.value)}
                     />
-                    <div className="form-label font-t my-10" htmlFor="upload">
+                    <div className="form-label font-t my-5" htmlFor="upload">
                       Select region wise
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,6 +92,20 @@ function GeographicCoverage() {
                         />
                       ))}
                     </div>
+                    <FormMultiSelect
+                      label="Select Industries"
+                      name="industries"
+                      placeholder="Choose industries"
+                      options={[
+                        { label: "IT", value: "it" },
+                        { label: "Construction", value: "construction" },
+                        { label: "Healthcare", value: "healthcare" },
+                        { label: "Finance", value: "finance" },
+                      ]}
+                      onChange={(selected) =>
+                        console.log("Selected values:", selected)
+                      }
+                    />
                   </div>
 
                   <FormFooter data={formFooter} />
