@@ -33,7 +33,7 @@ function Register() {
       link: "/company-build",
     },
     skip: {
-      text: "Next",
+      text: "",
       link: "/company-build",
     },
   };
@@ -86,7 +86,7 @@ function Register() {
                   </div>
                   <div className="">
                     <div className="accept">
-                      <label className="flex items-center text-white font-t font-normal">
+                      <label className=" text-white font-t font-normal">
                         <input type="checkbox" className="mr-2" />I accept the
                         &nbsp;
                         <Link className="underline" to="/policy">

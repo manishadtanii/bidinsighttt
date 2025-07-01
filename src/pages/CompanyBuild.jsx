@@ -136,8 +136,6 @@ function CompanyBuild() {
                     </div>
                     <div
                       className="form-field flex flex-col mb-3 w-[100%] md:w-[90%]"
-                      data-aos="fade-up"
-                      data-aos-delay={100}
                     >
                       <div className="form-label font-t mb-2" htmlFor="upload">
                         Capability Statement
@@ -162,7 +160,7 @@ function CompanyBuild() {
                     </div>
                     <div className="text-white font-t">
                       <b>NOTE:</b> The capability statement is essential for
-                      building your company’s profile, as providing
+                      building your company's profile, as providing
                       comprehensive information is crucial to achieving optimal
                       AI results
                     </div>

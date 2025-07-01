@@ -17,9 +17,9 @@ function FormHeader({ title, link, steps = 0, activeStep = 0 }) {
 
         {/* Header Links */}
         <div className="header-link flex justify-between gap-4 w-full md:w-auto mt-4 md:mt-0">
-          <Link to="/login" className="text-white text-lg hover:underline">
+          <div  className="text-white text-lg hover:underline">
             Need help?
-          </Link>
+          </div>
           <Link to={link} className="text-white text-lg hover:underline">
             {title}
           </Link>

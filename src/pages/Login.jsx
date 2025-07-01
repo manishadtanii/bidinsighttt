@@ -25,7 +25,7 @@ function Login() {
   const formFooter = {
     back: {
       text: "Don’t  have an account, Register",
-      link: "/",
+      link: "/register",
     },
     next: {
       text: "Login",

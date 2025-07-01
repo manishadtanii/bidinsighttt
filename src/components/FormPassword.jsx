@@ -13,8 +13,6 @@ function FormPassword({
     <div>
       <div
         className="form-field flex flex-col mb-6 w-[100%] md:w-[90%]"
-        data-aos="fade-up"
-        data-aos-delay={delay}
       >
         <label className="form-label font-t mb-3" htmlFor={id}>
           {label}
