@@ -1,3 +1,8 @@
+import React, { useEffect } from "react";
+import {BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LayoutWrapper from "./LayoutWrapper";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import Home from "./pages/Home";
 import Error404 from "./pages/Error404";
 import Login from "./pages/Login";
@@ -9,26 +14,17 @@ import IndustryCategories from "./pages/IndustryCategories";
 import ExtraData from "./pages/ExtraData";
 import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
-import { useLocation } from "react-router-dom";
 
 const App = () => {
-  const location = useLocation()
-  const hiddenRoutes = [
-    "/login",
-    "/signup",
-    "/register",
-    "/company-build",
-    "/geographic-coverage",
-    "/help-our-ai",
-    "/industry-categories",
-    "/extra-data",
-    "/verification",
-  ];
-  const isHidden = hiddenRoutes.includes(location.pathname);
-
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
   return (
-    <>
-      {!isHidden && <Header />}
+    <Router>
+    <LayoutWrapper>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -42,8 +38,8 @@ const App = () => {
         <Route path="/verification" element={<Verification />} />
         <Route path="/*" element={<Error404 />} />
       </Routes>
-      {!isHidden && <Footer />}
-    </>
+    </LayoutWrapper>
+    </Router>
   );
 };
 
