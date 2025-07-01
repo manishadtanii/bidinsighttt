@@ -226,18 +226,18 @@ p {
 }
 
 /* Chrome, Edge, Safari */
-.forn-container::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 8px;
 }
 .login{
   position: relative;
 }
-.forn-container::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: transparent; /* Tailwind's gray-200 */
   border-radius: 10px;
 } 
 
-.forn-container::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background-color: #273BE2; /* Your brand blue */
   border-radius: 10px;
   /* border: 2px solid transparent; */
