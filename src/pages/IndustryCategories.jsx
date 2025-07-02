@@ -129,6 +129,7 @@ function IndustryCategories() {
                       </div>
                     )}
                   </div>
+                  <p className="text-red mt-2">Please selec</p>
                 </div>
                 <FormFooter data={formFooter} />
               </form>

@@ -33,7 +33,7 @@ function FormMultiSelect({
             borderColor: "white",
             background: "transparent",
             color: "white",
-            width:'100%'
+            width: "100%",
           }),
           option: (provided, state) => ({
             ...provided,
@@ -44,8 +44,8 @@ function FormMultiSelect({
               : "white", // normal
             color: "black",
             cursor: "pointer",
-            position:"relative",
-            zIndex:"10"
+            position: "relative",
+            zIndex: "10",
           }),
         }}
       />
