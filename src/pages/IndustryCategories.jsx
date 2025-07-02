@@ -132,7 +132,9 @@ function IndustryCategories() {
       </div>
 
       {/* Right image */}
+      <div className="sticky top-0">
       <FormImg src={"industry-categories.png"} />
+      </div>
     </ProcessWrapper>
   );
 }

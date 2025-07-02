@@ -143,7 +143,9 @@ function HelpOurAi() {
           </form>
         </div>
       </div>
-      <FormImg src={"help-ai.png"} />
+      <div className="sticky top-0">
+        <FormImg src={"help-ai.png"} />
+      </div>
     </ProcessWrapper>
   );
 }

@@ -31,65 +31,66 @@ function ExtraData() {
       text: "Submit",
       link: "",
     },
-    skip:"" 
+    skip: "",
   };
   return (
     <ProcessWrapper>
-       <div className="form-left">
-              <div className="pe-3 flex flex-col justify-between h-full">
-                <div className="">
-                  <FormHeader {...formHeader} />
-                <HeroHeading data={data} />
-                </div>
-                <form
-                  action=""
-                  method="post"
-                  className="forn-container flex flex-col  h-full justify-between"
-                >
-                  <div className="">
-                    <FormField
-                      label="General liability insurance amount per occurrence & per aggregate"
-                      type={"text"}
-                      name="companyName"
-                      placeholder="e.g. Value  "
-                      delay={100}
-                    />
-                    <FormField
-                      label="Automobile liability insurance amount per occurrence & per aggregate"
-                      type={"text"}
-                      name="companyFienOrSsn"
-                      placeholder="e.g. Value"
-                      delay={100}
-                    />
-                    <FormField
-                      label="Medical/ Professional/ ESO liability insurance amount per occurrence & per aggregate"
-                      type={"text"}
-                      name="companyWebsite"
-                      placeholder="e.g. Value"
-                      delay={100}
-                    />
-                    <FormField
-                      label="Environment insurance amount per occurrence & per aggregate"
-                      type={"text"}
-                      name="companyWebsite"
-                      placeholder="e.g. Value"
-                      delay={100}
-                    />
-                    <FormField
-                      label="Cybersecurity insurance amount per occurrence & per aggregate"
-                      type={"text"}
-                      name="companyWebsite"
-                      placeholder="e.g. Value"
-                      delay={100}
-                    />
-
-                  </div>
-
-                  <FormFooter data={formFooter} />
-                </form>
-              </div>
+      <div className="form-left">
+        <div className="pe-3 flex flex-col justify-between h-full">
+          <div className="">
+            <FormHeader {...formHeader} />
+            <HeroHeading data={data} />
+          </div>
+          <form
+            action=""
+            method="post"
+            className="forn-container flex flex-col  h-full justify-between"
+          >
+            <div className="">
+              <FormField
+                label="General liability insurance amount per occurrence & per aggregate"
+                type={"text"}
+                name="companyName"
+                placeholder="e.g. Value  "
+                delay={100}
+              />
+              <FormField
+                label="Automobile liability insurance amount per occurrence & per aggregate"
+                type={"text"}
+                name="companyFienOrSsn"
+                placeholder="e.g. Value"
+                delay={100}
+              />
+              <FormField
+                label="Medical/ Professional/ ESO liability insurance amount per occurrence & per aggregate"
+                type={"text"}
+                name="companyWebsite"
+                placeholder="e.g. Value"
+                delay={100}
+              />
+              <FormField
+                label="Environment insurance amount per occurrence & per aggregate"
+                type={"text"}
+                name="companyWebsite"
+                placeholder="e.g. Value"
+                delay={100}
+              />
+              <FormField
+                label="Cybersecurity insurance amount per occurrence & per aggregate"
+                type={"text"}
+                name="companyWebsite"
+                placeholder="e.g. Value"
+                delay={100}
+              />
             </div>
-            <FormImg src={"login-img.png"} />
+
+            <FormFooter data={formFooter} />
+          </form>
+        </div>
+      </div>
+      <div className="sticky top-0">
+        <FormImg src={"login-img.png"} />
+      </div>
     </ProcessWrapper>
   );
 }

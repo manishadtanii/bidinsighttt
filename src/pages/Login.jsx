@@ -67,7 +67,9 @@ function Login() {
           </form>
         </div>
       </div>
-      <FormImg src={"login-img.png"} />
+      <div className="sticky top-0">
+        <FormImg src={"login-img.png"} />
+      </div>
     </ProcessWrapper>
   );
 }

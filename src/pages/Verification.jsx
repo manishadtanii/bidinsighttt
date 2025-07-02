@@ -128,7 +128,9 @@ function Verification() {
           <FormFooter data={formFooter} onNextClick={handleVerify} />
         </div>
       </div>
-      <FormImg src={"login-img.png"} />
+      <div className="sticky top-0">
+        <FormImg src={"login-img.png"} />
+      </div>
     </ProcessWrapper>
   );
 }

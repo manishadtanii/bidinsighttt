@@ -31,7 +31,7 @@ function Register() {
     },
     next: {
       text: "Next",
-      // link: "/company-build",
+      link: "/company-build",
     },
     skip: {
       text: "",
@@ -110,8 +110,7 @@ function Register() {
         </div>
       </div>
       <div className="sticky top-0">
-
-      <FormImg src={"login-img.png"} />
+        <FormImg src={"login-img.png"} />
       </div>
     </ProcessWrapper>
   );

@@ -53,64 +53,66 @@ function GeographicCoverage() {
   return (
     <ProcessWrapper>
       <div className="form-left">
-              <div className="flex flex-col justify-between h-full">
-                <div className="">
-                  <FormHeader {...formHeader} />
-                  <HeroHeading data={data} />
-                </div>
-                <form
-                  action=""
-                  method="post"
-                  className="forn-container flex flex-col  h-full justify-between"
-                >
-                  <div className="w-[100%] md:w-[90%]">
-                    <FormRadio
-                      label="Nationwide"
-                      type="radio"
-                      name="region"
-                      value="Nationwide"
-                      delay={100}
-                      selectedValue={selectedRegion}
-                      onChange={(e) => setSelectedRegion(e.target.value)}
-                    />
-                    <div className="form-label font-t my-5" htmlFor="upload">
-                      Select region wise
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {regions.map((reg, i) => (
-                        <FormRadio
-                          key={i}
-                          type={"radio"}
-                          label={reg}
-                          name="region"
-                          value={reg}
-                          selectedValue={selectedRegion}
-                          onChange={(e) => setSelectedRegion(e.target.value)}
-                          delay={i * 100}
-                        />
-                      ))}
-                    </div>
-                    <FormMultiSelect
-                      label="Select Industries"
-                      name="industries"
-                      placeholder="Choose industries"
-                      options={[
-                        { label: "IT", value: "it" },
-                        { label: "Construction", value: "construction" },
-                        { label: "Healthcare", value: "healthcare" },
-                        { label: "Finance", value: "finance" },
-                      ]}
-                      onChange={(selected) =>
-                        console.log("Selected values:", selected)
-                      }
-                    />
-                  </div>
-
-                  <FormFooter data={formFooter} />
-                </form>
+        <div className="flex flex-col justify-between h-full">
+          <div className="">
+            <FormHeader {...formHeader} />
+            <HeroHeading data={data} />
+          </div>
+          <form
+            action=""
+            method="post"
+            className="forn-container flex flex-col  h-full justify-between"
+          >
+            <div className="w-[100%] md:w-[90%]">
+              <FormRadio
+                label="Nationwide"
+                type="radio"
+                name="region"
+                value="Nationwide"
+                delay={100}
+                selectedValue={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+              />
+              <div className="form-label font-t my-5" htmlFor="upload">
+                Select region wise
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {regions.map((reg, i) => (
+                  <FormRadio
+                    key={i}
+                    type={"radio"}
+                    label={reg}
+                    name="region"
+                    value={reg}
+                    selectedValue={selectedRegion}
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                    delay={i * 100}
+                  />
+                ))}
+              </div>
+              <FormMultiSelect
+                label="Select Industries"
+                name="industries"
+                placeholder="Choose industries"
+                options={[
+                  { label: "IT", value: "it" },
+                  { label: "Construction", value: "construction" },
+                  { label: "Healthcare", value: "healthcare" },
+                  { label: "Finance", value: "finance" },
+                ]}
+                onChange={(selected) =>
+                  console.log("Selected values:", selected)
+                }
+              />
             </div>
-            <FormImg src={"geographic-coverage.png"} />
+
+            <FormFooter data={formFooter} />
+          </form>
+        </div>
+      </div>
+      <div className="sticky top-0">
+        <FormImg src={"geographic-coverage.png"} />
+      </div>
     </ProcessWrapper>
   );
 }
