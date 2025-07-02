@@ -7,6 +7,7 @@ import FormFooter from "../components/FormFooter";
 import { Link } from "react-router-dom";
 import FormSelect from "../components/FormSelect";
 import FormImg from "../components/FormImg";
+import ProcessWrapper from "../components/ProcessWrapper";
 
 function CompanyBuild() {
   const data = {
@@ -39,11 +40,8 @@ function CompanyBuild() {
     },
   };
   return (
-    <>
-      <div className="login bg-blue  w-screen px-5 md:px-10">
-        <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto relative">
-            <div className="form-left">
+    <ProcessWrapper>
+      <div className="form-left">
               <div className="pe-3 flex flex-col justify-between h-full">
                 <div className="">
                   <FormHeader {...formHeader} />
@@ -173,10 +171,7 @@ function CompanyBuild() {
               </div>
             </div>
             <FormImg src={"compang-build.png"} />
-          </div>
-        </div>
-      </div>
-    </>
+    </ProcessWrapper>
   );
 }
 

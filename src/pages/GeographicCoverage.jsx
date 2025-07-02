@@ -9,6 +9,7 @@ import FormSelect from "../components/FormSelect";
 import FormRadio from "../components/FormRadio";
 import FormImg from "../components/FormImg";
 import FormMultiSelect from "../components/FormMultiSelect";
+import ProcessWrapper from "../components/ProcessWrapper";
 
 function GeographicCoverage() {
   const data = {
@@ -50,11 +51,8 @@ function GeographicCoverage() {
   ];
   const [selectedRegion, setSelectedRegion] = useState("");
   return (
-    <>
-      <div className="login bg-blue">
-        <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
-            <div className="form-left">
+    <ProcessWrapper>
+      <div className="form-left">
               <div className="flex flex-col justify-between h-full">
                 <div className="">
                   <FormHeader {...formHeader} />
@@ -113,10 +111,7 @@ function GeographicCoverage() {
               </div>
             </div>
             <FormImg src={"geographic-coverage.png"} />
-          </div>
-        </div>
-      </div>
-    </>
+    </ProcessWrapper>
   );
 }
 

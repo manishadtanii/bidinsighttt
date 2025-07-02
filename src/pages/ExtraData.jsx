@@ -4,6 +4,7 @@ import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
 import FormFooter from "../components/FormFooter";
 import FormImg from "../components/FormImg";
+import ProcessWrapper from "../components/ProcessWrapper";
 
 function ExtraData() {
   const data = {
@@ -33,11 +34,8 @@ function ExtraData() {
     skip:"" 
   };
   return (
-    <>
-      <div className="login bg-blue">
-        <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
-            <div className="form-left">
+    <ProcessWrapper>
+       <div className="form-left">
               <div className="pe-3 flex flex-col justify-between h-full">
                 <div className="">
                   <FormHeader {...formHeader} />
@@ -92,10 +90,7 @@ function ExtraData() {
               </div>
             </div>
             <FormImg src={"login-img.png"} />
-          </div>
-        </div>
-      </div>
-    </>
+    </ProcessWrapper>
   );
 }
 

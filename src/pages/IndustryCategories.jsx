@@ -4,6 +4,7 @@ import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
 import FormRadio2 from "../components/FormRadio2";
 import FormImg from "../components/FormImg";
+import ProcessWrapper from "../components/ProcessWrapper";
 
 function IndustryCategories() {
   const data = {
@@ -72,75 +73,67 @@ function IndustryCategories() {
   }, [searchTerm]);
 
   return (
-    <div className="login bg-blue">
-      <div className="container-fixed">
-        <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
-          <div className="form-left">
-            <div className="pe-3 flex flex-col justify-between h-full">
-              <div className="">
-                <FormHeader {...formHeader} />
-                <HeroHeading data={data} />
-              </div>
-
-              <form
-                action=""
-                method="post"
-                className="forn-container flex flex-col  h-full justify-between"
-              >
-                <div className="">
-                  {/* Search input */}
-                  <div className="mb-6 relative ">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search your industry"
-                      className="w-full rounded-xl py-3 px-5 pr-12 bg-transparent border border-white text-white placeholder:text-white focus:outline-none "
-                    />
-                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50">
-                      <i class="far fa-search"></i>
-                    </span>
-                  </div>
-
-                  {/* Industry Grid */}
-                  <div className="font-t text-white text-p font-inter mb-4 text-center">
-                    {searchTerm ? "Search Results" : "Popular Industries"}
-                  </div>
-                  <div className="forn-container h-[400px] pe-2">
-                    {filteredIndustries.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 ">
-                        {filteredIndustries.map((industry, i) => (
-                          <FormRadio2
-                            key={i}
-                            label={industry}
-                            name="industry"
-                            value={industry}
-                            selectedValue={selectedIndustry}
-                            onChange={(e) =>
-                              setSelectedIndustry(e.target.value)
-                            }
-                            delay={i * 100}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-white text-sm">
-                        No industries found.
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-red mt-2">Please selec</p>
-                </div>
-                <FormFooter data={formFooter} />
-              </form>
-            </div>
+    <ProcessWrapper>
+      <div className="form-left">
+        <div className="pe-3 flex flex-col justify-between h-full">
+          <div className="">
+            <FormHeader {...formHeader} />
+            <HeroHeading data={data} />
           </div>
 
-          {/* Right image */}
-          <FormImg src={"industry-categories.png"} />
+          <form
+            action=""
+            method="post"
+            className="forn-container flex flex-col  h-full justify-between"
+          >
+            <div className="">
+              {/* Search input */}
+              <div className="mb-6 relative ">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search your industry"
+                  className="w-full rounded-xl py-3 px-5 pr-12 bg-transparent border border-white text-white placeholder:text-white focus:outline-none "
+                />
+                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50">
+                  <i class="far fa-search"></i>
+                </span>
+              </div>
+
+              {/* Industry Grid */}
+              <div className="font-t text-white text-p font-inter mb-4 text-center">
+                {searchTerm ? "Search Results" : "Popular Industries"}
+              </div>
+              <div className="forn-container h-[400px] pe-2">
+                {filteredIndustries.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 ">
+                    {filteredIndustries.map((industry, i) => (
+                      <FormRadio2
+                        key={i}
+                        label={industry}
+                        name="industry"
+                        value={industry}
+                        selectedValue={selectedIndustry}
+                        onChange={(e) => setSelectedIndustry(e.target.value)}
+                        delay={i * 100}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-white text-sm">No industries found.</div>
+                )}
+              </div>
+              <p className="text-red mt-2">Please selec</p>
+            </div>
+            <FormFooter data={formFooter} />
+          </form>
         </div>
       </div>
-    </div>
+
+      {/* Right image */}
+      <FormImg src={"industry-categories.png"} />
+    </ProcessWrapper>
   );
 }
 

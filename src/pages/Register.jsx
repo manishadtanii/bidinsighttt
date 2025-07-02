@@ -6,6 +6,7 @@ import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
 import { Link } from "react-router-dom";
 import FormImg from "../components/FormImg";
+import ProcessWrapper from "../components/ProcessWrapper";
 
 function Register() {
   const data = {
@@ -30,93 +31,89 @@ function Register() {
     },
     next: {
       text: "Next",
-      link: "/company-build",
+      // link: "/company-build",
     },
     skip: {
       text: "",
-      link: "/company-build",
+      link: "",
     },
   };
   return (
-    <>
-      <div className="login bg-blue">
-        <div className="container-fixed">
-          <div className="form-container py-10 h-screen grid grid-cols-1 lg:grid-cols-2 gap-10 px-5 md:px-10 overflow-y-auto">
-            <div className="form-left">
-              <div className="pe-3 flex flex-col justify-between h-full">
-                <div className="">
-                  <FormHeader {...formHeader} />
-                  <HeroHeading data={data} />
-                </div>
-
-                <form
-                  action=""
-                  method="post"
-                  className="forn-container flex flex-col  h-full justify-between"
-                >
-                  <div className="">
-                    <FormField
-                      label="Full Name"
-                      type={"text"}
-                      name="fullName"
-                      placeholder="e.g. John Doe"
-                      delay={100}
-                    />
-                    <FormField
-                      label="Email"
-                      type={"email"}
-                      name="email"
-                      placeholder="e.g. jopseph.mark12@gmail.com"
-                      delay={100}
-                    />
-                    <FormPassword
-                      label="Password"
-                      placeholder="e.g. m@rkJos6ph"
-                      name="password"
-                      id="password"
-                      delay={100}
-                    />
-                    <FormPassword
-                      label="Confirm password"
-                      placeholder="e.g. m@rkJos6ph"
-                      name="password"
-                      id="password"
-                      delay={100}
-                    />
-                  </div>
-                  <div className="">
-                    <div className="accept">
-                      <label className=" text-white font-t font-normal">
-                        <input type="checkbox" className="mr-2" />I accept the
-                        &nbsp;
-                        <Link className="underline" to="/policy">
-                          Privacy Policy{" "}
-                        </Link>
-                        ,&nbsp;
-                        <Link className="underline" to="/terms">
-                          T&C
-                        </Link>
-                        ,&nbsp;
-                        <Link className="underline" to="/member-terms">
-                          Member Terms
-                        </Link>
-                        &nbsp;and&nbsp;
-                        <Link className="underline" to="/disclaimer">
-                          Disclaimer
-                        </Link>
-                        .
-                      </label>
-                    </div>
-                    <FormFooter data={formFooter} />
-                  </div>
-                </form>
-              </div>
-            </div>
-            <FormImg src={"login-img.png"} />
+    <ProcessWrapper>
+      <div className="form-left">
+        <div className="pe-3 flex flex-col justify-between h-full">
+          <div className="">
+            <FormHeader {...formHeader} />
+            <HeroHeading data={data} />
           </div>
+
+          <form
+            action=""
+            method="post"
+            className="forn-container flex flex-col  h-full justify-between"
+          >
+            <div className="">
+              <FormField
+                label="Full Name"
+                type={"text"}
+                name="fullName"
+                placeholder="e.g. John Doe"
+                delay={100}
+              />
+              <FormField
+                label="Email"
+                type={"email"}
+                name="email"
+                placeholder="e.g. jopseph.mark12@gmail.com"
+                delay={100}
+              />
+              <FormPassword
+                label="Password"
+                placeholder="e.g. m@rkJos6ph"
+                name="password"
+                id="password"
+                delay={100}
+              />
+              <FormPassword
+                label="Confirm password"
+                placeholder="e.g. m@rkJos6ph"
+                name="password"
+                id="password"
+                delay={100}
+              />
+            </div>
+            <div className="">
+              <div className="accept">
+                <label className=" text-white font-t font-normal">
+                  <input type="checkbox" className="mr-2" />I accept the &nbsp;
+                  <Link className="underline" to="/policy">
+                    Privacy Policy{" "}
+                  </Link>
+                  ,&nbsp;
+                  <Link className="underline" to="/terms">
+                    T&C
+                  </Link>
+                  ,&nbsp;
+                  <Link className="underline" to="/member-terms">
+                    Member Terms
+                  </Link>
+                  &nbsp;and&nbsp;
+                  <Link className="underline" to="/disclaimer">
+                    Disclaimer
+                  </Link>
+                  .
+                </label>
+              </div>
+              <FormFooter data={formFooter} />
+            </div>
+          </form>
         </div>
       </div>
-    </>
+      <div className="sticky top-0">
+
+      <FormImg src={"login-img.png"} />
+      </div>
+    </ProcessWrapper>
   );
 }
 
