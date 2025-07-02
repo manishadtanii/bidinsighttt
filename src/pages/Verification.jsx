@@ -4,10 +4,10 @@ import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
 import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
-
+import { useNavigate } from "react-router-dom";
 function Verification() {
   const data = {
     title: "Verify your Email to begin your Biding",
@@ -39,9 +39,11 @@ function Verification() {
     },
   };
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(120);
+  const [otpMessage, setOtpMessage] = useState("");
+  const [otpMessageType, setOtpMessageType] = useState("");
   const inputsRef = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const countdown = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
@@ -54,7 +56,17 @@ function Verification() {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+      setOtpMessage("");
+      setOtpMessageType("");
       if (value && index < 5) inputsRef.current[index + 1].focus();
+      // Real-time validation
+      if (newOtp.every((d) => d.length === 1)) {
+        setOtpMessage("OTP entered successfully");
+        setOtpMessageType("success");
+      } else {
+        setOtpMessage("");
+        setOtpMessageType("");
+      }
     }
   };
 
@@ -66,13 +78,22 @@ function Verification() {
 
   const handleVerify = () => {
     const enteredOtp = otp.join("");
-    console.log("Entered OTP:", enteredOtp);
+    if (enteredOtp.length !== 6 || otp.some((d) => d === "")) {
+      setOtpMessage("OTP invalid, please fill all 6 digits");
+      setOtpMessageType("error");
+      return;
+    }
+    setOtpMessage("OTP entered successfully");
+    setOtpMessageType("success");
     // Call your API here
+
+
+    navigate("/plan");  
   };
 
   const handleResend = () => {
     if (timer === 0) {
-      setTimer(60);
+      setTimer(120);
       setOtp(["", "", "", "", "", ""]);
       inputsRef.current[0].focus();
       console.log("OTP resent!");
@@ -108,11 +129,32 @@ function Verification() {
                   />
                 ))}
               </div>
+              {otpMessage && (
+                <p
+                  className={`text-sm flex items-center gap-1 mt-2 mb-1 ${
+                    otpMessageType === "success"
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {otpMessageType === "success" ? (
+                    <span className="flex items-center">
+                      <i className="fa-solid fa-check text-green-400"></i>
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <i className="fa-solid fa-xmark text-red-400"></i>
+                    </span>
+                  )}
+                  <span>{otpMessage}</span>
+                </p>
+              )}
 
               <div className="mt-4 flex items-center gap-2 text-white">
                 {timer > 0 ? (
                   <p>
-                    Resend Code in <span className="font-bold">{timer}s</span>
+                    Resend Code in{" "}
+                    <span className="font-bold">{timer}s</span>
                   </p>
                 ) : (
                   <button

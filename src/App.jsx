@@ -14,6 +14,7 @@ import IndustryCategories from "./pages/IndustryCategories";
 import ExtraData from "./pages/ExtraData";
 import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
+import Plan from "./pages/Plan";
 
 const App = () => {
   useEffect(() => {
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/company-build" element={<CompanyBuild />} />
+          <Route path="/plan" element={<Plan />} />
           <Route path="/geographic-coverage" element={<GeographicCoverage />} />
           <Route path="/help-our-ai" element={<HelpOurAi />} />
           <Route path="/industry-categories" element={<IndustryCategories />} />

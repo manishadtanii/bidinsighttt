@@ -1,33 +1,20 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
-function FormField({ label, type = "text", name, placeholder, delay = 100 }) {
-  // Basic regex for validation
-  const getValidationProps = (type) => {
-    switch (type) {
-      case "email":
-        return {
-          pattern: "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}",
-          title: "Please enter a valid email address.",
-        };
-      case "phone":
-        return {
-          pattern: "[0-9]{10}",
-          inputMode: "numeric",
-          title: "Please enter a 10-digit phone number.",
-          maxLength: 10,
-        };
-      case "text":
-        return {
-          minLength: 2,
-          maxLength: 50,
-          title: "Text should be 2–50 characters.",
-        };
-      default:
-        return {};
-    }
-  };
-
-  const validationProps = getValidationProps(type);
+function FormField({
+  label,
+  type = "text",
+  name,
+  placeholder,
+  delay = 100,
+  value = "",
+  onChange,
+  onBlur,
+  message = "",
+  messageType = "",
+}) {
+  const isSuccess = messageType === "success";
 
   return (
     <div className="form-field flex flex-col mb-3 w-[100%] md:w-[90%]">
@@ -39,11 +26,18 @@ function FormField({ label, type = "text", name, placeholder, delay = 100 }) {
         id={name}
         name={name}
         placeholder={placeholder}
-        required
         className="form-input font-t p-3 rounded-[20px] bg-transparent border border-gray-300 focus:ring-0"
-        {...validationProps}
-        
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        autoComplete="off"
       />
+      {message && (
+        <p className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${isSuccess ? "text-green-400" : "text-red-400"}`}>
+          <FontAwesomeIcon icon={isSuccess ? faCheck : faXmark} className={isSuccess ? "text-green-400" : "text-red-400"} />
+          <span>{message}</span>
+        </p>
+      )}
     </div>
   );
 }

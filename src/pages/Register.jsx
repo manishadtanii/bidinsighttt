@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
@@ -9,6 +9,160 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function Register() {
+  // Validation state
+  const [fields, setFields] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [touched, setTouched] = useState({
+    fullName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [checkboxMessage, setCheckboxMessage] = useState("");
+  const [checkboxMessageType, setCheckboxMessageType] = useState("");
+
+  // Email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Password checks
+  const passwordChecks = [
+    {
+      test: (v) => v.length >= 8,
+      message: "At least 8 characters",
+    },
+    {
+      test: (v) => /[A-Z]/.test(v),
+      message: "At least one uppercase letter",
+    },
+    {
+      test: (v) => /[a-z]/.test(v),
+      message: "At least one lowercase letter",
+    },
+    {
+      test: (v) => /[0-9]/.test(v),
+      message: "At least one number",
+    },
+    {
+      test: (v) => /[^A-Za-z0-9]/.test(v),
+      message: "At least one special character",
+    },
+  ];
+
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({ ...prev, [name]: value }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  // Validate a single field
+  const validateField = (name, value) => {
+    let msg = "";
+    if (!value) {
+      msg = "This field is required";
+    } else {
+      if (name === "email") {
+        msg = emailRegex.test(value) ? "Email is valid" : "Enter a valid email";
+      } else if (name === "password") {
+        for (let i = 0; i < passwordChecks.length; i++) {
+          if (!passwordChecks[i].test(value)) {
+            msg = passwordChecks[i].message;
+            break;
+          }
+        }
+        if (!msg) msg = "Password is strong";
+      } else if (name === "confirmPassword") {
+        msg = value === fields.password ? "Password matched" : "Passwords do not match";
+      } else if (name === "fullName") {
+        msg = value.length > 1 ? "Full Name is valid" : "This field is required";
+      }
+    }
+    setErrors((prev) => ({ ...prev, [name]: msg }));
+  };
+
+  // On blur, mark as touched
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  // Check if all fields are valid
+  const allFieldsValid =
+    errors.fullName === "Full Name is valid" &&
+    errors.email === "Email is valid" &&
+    errors.password === "Password is strong" &&
+    errors.confirmPassword === "Password matched" &&
+    fields.fullName && fields.email && fields.password && fields.confirmPassword;
+
+  // Disable checkbox until all fields valid
+  const checkboxDisabled = !allFieldsValid;
+
+  // Handle checkbox change
+  const handleCheckboxChange = (e) => {
+    setCheckboxChecked(e.target.checked);
+    if (e.target.checked) {
+      setCheckboxMessage("Checkbox is accepted");
+      setCheckboxMessageType("success");
+    } else {
+      setCheckboxMessage("Please accept all terms");
+      setCheckboxMessageType("error");
+    }
+  };
+
+  // On Next click
+  const handleNext = (e) => {
+    e.preventDefault();
+    let newTouched = { ...touched };
+    let newErrors = { ...errors };
+    let valid = true;
+    Object.keys(fields).forEach((key) => {
+      newTouched[key] = true;
+      if (!fields[key]) {
+        newErrors[key] = "This field is required";
+        valid = false;
+      } else {
+        validateField(key, fields[key]);
+        if (
+          (key === "email" && !emailRegex.test(fields[key])) ||
+          (key === "password" && passwordChecks.some((c) => !c.test(fields[key]))) ||
+          (key === "confirmPassword" && fields[key] !== fields.password)
+        ) {
+          valid = false;
+        }
+      }
+    });
+    setTouched(newTouched);
+    setErrors(newErrors);
+
+    // Only show checkbox error if all fields are valid
+    if (valid && !checkboxChecked) {
+      setCheckboxMessage("Please accept all terms");
+      setCheckboxMessageType("error");
+      return;
+    }
+    if (valid && checkboxChecked) {
+      setCheckboxMessage("Checkbox is accepted");
+      setCheckboxMessageType("success");
+      window.location.href = "/company-build";
+    } else {
+      // Clear checkbox error if fields are not valid
+      setCheckboxMessage("");
+      setCheckboxMessageType("");
+    }
+  };
+
   const data = {
     title: "Ready to Win More Contracts?",
     para: "All government bids. One dashboard. Zero hassles.",
@@ -53,39 +207,106 @@ function Register() {
             className="forn-container flex flex-col  h-full justify-between"
           >
             <div className="">
+              {/* Full Name */}
               <FormField
                 label="Full Name"
                 type={"text"}
                 name="fullName"
                 placeholder="e.g. John Doe"
                 delay={100}
+                value={fields.fullName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                message={touched.fullName && errors.fullName ? (
+                  <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.fullName === 'Full Name is valid' ? 'text-green-400' : 'text-red-400'}`}>
+                    {errors.fullName === 'Full Name is valid' ? (
+                      <i className="fa-solid text-green-400"></i>
+                    ) : (
+                      <i className="fa-solid fa-xmark text-red-400"></i>
+                    )}
+                    <span>{errors.fullName}</span>  
+                  </span>
+                ) : ""}
+                messageType={touched.fullName && errors.fullName === "Full Name is valid" ? "success" : touched.fullName && errors.fullName ? "error" : ""}
               />
+              {/* Email */}
               <FormField
                 label="Email"
                 type={"email"}
                 name="email"
                 placeholder="e.g. jopseph.mark12@gmail.com"
                 delay={100}
+                value={fields.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                message={touched.email && errors.email ? (
+                  <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.email === 'Email is valid' ? 'text-green-400' : 'text-red-400'}`}>
+                    {errors.email === 'Email is valid' ? (
+                      <i className="fa-solid text-green-400"></i>
+                    ) : (
+                      <i className="fa-solid fa-xmark text-red-400"></i>
+                    )}
+                    <span>{errors.email}</span>
+                  </span>
+                ) : ""}
+                messageType={touched.email && errors.email === "Email is valid" ? "success" : touched.email && errors.email ? "error" : ""}
               />
+              {/* Password */}
               <FormPassword
                 label="Password"
                 placeholder="e.g. m@rkJos6ph"
                 name="password"
                 id="password"
                 delay={100}
+                value={fields.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                message={touched.password && errors.password ? (
+                  <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.password === 'Password is strong' ? 'text-green-400' : 'text-red-400'}`}>
+                    {errors.password === 'Password is strong' ? (
+                      <i className="fa-solid text-green-400"></i>
+                    ) : (
+                      <i className="fa-solid fa-xmark text-red-400"></i>
+                    )}
+                    <span>{errors.password}</span>
+                  </span>
+                ) : ""}
+                messageType={touched.password && errors.password === "Password is strong" ? "success" : touched.password && errors.password ? "error" : ""}
               />
+              {/* Confirm Password */}
               <FormPassword
                 label="Confirm password"
                 placeholder="e.g. m@rkJos6ph"
-                name="password"
-                id="password"
+                name="confirmPassword"
+                id="confirmPassword"
                 delay={100}
+                value={fields.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                message={touched.confirmPassword && errors.confirmPassword ? (
+                  <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.confirmPassword === 'Password matched' ? 'text-green-400' : 'text-red-400'}`}>
+                    {errors.confirmPassword === 'Password matched' ? (
+                      <i className="fa-solid text-green-400"></i>
+                    ) : (
+                      <i className="fa-solid text-red-400"></i>
+                    )}
+                    <span>{errors.confirmPassword}</span>
+                  </span>
+                ) : ""}
+                messageType={touched.confirmPassword && errors.confirmPassword === "Password matched" ? "success" : touched.confirmPassword && errors.confirmPassword ? "error" : ""}
               />
             </div>
             <div className="">
               <div className="accept">
                 <label className=" text-white font-t font-normal">
-                  <input type="checkbox" className="mr-2" />I accept the &nbsp;
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    disabled={checkboxDisabled}
+                    checked={checkboxChecked}
+                    onChange={handleCheckboxChange}
+                  />
+                  I accept the &nbsp;
                   <Link className="underline" to="/policy">
                     Privacy Policy{" "}
                   </Link>
@@ -103,8 +324,18 @@ function Register() {
                   </Link>
                   .
                 </label>
+                {checkboxMessage && (
+                  <p className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${checkboxMessageType === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                    {checkboxMessageType === 'success' ? (
+                      <span className="flex items-center"><i className="fa-solid text-green-400"></i></span>
+                    ) : (
+                      <span className="flex items-center"><i className="fa-solid fa-xmark text-red-400"></i></span>
+                    )}
+                    <span>{checkboxMessage}</span>
+                  </p>
+                )}
               </div>
-              <FormFooter data={formFooter} />
+              <FormFooter data={formFooter} onNextClick={handleNext} />
             </div>
           </form>
         </div>
