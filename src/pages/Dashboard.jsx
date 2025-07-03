@@ -1,121 +1,81 @@
 import React from "react";
-import {
-  faChartLine,
-  faFileInvoice,
-  faClock,
-  faBell,
-  faUser,
-  faSearch,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-const sidebarItems = [
-  { label: "Dashboard", icon: faChartLine },
-  { label: "Bids", icon: faFileInvoice },
-  { label: "History", icon: faClock },
-  { label: "Alerts", icon: faBell },
-];
-
-const cardsData = [
-  { label: "Total Bids", value: "234", icon: faFileInvoice },
-  { label: "Open Bids", value: "87", icon: faChartLine },
-  { label: "Pending", value: "29", icon: faClock },
-  { label: "New Alerts", value: "14", icon: faBell },
-];
+import ProcessWrapper from "../components/ProcessWrapper";
+import AlertToggle from "../components/AlertToggle";
+import Heading from "../components/Heading";
+import HeroHeading from "../components/HeroHeading";
+import BgCover from "../components/BgCover";
+import BidTable from "../components/BidTable";
 
 function Dashboard() {
+  const data = {
+    title: "Dashboard",
+    // container: "max-w-4xl mx-auto text-center",
+  };
+  const middle = [
+    { id: 1, title: "Active Bids", num: "315" },
+    { id: 2, title: "New Bids", num: "315" },
+    { id: 3, title: "Saved", num: "15" },
+    { id: 4, title: "Followed", num: "10/25" },
+  ];
   return (
-    <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg hidden md:block">
-        <div className="p-6 font-bold text-xl">BidInsight</div>
-        <nav className="flex flex-col gap-4 p-4">
-          {sidebarItems.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-100 cursor-pointer"
-            >
-              <FontAwesomeIcon icon={item.icon} className="text-blue-600" />
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        {/* Top Navbar */}
-        <header className="bg-white p-4 shadow flex justify-between items-center">
-          <div className="relative">
-            <FontAwesomeIcon
-              icon={faSearch}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 w-72"
-            />
+    <div className="bg-blue h-screen overflow-scroll">
+      <div className="container-fixed py-10 px-4">
+        <div className="dashboard-header  flex justify-between items-center">
+          <div className="title">
+            <HeroHeading data={data} />
           </div>
-          <div className="flex items-center gap-3">
-            <FontAwesomeIcon icon={faUser} className="text-blue-600" />
-            <span className="font-medium">Mark Joseph</span>
+          <div className="flex items-center gap-[15px]">
+            <span className="font-inter text-[#DBDBDB]">Alert</span>{" "}
+            <AlertToggle />
           </div>
-        </header>
-
-        {/* Cards */}
-        <section className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cardsData.map((card, i) => (
-            <div
-              key={i}
-              className="bg-white p-6 rounded-xl shadow flex items-center gap-4"
-            >
-              <div className="p-3 bg-blue-100 text-blue-600 rounded-full">
-                <FontAwesomeIcon icon={card.icon} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">{card.label}</p>
-                <h3 className="text-2xl font-bold">{card.value}</h3>
+        </div>
+        <div className="dashboard-middle">
+          <div className="max-w-[800px] py-[80px] flex justify-center mx-auto gap-8">
+            {middle.map((item) => (
+              <BgCover key={item.id}>
+                <div className="flex gap-4">
+                  <div className="text font-inter text-[#DBDBDB]">
+                    {item.title}
+                  </div>
+                  <p className="num font-inter font-bold text-white">
+                    {item.num}
+                  </p>
+                </div>
+              </BgCover>
+            ))}
+          </div>
+        </div>
+        <div className="dashboard-feature">
+          <div className="flex justify-between">
+            <div className="feature-left">
+              <div className="flex gap-2 items-end ">
+                <div className="text font-inter text-[#DBDBDB]">
+                  Total Bids:
+                </div>
+                <p className="num font-inter font-bold text-white">315</p>
               </div>
             </div>
-          ))}
-        </section>
-
-        {/* Recent Activity */}
-        <section className="p-6">
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 border-b">
-                    <th className="py-2">Bid Name</th>
-                    <th className="py-2">Date</th>
-                    <th className="py-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="py-2">Airport Maintenance</td>
-                    <td className="py-2">June 8, 2025</td>
-                    <td className="py-2">Submitted</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2">IT Infrastructure Upgrade</td>
-                    <td className="py-2">June 7, 2025</td>
-                    <td className="py-2">Pending</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Healthcare Procurement</td>
-                    <td className="py-2">June 6, 2025</td>
-                    <td className="py-2">Accepted</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="feature-right">
+              <div className="flex gap-4">
+                <div className="bg-btn p-4 rounded-[16px]" id="filter">
+                  <img src="filter.png" className="w-6" alt="" />
+                </div>
+                <div className="bg-btn p-4 rounded-[16px]" id="export">
+                  <img src="export.png" className="w-6" alt="" />
+                </div>
+                <div className="search-box bg-btn p-4 px-6 flex gap-3 items-center rounded-[30px]">
+                  <i class="far text-white fa-search"></i>
+                  <input type="text" placeholder="Search titles or organization or location" className="text-white bg-transparent w-[300px]  border-none outline-none" />
+                </div>
+                <BgCover>
+                  <div className="text-white">Save Search</div>
+                </BgCover>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+        <BidTable/>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ export default {
       backgroundImage: {
         "hero-pattern": "url('/images/hero.jpg')",
         "footer-texture": "url('/images/footer-texture.png')",
+        "btn":"linear-gradient(178.55deg, rgba(255, 255, 255, 0.1) 1.23%, rgba(153, 153, 153, 0.1) 98.77%);"
       },
       fontFamily: {
         archivo: ["Archivo", "sans-serif"], // default font
