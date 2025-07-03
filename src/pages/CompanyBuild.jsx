@@ -61,15 +61,27 @@ function CompanyBuild() {
     let msg = "";
     let type = "error";
     if (!value || (name === "upload" && !value)) {
-      msg = "This field is required";
+      if (name === "upload") {
+        msg = "Please upload a file";
+      } else {
+        msg = "This field is required";
+      }
     } else {
       if (name === "companyWebsite") {
-        // Require http:// or https://
-        const urlRegex = /^(https?:\/\/)[\w.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+        // Allow http(s)://, www., or plain domain like abc.com
+        const urlRegex = /^(https?:\/\/)?(www\.)?([\w-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
         msg = urlRegex.test(value)
           ? "Website is valid"
-          : "Enter a valid website URL (must start with http:// or https://)";
+          : "Enter a valid url";
         type = urlRegex.test(value) ? "success" : "error";
+      } else if (name === "upload") {
+        if (value && value.name) {
+          msg = `${value.name} is uploaded`;
+          type = "success";
+        } else {
+          msg = "Please upload a file";
+          type = "error";
+        }
       } else if (["yearInBusiness", "numberOfEmployees", "state", "targetContractSize"].includes(name)) {
         msg = "This field is selected";
         type = "success";
@@ -103,8 +115,13 @@ function CompanyBuild() {
   const getMessageType = (name) => {
     if (!touched[name]) return "";
     if (name === "companyWebsite") {
-      const urlRegex = /^(https?:\/\/)[\w.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+      // Use the same regex as above for consistency
+      const urlRegex = /^(https?:\/\/)?(www\.)?([\w-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
       return urlRegex.test(fields[name]) ? "success" : "error";
+    }
+    if (name === "upload") {
+      // If file is selected and has a name, return success
+      return fields.upload && fields.upload.name ? "success" : "error";
     }
     if (["yearInBusiness", "numberOfEmployees", "state", "targetContractSize"].includes(name)) {
       return errors[name] === "This field is selected" ? "success" : "error";
@@ -124,11 +141,15 @@ function CompanyBuild() {
       newTouched[key] = true;
 
       if ((!fields[key] && key !== "upload") || (key === "upload" && !uploadRef.current.files[0])) {
-        newErrors[key] = "This field is required";
+        if (key === "upload") {
+          newErrors[key] = "Please upload a file";
+        } else {
+          newErrors[key] = "This field is required";
+        }
         valid = false;
       } else {
         if (key === "companyWebsite") {
-          const urlRegex = /^(https?:\/\/)[\w.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+          const urlRegex = /^(https?:\/\/)?(www\.)?([\w-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
           if (!urlRegex.test(fields[key])) {
             newErrors[key] = "Enter a valid website URL (must start with http:// or https://)";
             valid = false;
@@ -366,11 +387,11 @@ function CompanyBuild() {
                   >
                     {getMessageType("upload") === "success" ? (
                       <span className="flex items-center">
-                        <i className="far fa-check text-green-400"></i>
+                        <i className="fal fa-check text-green-400"></i>
                       </span>
                     ) : (
                       <span className="flex items-center">
-                        <i class="far fa-times text-red-400"></i>
+                        <i class="fal fa-times text-red-400"></i>
                       </span>
                     )}
                     <span>{errors.upload}</span>

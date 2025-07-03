@@ -65,7 +65,6 @@ function Verification() {
       setOtpMessage("");
       setOtpMessageType("");
 
-      console.log("OTP so far:", newOtp.join("")); // ✅ Real-time log
 
       if (value && index < 5) inputsRef.current[index + 1].focus();
     }
@@ -119,7 +118,7 @@ function Verification() {
         // Pass email in the request body as required by backend
         const response = await api.post("/auth/resend-otp/", { email });
         setApiResponse(response.data);
-        console.log("Resend OTP API Response:", response.data);
+        console.log("Resend OTP API Response:", response.data.data);
       } catch (error) {
         setApiResponse({ error: error.message });
         setOtpMessage("Failed to resend OTP. Please try again.");

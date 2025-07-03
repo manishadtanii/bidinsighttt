@@ -65,6 +65,7 @@ function HelpOurAi() {
 
   const [formValues, setFormValues] = useState({});
   const [showValidation, setShowValidation] = useState(false);
+  const [allDisabled, setAllDisabled] = useState(false);
 
   // Load from Redux if available, else from localStorage
   const insuranceData = useSelector((state) => state.onboarding.insuranceData);
@@ -117,6 +118,7 @@ function HelpOurAi() {
     fields.forEach(f => { allNo[f.name] = "no"; });
     dispatch(saveInsuranceData(allNo));
     localStorage.setItem("insurancePreferences", JSON.stringify(allNo));
+    setAllDisabled(true);
     navigate("/extra-data");
   };
 
@@ -139,11 +141,12 @@ function HelpOurAi() {
                         label={field.label}
                         name={field.name}
                         options={yesNoOptions}
-                        onChange={(e) => handleChange(field.name, e.target.value)}
+                        onChange={allDisabled ? () => {} : (e) => handleChange(field.name, e.target.value)}
                         value={formValues[field.name] || ""}
                         message={getMessage(field.name)}
                         messageType={getMessageType(field.name)}
                         delay={100}
+                        disabled={allDisabled}
                       />
                     </div>
                   ))}
