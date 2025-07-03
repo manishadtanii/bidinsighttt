@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
-import FormField from "../components/FormField";
-import FormPassword from "../components/FormPassword";
 import FormFooter from "../components/FormFooter";
-import { Link } from "react-router-dom";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
+import { useNavigate, useLocation } from "react-router-dom";
+import api from "../utils/axios"
 
 function Verification() {
   const data = {
@@ -18,12 +17,14 @@ function Verification() {
     headingSize: "h1",
     pSize: "text-xl",
   };
+
   const formHeader = {
     title: "Log In",
     link: "/login",
     steps: "",
     activeStep: 0,
   };
+
   const formFooter = {
     back: {
       text: "Back",
@@ -38,9 +39,16 @@ function Verification() {
       link: "",
     },
   };
+
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(120);
+  const [otpMessage, setOtpMessage] = useState("");
+  const [otpMessageType, setOtpMessageType] = useState("");
+  const [apiResponse, setApiResponse] = useState(null);
   const inputsRef = useRef([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "";
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -54,6 +62,11 @@ function Verification() {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+      setOtpMessage("");
+      setOtpMessageType("");
+
+      console.log("OTP so far:", newOtp.join("")); // ✅ Real-time log
+
       if (value && index < 5) inputsRef.current[index + 1].focus();
     }
   };
@@ -64,35 +77,70 @@ function Verification() {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const enteredOtp = otp.join("");
-    console.log("Entered OTP:", enteredOtp);
-    // Call your API here
-  };
+    if (enteredOtp.length !== 6 || otp.some((d) => d === "")) {
+      setOtpMessage("Please fill all the 6 digits");
+      setOtpMessageType("error");
+      return;
+    }
+    setOtpMessage("");
+    setOtpMessageType("success");
 
-  const handleResend = () => {
-    if (timer === 0) {
-      setTimer(60);
-      setOtp(["", "", "", "", "", ""]);
-      inputsRef.current[0].focus();
-      console.log("OTP resent!");
-      // Call resend OTP API here
+    try {
+      const response = await api.post("/auth/verify-otp/", { email, otp: enteredOtp });
+      setApiResponse(response.data);
+      console.log("API Response:", response.data);
+      // Check for success in response (adjust as per your backend)
+      if ((response.data.success || response.status === 200) && response.data.access) {
+        localStorage.setItem("access_token", response.data.access);
+        navigate("/plan");
+      } else {
+        setOtpMessage("OTP is invalid");
+        setOtpMessageType("error");
+      }
+    } catch (error) {
+      setApiResponse({ error: error.message });
+      setOtpMessage("OTP is invalid");
+      setOtpMessageType("error");
+      console.log("API Error:", error);
+      if (error.response) {
+        console.log("API Error Response Data:", error.response.data);
+      }
     }
   };
+
+  const handleResend = async () => {
+    if (timer === 0) {
+      setTimer(120);
+      setOtp(["", "", "", "", "", ""]);
+      inputsRef.current[0].focus();
+      try {
+        // Pass email in the request body as required by backend
+        const response = await api.post("/auth/resend-otp/", { email });
+        setApiResponse(response.data);
+        console.log("Resend OTP API Response:", response.data);
+      } catch (error) {
+        setApiResponse({ error: error.message });
+        setOtpMessage("Failed to resend OTP. Please try again.");
+        setOtpMessageType("error");
+        console.log("Resend OTP API Error:", error);
+      }
+    }
+  };
+
   return (
     <ProcessWrapper>
       <div className="form-left">
         <div className="pe-3 flex flex-col justify-between h-full">
-          <div className="">
+          <div>
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
 
           <div className="h-full">
             <div className="mt-10">
-              <p className="mb-2 text-white">
-                Enter the 6 digit verification code
-              </p>
+              <p className="mb-2 text-white">Enter the 6 digit verification code</p>
               <div className="flex gap-4">
                 {otp.map((digit, i) => (
                   <input
@@ -108,6 +156,27 @@ function Verification() {
                   />
                 ))}
               </div>
+
+              {otpMessage && (
+                <p
+                  className={`text-sm flex items-center gap-1 mt-2 mb-1 ${
+                    otpMessageType === "success"
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {otpMessageType === "success" ? (
+                    <span className="flex items-center">
+                      <i className="fal fa-check text-green-400"></i>
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <i className="far fa-times text-red-400"></i>
+                    </span>
+                  )}
+                  <span>{otpMessage}</span>
+                </p>
+              )}
 
               <div className="mt-4 flex items-center gap-2 text-white">
                 {timer > 0 ? (
@@ -125,9 +194,11 @@ function Verification() {
               </div>
             </div>
           </div>
+
           <FormFooter data={formFooter} onNextClick={handleVerify} />
         </div>
       </div>
+
       <div className="sticky top-0">
         <FormImg src={"login-img.png"} />
       </div>

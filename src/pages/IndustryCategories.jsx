@@ -1,4 +1,8 @@
 import React, { useState, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { saveIndustryCategory } from "../redux/onboardingSlice";
+
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
@@ -7,6 +11,9 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function IndustryCategories() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const data = {
     title: "Your Industry Focus",
     para: "Pick sectors where you excel. Our AI will learn your sweet spots!",
@@ -31,7 +38,6 @@ function IndustryCategories() {
     },
     next: {
       text: "Next",
-      link: "/help-our-ai",
     },
     skip: {
       text: "Skip",
@@ -63,51 +69,62 @@ function IndustryCategories() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
+  const [showValidation, setShowValidation] = useState(false);
 
-  // Filter industries based on search
   const filteredIndustries = useMemo(() => {
-    if (!searchTerm) return allIndustries.slice(0, 6); // default to popular
+    if (!searchTerm) return allIndustries.slice(0, 6);
     return allIndustries.filter((ind) =>
       ind.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setShowValidation(true);
+
+    if (selectedIndustry) {
+      dispatch(saveIndustryCategory([selectedIndustry]));
+      console.log("✅ Selected Industry (saved to Redux):", selectedIndustry);
+      navigate("/help-our-ai");
+    }
+  };
+
   return (
     <ProcessWrapper>
       <div className="form-left">
         <div className="pe-3 flex flex-col justify-between h-full">
-          <div className="">
+          <div>
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
 
           <form
-            action=""
-            method="post"
-            className="forn-container flex flex-col  h-full justify-between"
+            className="forn-container flex flex-col h-full justify-between"
+            onSubmit={handleSubmit} // ✅ handled properly
           >
-            <div className="">
-              {/* Search input */}
-              <div className="mb-6 relative ">
+            <div>
+              {/* Search Input */}
+              <div className="mb-6 relative">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search your industry"
-                  className="w-full rounded-xl py-3 px-5 pr-12 bg-transparent border border-white text-white placeholder:text-white focus:outline-none "
+                  className="w-full rounded-xl py-3 px-5 pr-12 bg-transparent border border-white text-white placeholder:text-white focus:outline-none"
                 />
                 <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50">
-                  <i class="far fa-search"></i>
+                  <i className="fa-solid fa-search"></i>
                 </span>
               </div>
 
-              {/* Industry Grid */}
               <div className="font-t text-white text-p font-inter mb-4 text-center">
                 {searchTerm ? "Search Results" : "Popular Industries"}
               </div>
-              <div className="forn-container h-[400px] pe-2">
+
+              {/* Grid */}
+              <div className="forn-container h-[400px] pe-2 overflow-y-auto">
                 {filteredIndustries.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 ">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {filteredIndustries.map((industry, i) => (
                       <FormRadio2
                         key={i}
@@ -124,16 +141,34 @@ function IndustryCategories() {
                   <div className="text-white text-sm">No industries found.</div>
                 )}
               </div>
-              <p className="text-red mt-2">Please selec</p>
+
+              {/* Real-time validation */}
+              {showValidation && (
+                <div className="flex items-center gap-2 mt-4 font-semibold">
+                  {selectedIndustry ? (
+                    <span className="text-green-400 text-[14px]">
+                      <i className="fal fa-check"></i> This field is selected
+                    </span>
+                  ) : (
+                    <span className="text-red-400 text-[14px]">
+                      <i className="fal fa-times"></i> This field is required
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-            <FormFooter data={formFooter} />
+
+            {/* Footer with button type="submit" */}
+            <FormFooter
+              data={formFooter}
+              onNextClick={() => {}} // no need anymore, submit is handled above
+            />
           </form>
         </div>
       </div>
 
-      {/* Right image */}
       <div className="sticky top-0">
-      <FormImg src={"industry-categories.png"} />
+        <FormImg src={"industry-categories.png"} />
       </div>
     </ProcessWrapper>
   );

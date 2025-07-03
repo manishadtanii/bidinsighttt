@@ -15,6 +15,7 @@ import ExtraData from "./pages/ExtraData";
 import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
 import Dashboard from "./pages/Dashboard";
+import Plan from "./pages/Plan";
 
 const App = () => {
   useEffect(() => {
@@ -24,13 +25,14 @@ const App = () => {
     });
   }, []);
   return (
-    <Router>
+    // <Router>
       <LayoutWrapper>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/company-build" element={<CompanyBuild />} />
+          <Route path="/plan" element={<Plan />} />
           <Route path="/geographic-coverage" element={<GeographicCoverage />} />
           <Route path="/help-our-ai" element={<HelpOurAi />} />
           <Route path="/industry-categories" element={<IndustryCategories />} />
@@ -41,7 +43,7 @@ const App = () => {
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
-    </Router>
+    // </Router>
   );
 };
 

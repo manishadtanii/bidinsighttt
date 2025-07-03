@@ -17,6 +17,7 @@ const LayoutWrapper = ({ children }) => {
     "/extra-data",
     "/verification",
     "/dashboard",
+    "/plan"
   ];
 
   const isHidden = hiddenRoutes.includes(location.pathname);
