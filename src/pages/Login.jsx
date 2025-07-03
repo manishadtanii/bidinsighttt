@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
@@ -7,6 +8,7 @@ import FormFooter from "../components/FormFooter";
 import { Link } from "react-router-dom";
 import ProcessWrapper from "../components/ProcessWrapper";
 import FormImg from "../components/FormImg";
+import api from "../utils/axios";
 
 function Login() {
   const data = {
@@ -47,25 +49,20 @@ function Login() {
     email: "",
     password: "",
   });
+  const [loginError, setLoginError] = useState("");
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const navigate = useNavigate();
 
+  // Real-time validation: only show error for invalid email format or password < 6
   const validateField = (name, value) => {
     let msg = "";
-    let type = "error";
-    if (!value) {
-      msg = name === "email" ? "This field is required" : "Password is required";
-    } else {
-      if (name === "email") {
-        msg = emailRegex.test(value) ? "This field is valid" : "Please enter a valid email";
-        type = emailRegex.test(value) ? "success" : "error";
-      } else if (name === "password") {
-        msg = value.length >= 6 ? "This field is valid" : "Please enter a valid password";
-        type = value.length >= 6 ? "success" : "error";
-      }
+    if (name === "email" && value && !emailRegex.test(value)) {
+      msg = "Please enter a valid email";
+    } else if (name === "password" && value && value.length < 6) {
+      msg = "Please enter a valid password";
     }
     setErrors((prev) => ({ ...prev, [name]: msg }));
-    return type;
   };
 
   const handleChange = (e) => {
@@ -73,6 +70,7 @@ function Login() {
     setFields((prev) => ({ ...prev, [name]: value }));
     setTouched((prev) => ({ ...prev, [name]: true }));
     validateField(name, value);
+    setLoginError(""); // Clear login error on change
   };
 
   const handleBlur = (e) => {
@@ -83,36 +81,44 @@ function Login() {
 
   const getMessageType = (name) => {
     if (!touched[name]) return "";
-    return errors[name] === "This field is valid" ? "success" : "error";
+    return errors[name] ? "error" : "";
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    let newTouched = { ...touched };
-    let newErrors = { ...errors };
+    setLoginError("");
+    // Only check for empty fields and format errors
     let valid = true;
-    Object.keys(fields).forEach((key) => {
-      newTouched[key] = true;
-      if (!fields[key]) {
-        newErrors[key] = key === "email" ? "This field is required" : "Password is required";
-        valid = false;
-      } else {
-        if (key === "email" && !emailRegex.test(fields[key])) {
-          newErrors[key] = "Please enter a valid email";
-          valid = false;
-        } else if (key === "password" && fields[key].length < 6) {
-          newErrors[key] = "Please enter a valid password";
-          valid = false;
-        } else {
-          newErrors[key] = "This field is valid";
-        }
-      }
-    });
-    setTouched(newTouched);
+    let newErrors = { ...errors };
+    if (!fields.email || !emailRegex.test(fields.email)) {
+      newErrors.email = !fields.email ? "Please enter a valid email format" : errors.email;
+      valid = false;
+    }
+    if (!fields.password || fields.password.length < 6) {
+      newErrors.password = !fields.password ? "Please enter a valid password" : errors.password;
+      valid = false;
+    }
     setErrors(newErrors);
-    if (valid) {
-      // Redirect or submit
-      window.location.href = "/";
+    if (!valid) return;
+    try {
+      const res = await api.post("/auth/login/", fields);
+      if (res.data && res.data.access) {
+        localStorage.setItem("access_token", res.data.access);
+      }
+
+      console.log(res.data);
+      if (res.data && res.data.refresh) {
+        localStorage.setItem("refresh_token", res.data.refresh);
+      }
+      navigate("/dashboard");
+    } catch (err) {
+      if (err.response && err.response.status === 400) {
+        setLoginError("Invalid email or password");
+      } else if (err.response) {
+        setLoginError("Invalid email or password");
+      } else {
+        setLoginError("Network Error: " + err.message);
+      }
     }
   };
 
@@ -128,6 +134,7 @@ function Login() {
             action=""
             method="post"
             className="flex flex-col justify-between h-full"
+            onSubmit={handleLogin}
           >
             <div className="">
               <FormField
@@ -139,7 +146,7 @@ function Login() {
                 value={fields.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                message={touched.email || errors.email ? errors.email : ""}
+                message={errors.email}
                 messageType={getMessageType("email")}
               />
               <FormPassword
@@ -151,9 +158,12 @@ function Login() {
                 value={fields.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                message={touched.password || errors.password ? errors.password : ""}
+                message={errors.password}
                 messageType={getMessageType("password")}
               />
+              {loginError && (
+                <div style={{ marginTop: "18px", color: "#ef4444", fontSize: "15px" }}>{loginError}</div>
+              )}
             </div>
             <FormFooter data={formFooter} onNextClick={handleLogin} />
           </form>

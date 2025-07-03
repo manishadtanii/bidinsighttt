@@ -24,7 +24,7 @@ const App = () => {
     });
   }, []);
   return (
-    <Router>
+    // <Router>
       <LayoutWrapper>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -41,7 +41,7 @@ const App = () => {
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
-    </Router>
+    // </Router>
   );
 };
 

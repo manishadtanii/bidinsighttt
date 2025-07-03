@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { saveIndustryCategory } from "../redux/onboardingSlice";
+
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
@@ -8,6 +11,7 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function IndustryCategories() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const data = {
@@ -74,10 +78,13 @@ function IndustryCategories() {
     );
   }, [searchTerm]);
 
-  const handleNextClick = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setShowValidation(true);
+
     if (selectedIndustry) {
+      dispatch(saveIndustryCategory([selectedIndustry]));
+      console.log("✅ Selected Industry (saved to Redux):", selectedIndustry);
       navigate("/help-our-ai");
     }
   };
@@ -91,7 +98,10 @@ function IndustryCategories() {
             <HeroHeading data={data} />
           </div>
 
-          <form className="forn-container flex flex-col h-full justify-between">
+          <form
+            className="forn-container flex flex-col h-full justify-between"
+            onSubmit={handleSubmit} // ✅ handled properly
+          >
             <div>
               {/* Search Input */}
               <div className="mb-6 relative">
@@ -112,7 +122,7 @@ function IndustryCategories() {
               </div>
 
               {/* Grid */}
-              <div className="forn-container h-[400px] pe-2">
+              <div className="forn-container h-[400px] pe-2 overflow-y-auto">
                 {filteredIndustries.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {filteredIndustries.map((industry, i) => (
@@ -136,20 +146,23 @@ function IndustryCategories() {
               {showValidation && (
                 <div className="flex items-center gap-2 mt-4 font-semibold">
                   {selectedIndustry ? (
-                    <span className="text-green-400">
-                      <i className="fa-solid fa-check"></i> This field is selected
+                    <span className="text-green-400 text-[14px]">
+                      <i className="fal fa-check"></i> This field is selected
                     </span>
                   ) : (
-                    <span className="text-red-400">
-                      <i className="fa-solid fa-xmark"></i> This field is required
+                    <span className="text-red-400 text-[14px]">
+                      <i className="fal fa-times"></i> This field is required
                     </span>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Footer */}
-            <FormFooter data={formFooter} onNextClick={handleNextClick} />
+            {/* Footer with button type="submit" */}
+            <FormFooter
+              data={formFooter}
+              onNextClick={() => {}} // no need anymore, submit is handled above
+            />
           </form>
         </div>
       </div>

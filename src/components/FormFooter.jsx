@@ -15,18 +15,16 @@ function FormFooter({ data, onNextClick }) {
             {back.text}
           </Link>
         )}
-        
         {next && (
           <button
-            onClick={onNextClick}
             className="rounded-[20px] bg-[#273BE2] md:ms-5 text-white text-lg p-3 lg:py-4 lg:px-10 font-h border border-[rgba(255,255,255,0.5)] transition-all duration-300"
-            type="button"
+            type="submit"
+            onClick={onNextClick}
           >
             {next.text}
           </button>
         )}
       </div>
-
       <div className="">
         {skip && (
           <Link

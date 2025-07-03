@@ -9,7 +9,7 @@ function FormField({
   placeholder,
   delay = 100,
   value = "",
-  onChange,
+  onChange = () => {},
   onBlur,
   message = "",
   messageType = "",

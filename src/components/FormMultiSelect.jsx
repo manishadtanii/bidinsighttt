@@ -29,7 +29,7 @@ function FormMultiSelect({
         className="basic-multi-select font-t rounded-[20px] border border-gray-300 text-white bg-transparent"
         classNamePrefix="select"
         placeholder={placeholder}
-        required={required}
+        // required={required}
         value={value}
         onChange={handleChange}
         styles={{

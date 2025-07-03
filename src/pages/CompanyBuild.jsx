@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux"; // <-- Add this
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
@@ -8,9 +10,17 @@ import { Link } from "react-router-dom";
 import FormSelect from "../components/FormSelect";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
+import api from "../utils/axios"; // <-- Import your custom axios instance
+
 
 function CompanyBuild() {
-  // Validation state
+  // Redux se user data lo
+  const { fullName, email } = useSelector((state) => state.register.userData);
+  // Password navigate state se lo
+  const location = useLocation();
+  const password = location.state?.password || "";
+
+  // Company fields
   const [fields, setFields] = useState({
     companyName: "",
     companyFienOrSsn: "",
@@ -21,6 +31,7 @@ function CompanyBuild() {
     targetContractSize: "",
     upload: null,
   });
+
   const [touched, setTouched] = useState({
     companyName: false,
     companyFienOrSsn: false,
@@ -41,6 +52,9 @@ function CompanyBuild() {
     targetContractSize: "",
     upload: "",
   });
+  const [emailError, setEmailError] = useState("");
+  const navigate = useNavigate(); // <-- Add this
+  const uploadRef = useRef(null); // <-- Add this
 
   // Validation rules
   const validateField = (name, value) => {
@@ -99,18 +113,20 @@ function CompanyBuild() {
   };
 
   // On Next click
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     e.preventDefault();
+    setEmailError("");
     let newTouched = { ...touched };
     let newErrors = { ...errors };
     let valid = true;
+
     Object.keys(fields).forEach((key) => {
       newTouched[key] = true;
-      if (!fields[key] || (key === "upload" && !fields[key])) {
+
+      if ((!fields[key] && key !== "upload") || (key === "upload" && !uploadRef.current.files[0])) {
         newErrors[key] = "This field is required";
         valid = false;
       } else {
-        // revalidate for url
         if (key === "companyWebsite") {
           const urlRegex = /^(https?:\/\/)[\w.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
           if (!urlRegex.test(fields[key])) {
@@ -126,12 +142,58 @@ function CompanyBuild() {
         }
       }
     });
+
     setTouched(newTouched);
     setErrors(newErrors);
+
     if (valid) {
-      window.location.href = "/verification";
+      // Use fields.upload for the file
+      const signupData = {
+        full_name: fullName,
+        email: email,
+        password: password,
+        company_name: fields.companyName,
+        fein_or_ssn_number: fields.companyFienOrSsn,
+        company_website: fields.companyWebsite,
+        year_in_business: fields.yearInBusiness,
+        no_of_employees: fields.numberOfEmployees,
+        state: fields.state,
+        target_contract_size: fields.targetContractSize,
+      };
+      const formData = new FormData();
+      Object.entries(signupData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      });
+      if (fields.upload) {
+        formData.append("capability_statement", fields.upload); // <-- backend expects this
+      }
+      try {
+        const res = await api.post("/auth/signup/", formData);
+        console.log("Signup API Response:", res);
+        if (res.status === 200 || res.status === 201) {
+          navigate("/verification", { state: { email } });
+        } else {
+          alert("Signup failed");
+        }
+      } catch (err) {
+        // Check for email already registered error
+        if (
+          err.response &&
+          err.response.status === 400 &&
+          err.response.data &&
+          (String(err.response.data.email).toLowerCase().includes("already") ||
+            String(err.response.data.detail).toLowerCase().includes("already"))
+        ) {
+          setEmailError("Email is already registered. Please login.");
+        } else {
+          alert("Network error");
+        }
+      }
     }
   };
+
 
   const data = {
     title: "Lorem ipsum dolor sit ",
@@ -289,12 +351,14 @@ function CompanyBuild() {
                 <input
                   type="file"
                   id="upload"
-                  name="upload"
+                  name="upload" // <-- must match state key
+                  ref={uploadRef}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   accept=".pdf,.doc,.docx"
                   className="opacity-0 absolute pointer-events-none"
                 />
+
                 {touched.upload && errors.upload && (
                   <p
                     className={`text-sm flex items-center gap-1 mt-1 mb-1 ${getMessageType("upload") === "success" ? "text-green-400" : "text-red-400"
@@ -302,11 +366,11 @@ function CompanyBuild() {
                   >
                     {getMessageType("upload") === "success" ? (
                       <span className="flex items-center">
-                        <i className="fa-solid text-green-400"></i>
+                        <i className="far fa-check text-green-400"></i>
                       </span>
                     ) : (
                       <span className="flex items-center">
-                        <i className="fa-solid fa-xmark text-red-400"></i>
+                        <i class="far fa-times text-red-400"></i>
                       </span>
                     )}
                     <span>{errors.upload}</span>
@@ -320,6 +384,12 @@ function CompanyBuild() {
                 your company's profile, as providing comprehensive information
                 is crucial to achieving optimal AI results
               </div>
+              {emailError && (
+                <div className="text-red-400 font-t mt-2 text-base flex items-center gap-2">
+                  <i className="fa-solid fa-xmark text-red-400"></i>
+                  {emailError} <a href="/login" className="underline text-red-400 ml-2">Login</a>
+                </div>
+              )}
             </div>
 
             <div className="">

@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { saveInsuranceData } from "../redux/onboardingSlice"; // ✅ correct import
+
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
@@ -9,6 +12,7 @@ import ProcessWrapper from "../components/ProcessWrapper";
 
 function HelpOurAi() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const data = {
     title: "Help Our A.I. Get Smarter!",
@@ -50,16 +54,30 @@ function HelpOurAi() {
     { label: "Workers compensation", name: "workersCompensation" },
     { label: "General liability insurance", name: "generalLiability" },
     { label: "Automobile liability insurance", name: "autoLiability" },
+    
+    { label: "Cybersecurity insurance", name: "cyberInsurance" },
+    { label: "Environmental insurance", name: "environmentalInsurance" },
     {
       label: "Medical/ Professional/ ESO liability insurance",
-      name: "medicalProfessionalLiability",
-    },
-    { label: "Cybersecurity insurance", name: "cybersecurityInsurance" },
-    { label: "Environmental insurance", name: "environmentalInsurance" },
+      name: "medicalProfessional",
+    }
   ];
 
   const [formValues, setFormValues] = useState({});
   const [showValidation, setShowValidation] = useState(false);
+
+  // Load from Redux if available, else from localStorage
+  const insuranceData = useSelector((state) => state.onboarding.insuranceData);
+  useEffect(() => {
+    if (insuranceData && Object.keys(insuranceData).length > 0) {
+      setFormValues(insuranceData);
+    } else {
+      const savedData = localStorage.getItem("insurancePreferences");
+      if (savedData) {
+        setFormValues(JSON.parse(savedData));
+      }
+    }
+  }, [insuranceData]);
 
   const handleChange = (name, value) => {
     setFormValues((prev) => ({
@@ -86,8 +104,20 @@ function HelpOurAi() {
 
     const allFilled = fields.every((field) => formValues[field.name]);
     if (allFilled) {
+      dispatch(saveInsuranceData(formValues));
+      localStorage.setItem("insurancePreferences", JSON.stringify(formValues));
       navigate("/extra-data");
     }
+  };
+
+  const handleSkip = (e) => {
+    e.preventDefault();
+    // Set all fields to 'no' and save to redux/localStorage
+    const allNo = {};
+    fields.forEach(f => { allNo[f.name] = "no"; });
+    dispatch(saveInsuranceData(allNo));
+    localStorage.setItem("insurancePreferences", JSON.stringify(allNo));
+    navigate("/extra-data");
   };
 
   return (
@@ -120,9 +150,8 @@ function HelpOurAi() {
                 </div>
               ))}
             </div>
-
-            <div onClick={handleNextClick}>
-              <FormFooter data={formFooter} />
+            <div>
+              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={handleSkip} />
             </div>
           </form>
         </div>
