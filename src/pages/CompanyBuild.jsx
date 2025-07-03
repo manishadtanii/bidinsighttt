@@ -193,7 +193,11 @@ function CompanyBuild() {
       try {
         const res = await api.post("/auth/signup/", formData);
         console.log("Signup API Response:", res);
-        if (res.status === 200 || res.status === 201) {
+        // Pass OTP to verification page if present in response
+        let otp = res.data && res.data.otp ? res.data.otp : null;
+        if ((res.status === 200 || res.status === 201) && otp) {
+          navigate("/verification", { state: { email, otp } });
+        } else if (res.status === 200 || res.status === 201) {
           navigate("/verification", { state: { email } });
         } else {
           alert("Signup failed");

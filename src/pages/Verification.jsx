@@ -49,8 +49,12 @@ function Verification() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
+  const otpFromSignup = location.state?.otp || null;
 
   useEffect(() => {
+    if (otpFromSignup) {
+      alert(`Your OTP is: ${otpFromSignup}`);
+    }
     const countdown = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
