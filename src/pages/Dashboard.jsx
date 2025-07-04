@@ -5,6 +5,7 @@ import Heading from "../components/Heading";
 import HeroHeading from "../components/HeroHeading";
 import BgCover from "../components/BgCover";
 import BidTable from "../components/BidTable";
+import Pagination from "../components/Pagination";
 
 function Dashboard() {
   const data = {
@@ -75,6 +76,7 @@ function Dashboard() {
           </div>
         </div>
         <BidTable/>
+        <Pagination/>
       </div>
     </div>
   );
