@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Apna API base URL yahan daal do
 const instance = axios.create({
-  baseURL: "http://82.112.234.104:8001/api", // <-- yahan apna endpoint daalo
+  baseURL: "http://82.112.234.104:8001/api",
   headers: {
     "Content-Type": "multipart/form-data",
   },
