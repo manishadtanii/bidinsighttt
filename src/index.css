@@ -229,16 +229,16 @@ p {
 *::-webkit-scrollbar {
   width: 8px;
 }
-.login{
+.login {
   position: relative;
 }
 *::-webkit-scrollbar-track {
   background: transparent; /* Tailwind's gray-200 */
   border-radius: 10px;
-} 
+}
 
 *::-webkit-scrollbar-thumb {
-  background-color: #273BE2; /* Your brand blue */
+  background-color: #273be2; /* Your brand blue */
   border-radius: 10px;
   /* border: 2px solid transparent; */
   background-clip: content-box;
@@ -257,28 +257,44 @@ p {
 }
 
 .form-container::-webkit-scrollbar-track {
-  background: transparent; 
-} 
+  background: transparent;
+}
 
 .form-container::-webkit-scrollbar-thumb {
-  background-color: transparent; 
+  background-color: transparent;
   border-radius: 10px;
   /* border: 2px solid transparent; */
   background-clip: content-box;
 }
 
-.css-dlk9k9-control{
+.css-dlk9k9-control {
   background-color: transparent !important;
 }
-.css-1jqq78o-placeholder{
+.css-1jqq78o-placeholder {
   color: white !important;
 }
-.select_menu{
+.select_menu {
   background-color: transparent !important;
 }
-.css-1p3m7a8-multiValue{
+.css-1p3m7a8-multiValue {
   background-color: white !important;
 }
-.css-v7duua{
- color: rgb(224, 224, 224) !important; 
+.css-v7duua {
+  color: rgb(224, 224, 224) !important;
+}
+
+.on-off {
+  font-size: 15.64px;
+  line-height: 100%;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.on-off .slider {
+  transition: 0.5s;
+}
+.on-off.active .slider {
+  background-color: #999999;
+  transform: translateX(94%);
 }

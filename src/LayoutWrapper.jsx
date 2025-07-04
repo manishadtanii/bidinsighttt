@@ -16,6 +16,7 @@ const LayoutWrapper = ({ children }) => {
     "/industry-categories",
     "/extra-data",
     "/verification",
+    "/dashboard",
     "/plan"
   ];
 

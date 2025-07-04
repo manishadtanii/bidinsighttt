@@ -113,7 +113,7 @@ function IndustryCategories() {
                   className="w-full rounded-xl py-3 px-5 pr-12 bg-transparent border border-white text-white placeholder:text-white focus:outline-none"
                 />
                 <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50">
-                  <i className="fa-solid fa-search"></i>
+                  <i className="fas fa-search"></i>
                 </span>
               </div>
 

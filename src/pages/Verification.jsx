@@ -41,7 +41,7 @@ function Verification() {
   };
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(30);
   const [otpMessage, setOtpMessage] = useState("");
   const [otpMessageType, setOtpMessageType] = useState("");
   const [apiResponse, setApiResponse] = useState(null);

@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 
 function ExtraData() {
-  const navigate = useNavigate();
   const data = {
     title: "Extra Data, Maximum Compatibility",
     para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
@@ -40,7 +39,7 @@ function ExtraData() {
     },
     skip: "",
   };
-
+  const navigate = useNavigate()
   const [enabledFields, setEnabledFields] = useState({});
   const [fields, setFields] = useState({
     workersCompensationAmount: "",
@@ -157,6 +156,9 @@ function ExtraData() {
         const res = await api.post("/auth/profile/", payload);
         console.log("✅ Profile submitted successfully:", res.data);
         navigate("/dashboard")
+        // console.log("✅ Profile submitted successfully:", res.data);
+        navigate("/dashboard")
+        alert("Profile submitted successfully!");
       } catch (err) {
         if (err.response) {
           console.error("❌ API Error:", err.response.data);

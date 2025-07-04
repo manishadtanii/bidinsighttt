@@ -14,6 +14,7 @@ import IndustryCategories from "./pages/IndustryCategories";
 import ExtraData from "./pages/ExtraData";
 import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
+import Dashboard from "./pages/Dashboard";
 import Plan from "./pages/Plan";
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/extra-data" element={<ExtraData />} />
           <Route path="/email-verification" element={<EmailVerification />} />
           <Route path="/verification" element={<Verification />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
