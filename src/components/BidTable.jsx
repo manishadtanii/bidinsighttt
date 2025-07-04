@@ -36,6 +36,18 @@ const BidTable = ({ bids = [] }) => {
     setSortConfig({ key, order });
   };
 
+  // Helper to truncate bid name to 33 characters (30 + '...')
+  function truncateBidName(name) {
+    if (!name) return "-";
+    return name.length > 30 ? name.slice(0, 30) + "..." : name;
+  }
+
+  // Helper to truncate jurisdiction to 33 characters (30 + '...')
+  function truncateJurisdiction(jurisdiction) {
+    if (!jurisdiction) return "-";
+    return jurisdiction.length > 30 ? jurisdiction.slice(0, 30) + "..." : jurisdiction;
+  }
+
   const renderSelect = (key) => (
     <select
       onChange={(e) => handleSort(key, e.target.value)}
@@ -79,7 +91,7 @@ const BidTable = ({ bids = [] }) => {
             if (typeof statusLabel === "boolean") {
               statusLabel = statusLabel ? "Active" : "Inactive";
             }
-            
+
             // Remove '.gov' from source if present
             let sourceLabel = bid.source || "-";
             if (typeof sourceLabel === "string" && sourceLabel.endsWith('.gov')) {
@@ -87,11 +99,12 @@ const BidTable = ({ bids = [] }) => {
             }
             return (
               <tr key={bid.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                <td className="px-4 py-4 font-semibold font-inter">{bid.jurisdiction || "-"}</td>
-                <td className="px-4 py-4 font-medium font-inter">{bid.bid_name || "-"}</td>
-                <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date)}</td>
+                <td className="px-4 py-4 font-semibold font-inter">{truncateJurisdiction(bid.jurisdiction)}</td>
+                <td className="px-4 py-4 font-medium font-inter">{truncateBidName(bid.bid_name)}</td>
+                <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date) || "-"}</td>
                 <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
-                <td className="px-4 py-4 font-medium font-inter">
+                <td className="px-4 py-4 font-medium font-inter">{bid.bid_type}</td>
+                {/* <td className="px-4 py-4 font-medium font-inter">
                   <span className={`bg-white inline-flex items-center gap-1 text-xs font-medium px-4 py-3 rounded-full ${
                     statusLabel === "Active"
                       ? "text-green-700"
@@ -102,7 +115,7 @@ const BidTable = ({ bids = [] }) => {
                     }`} />
                     {statusLabel}
                   </span>
-                </td>
+                </td> */}
                 <td className="px-4 py-4 text-center">
                   <button><i className="fas fa-share-alt"></i></button>
                 </td>
