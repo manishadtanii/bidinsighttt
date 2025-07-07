@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 
 function ExtraData() {
+  const navigate = useNavigate()
   const data = {
     title: "Extra Data, Maximum Compatibility",
     para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
