@@ -61,7 +61,7 @@ const BidTable = ({ bids = [] }) => {
   );
 
   return (
-    <div className=" rounded-2xl bg-btn text-white my-[50px] w-[70%] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid">
+    <div className=" rounded-2xl bg-btn text-white my-[50px] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid">
       <table className="min-w-full table-auto  text-sm text-center">
         <thead>
           <tr className="text-white/80 text-xs border-b border-white/20">
