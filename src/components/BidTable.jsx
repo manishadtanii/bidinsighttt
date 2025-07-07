@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
 
-const dummyData = [
-  { id: 1, state: "TN", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 25", close: "Jul, 25", status: "Active", followed: false },
-  { id: 2, state: "CA", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 10", close: "Jul, 10", status: "Inactive", followed: true },
-  { id: 3, state: "NY", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 20", close: "Jul, 22", status: "Active", followed: false },
-  { id: 1, state: "TN", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 25", close: "Jul, 25", status: "Active", followed: false },
-  { id: 2, state: "CA", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 10", close: "Jul, 10", status: "Inactive", followed: true },
-  { id: 3, state: "NY", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 20", close: "Jul, 22", status: "Active", followed: false },
-  { id: 1, state: "TN", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 25", close: "Jul, 25", status: "Active", followed: false },
-  { id: 2, state: "CA", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 10", close: "Jul, 10", status: "Inactive", followed: true },
-  { id: 3, state: "NY", name: "Canvas Learning Management Tool (LMS) ", open: "Jun, 20", close: "Jul, 22", status: "Active", followed: false },
-];
+// Helper to format date string to 'Mon, DD'
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const month = date.toLocaleString("default", { month: "short" });
+  const day = date.getDate();
+  return `${month}, ${day}`;
+}
 
 const sortFunctions = {
-  az: (a, b, key) => a[key].localeCompare(b[key]),
-  za: (a, b, key) => b[key].localeCompare(a[key]),
+  az: (a, b, key) => {
+    const aVal = (a[key] || "").toString().toLowerCase();
+    const bVal = (b[key] || "").toString().toLowerCase();
+    return aVal.localeCompare(bVal);
+  },
+  za: (a, b, key) => {
+    const aVal = (a[key] || "").toString().toLowerCase();
+    const bVal = (b[key] || "").toString().toLowerCase();
+    return bVal.localeCompare(aVal);
+  },
 };
 
-const BidTable = () => {
+const BidTable = ({ bids = [] }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, order: "az" });
 
   useEffect(() => {
-    setData(dummyData);
-  }, []);
+    setData(bids);
+  }, [bids]);
 
   const handleSort = (key, order) => {
     const sorted = [...data].sort((a, b) => sortFunctions[order](a, b, key));
@@ -31,10 +36,23 @@ const BidTable = () => {
     setSortConfig({ key, order });
   };
 
+  // Helper to truncate bid name to 33 characters (30 + '...')
+  function truncateBidName(name) {
+    if (!name) return "-";
+    return name.length > 30 ? name.slice(0, 30) + "..." : name;
+  }
+
+  // Helper to truncate jurisdiction to 33 characters (30 + '...')
+  function truncateJurisdiction(jurisdiction) {
+    if (!jurisdiction) return "-";
+    return jurisdiction.length > 30 ? jurisdiction.slice(0, 30) + "..." : jurisdiction;
+  }
+
   const renderSelect = (key) => (
     <select
       onChange={(e) => handleSort(key, e.target.value)}
       className="bg-transparent text-white text-xs outline-none w-4"
+      value={sortConfig.key === key ? sortConfig.order : ""}
     >
       <option className="" value=""></option>
       <option className="" value="az">A → Z</option>
@@ -48,16 +66,16 @@ const BidTable = () => {
         <thead>
           <tr className="text-white/80 text-xs border-b border-white/20">
             <th className="px-4 py-2 font-inter text-lg">
-              Gov. Level {renderSelect("state")}
+              Jurisdiction {renderSelect("jurisdiction")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
-              Bid Name {renderSelect("name")}
+              Bid Name {renderSelect("bid_name")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
-              Open Date {renderSelect("open")}
+              Open Date {renderSelect("opening_date")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
-              Closed Date {renderSelect("close")}
+              Closed Date {renderSelect("closing_date")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
               Status {renderSelect("status")}
@@ -67,34 +85,48 @@ const BidTable = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((bid) => (
-            <tr key={bid.id} className="border-b border-white/10 hover:bg-white/5 transition">
-              <td className="px-4 py-4 font-semibold font-inter">{bid.state}</td>
-              <td className="px-4 py-4 font-medium font-inter">{bid.name}</td>
-              <td className="px-4 py-4 font-medium font-inter">{bid.open}</td>
-              <td className="px-4 py-4 font-medium font-inter">{bid.close}</td>
-              <td className="px-4 py-4 font-medium font-inter">
-                <span className={`bg-white inline-flex items-center gap-1 text-xs font-medium px-4 py-3 rounded-full ${
-                  bid.status === "Active"
-                    ? "text-green-700"
-                    : "text-red-700"
-                }`}>
-                  <span className={`w-2 h-2 rounded-full ${
-                    bid.status === "Active" ? "bg-green-500" : "bg-red-500"
-                  }`} />
-                  {bid.status}
-                </span>
-              </td>
-              <td className="px-4 py-4 text-center">
-                <button><i className="fas fa-share-alt"></i></button>
-              </td>
-              <td className="px-4 py-4 text-center">
-                <button>
-                  <i className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"}`}></i>
-                </button>
-              </td>
-            </tr>
-          ))}
+          {data.map((bid) => {
+            // Convert boolean status to string
+            let statusLabel = bid.status;
+            if (typeof statusLabel === "boolean") {
+              statusLabel = statusLabel ? "Active" : "Inactive";
+            }
+
+            // Remove '.gov' from source if present
+            let sourceLabel = bid.source || "-";
+            if (typeof sourceLabel === "string" && sourceLabel.endsWith('.gov')) {
+              sourceLabel = sourceLabel.replace(/\.gov$/, "");
+            }
+            return (
+              <tr key={bid.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                <td className="px-4 py-4 font-semibold font-inter">{truncateJurisdiction(bid.jurisdiction)}</td>
+                <td className="px-4 py-4 font-medium font-inter">{truncateBidName(bid.bid_name)}</td>
+                <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date) || "-"}</td>
+                <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
+                <td className="px-4 py-4 font-medium font-inter">{bid.bid_type}</td>
+                {/* <td className="px-4 py-4 font-medium font-inter">
+                  <span className={`bg-white inline-flex items-center gap-1 text-xs font-medium px-4 py-3 rounded-full ${
+                    statusLabel === "Active"
+                      ? "text-green-700"
+                      : "text-red-700"
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${
+                      statusLabel === "Active" ? "bg-green-500" : "bg-red-500"
+                    }`} />
+                    {statusLabel}
+                  </span>
+                </td> */}
+                <td className="px-4 py-4 text-center">
+                  <button><i className="fas fa-share-alt"></i></button>
+                </td>
+                <td className="px-4 py-4 text-center">
+                  <button>
+                    <i className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"}`}></i>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

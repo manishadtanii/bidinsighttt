@@ -1,17 +1,21 @@
 import axios from "axios";
 
-// Apna API base URL yahan daal do
+const devBaseURL = "http://82.112.234.104:8001/api";
+const prodBaseURL = "https://apibid.collegedwarka.com/api";
+
+const baseURL = process.env.NODE_ENV === "production" ? prodBaseURL : devBaseURL;
+
 const instance = axios.create({
-  baseURL: "http://82.112.234.104:8001/api", // <-- yahan apna endpoint daalo
+  baseURL: baseURL,
   headers: {
     "Content-Type": "multipart/form-data",
   },
 });
 
-// Add interceptor to include access token from localStorage, except for public endpoints
+
 instance.interceptors.request.use(
   (config) => {
-    // List of endpoints that should NOT have Authorization header
+    
     const publicEndpoints = ["/auth/signup/", "/auth/login/", "/auth/verify-otp/", "/auth/resend-otp/"];
     const isPublic = publicEndpoints.some((endpoint) => config.url && config.url.includes(endpoint));
     if (!isPublic) {

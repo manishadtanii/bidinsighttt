@@ -62,7 +62,8 @@ function CompanyBuild() {
     let type = "error";
     if (!value || (name === "upload" && !value)) {
       if (name === "upload") {
-        msg = "Please upload a file";
+        msg = ""; // No error for optional upload
+        type = "";
       } else {
         msg = "This field is required";
       }
@@ -79,8 +80,8 @@ function CompanyBuild() {
           msg = `${value.name} is uploaded`;
           type = "success";
         } else {
-          msg = "Please upload a file";
-          type = "error";
+          msg = "";
+          type = "";
         }
       } else if (["yearInBusiness", "numberOfEmployees", "state", "targetContractSize"].includes(name)) {
         msg = "This field is selected";
@@ -139,13 +140,8 @@ function CompanyBuild() {
 
     Object.keys(fields).forEach((key) => {
       newTouched[key] = true;
-
-      if ((!fields[key] && key !== "upload") || (key === "upload" && !uploadRef.current.files[0])) {
-        if (key === "upload") {
-          newErrors[key] = "Please upload a file";
-        } else {
-          newErrors[key] = "This field is required";
-        }
+      if ((!fields[key] && key !== "upload")) {
+        newErrors[key] = "This field is required";
         valid = false;
       } else {
         if (key === "companyWebsite") {
@@ -158,6 +154,12 @@ function CompanyBuild() {
           }
         } else if (["yearInBusiness", "numberOfEmployees", "state", "targetContractSize"].includes(key)) {
           newErrors[key] = "This field is selected";
+        } else if (key === "upload") {
+          if (fields.upload && fields.upload.name) {
+            newErrors[key] = `${fields.upload.name} is uploaded`;
+          } else {
+            newErrors[key] = "";
+          }
         } else {
           newErrors[key] = "This field is valid";
         }
@@ -364,7 +366,7 @@ function CompanyBuild() {
 
               <div className="form-field flex flex-col mb-2 w-[100%] md:w-[90%]">
                 <label className="form-label font-t mb-2" htmlFor="upload">
-                  Capability Statement
+                  Capability Statement (Optional)
                 </label>
                 <label
                   htmlFor="upload"
@@ -384,7 +386,7 @@ function CompanyBuild() {
                   className="opacity-0 absolute pointer-events-none"
                 />
 
-                {touched.upload && errors.upload && (
+                {touched.upload && errors.upload && fields.upload && (
                   <p
                     className={`text-sm flex items-center gap-1 mt-1 mb-1 ${getMessageType("upload") === "success" ? "text-green-400" : "text-red-400"
                       }`}

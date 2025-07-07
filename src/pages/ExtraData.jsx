@@ -8,9 +8,12 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import api from "../utils/axios"; 
 import { useNavigate } from "react-router-dom";
+<<<<<<<<< Temporary merge branch 1
+
+=========
+>>>>>>>>> Temporary merge branch 2
 
 function ExtraData() {
-  const navigate = useNavigate();
   const data = {
     title: "Extra Data, Maximum Compatibility",
     para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
@@ -153,6 +156,10 @@ function ExtraData() {
       });
       try {
         const res = await api.post("/auth/profile/", payload);
+<<<<<<<<< Temporary merge branch 1
+        console.log("✅ Profile submitted successfully:", res.data);
+        navigate("/dashboard")
+=========
         // console.log("✅ Profile submitted successfully:", res.data);
         navigate("/dashboard")
         alert("Profile submitted successfully!");
