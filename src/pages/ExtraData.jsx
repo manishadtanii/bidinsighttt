@@ -9,8 +9,6 @@ import ProcessWrapper from "../components/ProcessWrapper";
 import api from "../utils/axios"; 
 import { useNavigate } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
-
 function ExtraData() {
   const navigate = useNavigate();
   const data = {
@@ -41,7 +39,6 @@ function ExtraData() {
     },
     skip: "",
   };
-  const navigate = useNavigate()
   const [enabledFields, setEnabledFields] = useState({});
   const [fields, setFields] = useState({
     workersCompensationAmount: "",
@@ -156,7 +153,8 @@ function ExtraData() {
       });
       try {
         const res = await api.post("/auth/profile/", payload);
-        console.log("✅ Profile submitted successfully:", res.data);
+        // console.log("✅ Profile submitted successfully:", res.data);
+        navigate("/dashboard")
         alert("Profile submitted successfully!");
       } catch (err) {
         if (err.response) {
