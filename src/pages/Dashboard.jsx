@@ -13,7 +13,7 @@ function Dashboard() {
     title: "Dashboard",
     // container: "max-w-4xl mx-auto text-center",
   };
-  
+
 
   // State for bids and pagination
   const [bids, setBids] = useState([]);
@@ -23,10 +23,10 @@ function Dashboard() {
   const [totalResults, setTotalResults] = useState(0);
   const perPage = 25;
   const bidsSectionRef = useRef(null);
-   const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0);
 
 
-   const middle = [
+  const middle = [
     { id: 1, title: "Active Bids", num: count },
     { id: 2, title: "New Bids", num: count },
     { id: 3, title: "Saved", num: "0" },
@@ -106,7 +106,7 @@ function Dashboard() {
             <div className="feature-left">
               <div className="flex gap-2 items-end ">
                 <div className="text font-inter text-[#DBDBDB]">
-                  Total Bids: 
+                  Total Bids:
                 </div>
                 <p className="num font-inter font-bold text-white">13153</p>
               </div>
@@ -145,6 +145,7 @@ function Dashboard() {
             currentPage={currentPage}
             onPageChange={handlePageChange}
           />
+
         </div>
       </div>
     </div>
