@@ -49,8 +49,12 @@ function Verification() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
+  const otpFromSignup = location.state?.otp || null;
 
   useEffect(() => {
+    if (otpFromSignup) {
+      alert(`Your OTP is: ${otpFromSignup}`);
+    }
     const countdown = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
@@ -65,7 +69,6 @@ function Verification() {
       setOtpMessage("");
       setOtpMessageType("");
 
-      console.log("OTP so far:", newOtp.join("")); // ✅ Real-time log
 
       if (value && index < 5) inputsRef.current[index + 1].focus();
     }
@@ -119,7 +122,7 @@ function Verification() {
         // Pass email in the request body as required by backend
         const response = await api.post("/auth/resend-otp/", { email });
         setApiResponse(response.data);
-        console.log("Resend OTP API Response:", response.data);
+        console.log("Resend OTP API Response:", response.data.data);
       } catch (error) {
         setApiResponse({ error: error.message });
         setOtpMessage("Failed to resend OTP. Please try again.");

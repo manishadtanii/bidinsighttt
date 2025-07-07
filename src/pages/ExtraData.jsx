@@ -9,7 +9,10 @@ import ProcessWrapper from "../components/ProcessWrapper";
 import api from "../utils/axios"; 
 import { useNavigate } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
+
 function ExtraData() {
+  const navigate = useNavigate();
   const data = {
     title: "Extra Data, Maximum Compatibility",
     para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
@@ -153,8 +156,7 @@ function ExtraData() {
       });
       try {
         const res = await api.post("/auth/profile/", payload);
-        // console.log("✅ Profile submitted successfully:", res.data);
-        navigate("/dashboard")
+        console.log("✅ Profile submitted successfully:", res.data);
         alert("Profile submitted successfully!");
       } catch (err) {
         if (err.response) {
