@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { saveInsuranceData } from "../redux/onboardingSlice"; // ✅ correct import
+import { useNavigate } from "react-router-dom";
+import { saveInsuranceData } from "../redux/onboardingSlice";
 
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
@@ -11,8 +11,8 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function HelpOurAi() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const data = {
     title: "Help Our A.I. Get Smarter!",
@@ -38,6 +38,7 @@ function HelpOurAi() {
     },
     next: {
       text: "Next",
+      link: "/extra-data",
     },
     skip: {
       text: "Skip",
@@ -54,29 +55,22 @@ function HelpOurAi() {
     { label: "Workers compensation", name: "workersCompensation" },
     { label: "General liability insurance", name: "generalLiability" },
     { label: "Automobile liability insurance", name: "autoLiability" },
-    
     { label: "Cybersecurity insurance", name: "cyberInsurance" },
     { label: "Environmental insurance", name: "environmentalInsurance" },
     {
       label: "Medical/ Professional/ ESO liability insurance",
       name: "medicalProfessional",
-    }
+    },
   ];
 
+  const insuranceData = useSelector((state) => state.onboarding.insuranceData);
   const [formValues, setFormValues] = useState({});
   const [showValidation, setShowValidation] = useState(false);
   const [allDisabled, setAllDisabled] = useState(false);
 
-  // Load from Redux if available, else from localStorage
-  const insuranceData = useSelector((state) => state.onboarding.insuranceData);
   useEffect(() => {
     if (insuranceData && Object.keys(insuranceData).length > 0) {
       setFormValues(insuranceData);
-    } else {
-      const savedData = localStorage.getItem("insurancePreferences");
-      if (savedData) {
-        setFormValues(JSON.parse(savedData));
-      }
     }
   }, [insuranceData]);
 
@@ -89,9 +83,7 @@ function HelpOurAi() {
 
   const getMessage = (name) => {
     if (!showValidation) return "";
-    return formValues[name]
-      ? "This field is selected"
-      : "This field is required";
+    return formValues[name] ? "This field is selected" : "This field is required";
   };
 
   const getMessageType = (name) => {
@@ -106,21 +98,20 @@ function HelpOurAi() {
     const allFilled = fields.every((field) => formValues[field.name]);
     if (allFilled) {
       dispatch(saveInsuranceData(formValues));
-      localStorage.setItem("insurancePreferences", JSON.stringify(formValues));
       navigate("/extra-data");
     }
   };
 
-  const handleSkip = (e) => {
-    e.preventDefault();
-    // Set all fields to 'no' and save to redux/localStorage
+  const handleSkip = () => {
     const allNo = {};
-    fields.forEach(f => { allNo[f.name] = "no"; });
+    fields.forEach((f) => {
+      allNo[f.name] = "no";
+    });
     dispatch(saveInsuranceData(allNo));
-    localStorage.setItem("insurancePreferences", JSON.stringify(allNo));
     setAllDisabled(true);
     navigate("/extra-data");
   };
+
 
   return (
     <ProcessWrapper>
@@ -141,7 +132,9 @@ function HelpOurAi() {
                         label={field.label}
                         name={field.name}
                         options={yesNoOptions}
-                        onChange={allDisabled ? () => {} : (e) => handleChange(field.name, e.target.value)}
+                        onChange={
+                          allDisabled ? () => {} : (e) => handleChange(field.name, e.target.value)
+                        }
                         value={formValues[field.name] || ""}
                         message={getMessage(field.name)}
                         messageType={getMessageType(field.name)}
@@ -153,15 +146,18 @@ function HelpOurAi() {
                 </div>
               ))}
             </div>
-            <div>
-              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={handleSkip} />
-            </div>
+
+            <FormFooter
+              data={formFooter}
+              onNextClick={handleNextClick}
+              onSkipClick={handleSkip}
+            />
           </form>
         </div>
       </div>
 
       <div className="sticky top-0">
-        <FormImg src={"help-ai.png"} />
+        <FormImg src="help-ai.png" />
       </div>
     </ProcessWrapper>
   );

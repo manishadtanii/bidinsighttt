@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux"; // <-- Add this
 import FormHeader from "../components/FormHeader";
@@ -56,6 +56,30 @@ function CompanyBuild() {
   const navigate = useNavigate(); // <-- Add this
   const uploadRef = useRef(null); // <-- Add this
 
+  // State for API states
+  const [stateOptions, setStateOptions] = useState([]);
+
+  // Fetch states from API on mount
+  useEffect(() => {
+    async function fetchStates() {
+      try {
+        const res = await api.get("/auth/states/");
+        // Assuming API returns: [{ id: 1, name: "California" }, ...]
+        if (Array.isArray(res.data)) {
+          setStateOptions(
+            res.data.map((item) => ({
+              value: item.id,
+              label: item.name,
+            }))
+          );
+        }
+      } catch (err) {
+        setStateOptions([{ value: "", label: "Error loading states" }]);
+      }
+    }
+    fetchStates();
+  }, []);
+
   // Validation rules
   const validateField = (name, value) => {
     let msg = "";
@@ -75,6 +99,19 @@ function CompanyBuild() {
           ? "Website is valid"
           : "Enter a valid url";
         type = urlRegex.test(value) ? "success" : "error";
+      } else if (name === "companyFienOrSsn") {
+        // New validation for FIEN/SSN
+        // Allow digits and hyphens, but only digits count for length
+        if (!/^[\d-]*$/.test(value)) {
+          msg = "Please enter valid fien or ssn number";
+          type = "error";
+        } else if (value.replace(/-/g, "").length !== 9) {
+          msg = "Fien or ssn number must be 9 digits long";
+          type = "error";
+        } else {
+          msg = "This field is valid";
+          type = "success";
+        }
       } else if (name === "upload") {
         if (value && value.name) {
           msg = `${value.name} is uploaded`;
@@ -151,6 +188,16 @@ function CompanyBuild() {
             valid = false;
           } else {
             newErrors[key] = "Website is valid";
+          }
+        } else if (key === "companyFienOrSsn") {
+          if (!/^[\d-]*$/.test(fields[key])) {
+            newErrors[key] = "Please enter valid fien or ssn number";
+            valid = false;
+          } else if (fields[key].replace(/-/g, "").length !== 9) {
+            newErrors[key] = "Fien or ssn number must be 9 digits long";
+            valid = false;
+          } else {
+            newErrors[key] = "This field is valid";
           }
         } else if (["yearInBusiness", "numberOfEmployees", "state", "targetContractSize"].includes(key)) {
           newErrors[key] = "This field is selected";
@@ -339,9 +386,7 @@ function CompanyBuild() {
                   value={fields.state}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  options={[
-                    { value: "1", label: "California" },
-                  ]}
+                  options={stateOptions}
                   delay={100}
                   message={touched.state || errors.state ? errors.state : ""}
                   messageType={getMessageType("state")}
