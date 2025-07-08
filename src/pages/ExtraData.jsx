@@ -6,12 +6,12 @@ import FormField from "../components/FormField";
 import FormFooter from "../components/FormFooter";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
-import api from "../utils/axios"; 
+import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-
+import SubmissionModal from "../components/SubmissionModal";
 
 function ExtraData() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const data = {
     title: "Extra Data, Maximum Compatibility",
     para: "Your A.I. profile is tuned to score every RFP by how well it fits you.",
@@ -85,9 +85,11 @@ function ExtraData() {
   // Validation logic
   const validateField = (name, value) => {
     // Only validate if enabled
-    if (enabledFields[name.replace("Amount", "")] === "no") return { msg: "", type: "" };
+    if (enabledFields[name.replace("Amount", "")] === "no")
+      return { msg: "", type: "" };
     if (!value) return { msg: "This field is required", type: "error" };
-    if (!/^[0-9]+$/.test(value)) return { msg: "Please enter digits", type: "error" };
+    if (!/^[0-9]+$/.test(value))
+      return { msg: "Please enter digits", type: "error" };
     return { msg: "This field is valid", type: "success" };
   };
 
@@ -156,9 +158,9 @@ function ExtraData() {
         const res = await api.post("/auth/profile/", payload);
 
         console.log("✅ Profile submitted successfully:", res.data);
-        navigate("/dashboard")
+        navigate("/dashboard");
         // console.log("✅ Profile submitted successfully:", res.data);
-        navigate("/dashboard")
+        navigate("/dashboard");
         alert("Profile submitted successfully!");
       } catch (err) {
         if (err.response) {
@@ -172,6 +174,24 @@ function ExtraData() {
     }
   };
 
+
+  // Submission Modal Handler 
+  const [showModal, setShowModal] = useState(true);
+
+  const handleBack = () => {
+    // Navigate to previous step
+    navigate("/help-our-ai")
+  };
+
+  const handleContinue = () => {
+    alert("Continue clicked");
+    // Proceed to next step
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
   return (
     <ProcessWrapper>
       <div className="form-left">
@@ -181,7 +201,10 @@ function ExtraData() {
             <HeroHeading data={data} />
           </div>
 
-          <form className="forn-container flex flex-col h-full justify-between" onSubmit={handleSubmit}>
+          <form
+            className="forn-container flex flex-col h-full justify-between"
+            onSubmit={handleSubmit}
+          >
             <div>
               <FormField
                 label="Workers compensation insurance amount per occurrence & per aggregate"
@@ -189,12 +212,44 @@ function ExtraData() {
                 name="workersCompensationAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.workersCompensationAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.workersCompensationAmount] ===
+                  "no"
+                }
                 value={fields.workersCompensationAmount}
-                onChange={enabledFields[fieldToPrefKey.workersCompensationAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.workersCompensationAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.workersCompensationAmount] === "no" ? "" : (touched.workersCompensationAmount && errors.workersCompensationAmount ? errors.workersCompensationAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.workersCompensationAmount] === "no" ? "" : (touched.workersCompensationAmount && errors.workersCompensationAmount === "This field is valid" ? "success" : touched.workersCompensationAmount && errors.workersCompensationAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.workersCompensationAmount] ===
+                  "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.workersCompensationAmount] ===
+                  "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.workersCompensationAmount] ===
+                  "no"
+                    ? ""
+                    : touched.workersCompensationAmount &&
+                      errors.workersCompensationAmount
+                    ? errors.workersCompensationAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.workersCompensationAmount] ===
+                  "no"
+                    ? ""
+                    : touched.workersCompensationAmount &&
+                      errors.workersCompensationAmount === "This field is valid"
+                    ? "success"
+                    : touched.workersCompensationAmount &&
+                      errors.workersCompensationAmount
+                    ? "error"
+                    : ""
+                }
               />
               <FormField
                 label="General liability insurance amount per occurrence & per aggregate"
@@ -202,12 +257,39 @@ function ExtraData() {
                 name="generalLiabilityAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"
+                }
                 value={fields.generalLiabilityAmount}
-                onChange={enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no" ? "" : (touched.generalLiabilityAmount && errors.generalLiabilityAmount ? errors.generalLiabilityAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no" ? "" : (touched.generalLiabilityAmount && errors.generalLiabilityAmount === "This field is valid" ? "success" : touched.generalLiabilityAmount && errors.generalLiabilityAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"
+                    ? ""
+                    : touched.generalLiabilityAmount &&
+                      errors.generalLiabilityAmount
+                    ? errors.generalLiabilityAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.generalLiabilityAmount] === "no"
+                    ? ""
+                    : touched.generalLiabilityAmount &&
+                      errors.generalLiabilityAmount === "This field is valid"
+                    ? "success"
+                    : touched.generalLiabilityAmount &&
+                      errors.generalLiabilityAmount
+                    ? "error"
+                    : ""
+                }
               />
               <FormField
                 label="Automobile liability insurance amount per occurrence & per aggregate"
@@ -215,12 +297,37 @@ function ExtraData() {
                 name="autoLiabilityAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"
+                }
                 value={fields.autoLiabilityAmount}
-                onChange={enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no" ? "" : (touched.autoLiabilityAmount && errors.autoLiabilityAmount ? errors.autoLiabilityAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no" ? "" : (touched.autoLiabilityAmount && errors.autoLiabilityAmount === "This field is valid" ? "success" : touched.autoLiabilityAmount && errors.autoLiabilityAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"
+                    ? ""
+                    : touched.autoLiabilityAmount && errors.autoLiabilityAmount
+                    ? errors.autoLiabilityAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.autoLiabilityAmount] === "no"
+                    ? ""
+                    : touched.autoLiabilityAmount &&
+                      errors.autoLiabilityAmount === "This field is valid"
+                    ? "success"
+                    : touched.autoLiabilityAmount && errors.autoLiabilityAmount
+                    ? "error"
+                    : ""
+                }
               />
               <FormField
                 label="Medical/ Professional/ ESO liability insurance amount per occurrence & per aggregate"
@@ -228,12 +335,44 @@ function ExtraData() {
                 name="medicalProfessionalAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.medicalProfessionalAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.medicalProfessionalAmount] ===
+                  "no"
+                }
                 value={fields.medicalProfessionalAmount}
-                onChange={enabledFields[fieldToPrefKey.medicalProfessionalAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.medicalProfessionalAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.medicalProfessionalAmount] === "no" ? "" : (touched.medicalProfessionalAmount && errors.medicalProfessionalAmount ? errors.medicalProfessionalAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.medicalProfessionalAmount] === "no" ? "" : (touched.medicalProfessionalAmount && errors.medicalProfessionalAmount === "This field is valid" ? "success" : touched.medicalProfessionalAmount && errors.medicalProfessionalAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.medicalProfessionalAmount] ===
+                  "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.medicalProfessionalAmount] ===
+                  "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.medicalProfessionalAmount] ===
+                  "no"
+                    ? ""
+                    : touched.medicalProfessionalAmount &&
+                      errors.medicalProfessionalAmount
+                    ? errors.medicalProfessionalAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.medicalProfessionalAmount] ===
+                  "no"
+                    ? ""
+                    : touched.medicalProfessionalAmount &&
+                      errors.medicalProfessionalAmount === "This field is valid"
+                    ? "success"
+                    : touched.medicalProfessionalAmount &&
+                      errors.medicalProfessionalAmount
+                    ? "error"
+                    : ""
+                }
               />
               <FormField
                 label="Environment insurance amount per occurrence & per aggregate"
@@ -241,12 +380,37 @@ function ExtraData() {
                 name="environmentAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.environmentAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.environmentAmount] === "no"
+                }
                 value={fields.environmentAmount}
-                onChange={enabledFields[fieldToPrefKey.environmentAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.environmentAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.environmentAmount] === "no" ? "" : (touched.environmentAmount && errors.environmentAmount ? errors.environmentAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.environmentAmount] === "no" ? "" : (touched.environmentAmount && errors.environmentAmount === "This field is valid" ? "success" : touched.environmentAmount && errors.environmentAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.environmentAmount] === "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.environmentAmount] === "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.environmentAmount] === "no"
+                    ? ""
+                    : touched.environmentAmount && errors.environmentAmount
+                    ? errors.environmentAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.environmentAmount] === "no"
+                    ? ""
+                    : touched.environmentAmount &&
+                      errors.environmentAmount === "This field is valid"
+                    ? "success"
+                    : touched.environmentAmount && errors.environmentAmount
+                    ? "error"
+                    : ""
+                }
               />
               <FormField
                 label="Cybersecurity insurance amount per occurrence & per aggregate"
@@ -254,12 +418,37 @@ function ExtraData() {
                 name="cybersecurityAmount"
                 placeholder="e.g. Value"
                 delay={100}
-                disabled={enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"}
+                disabled={
+                  enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"
+                }
                 value={fields.cybersecurityAmount}
-                onChange={enabledFields[fieldToPrefKey.cybersecurityAmount] === "no" ? () => {} : handleChange}
-                onBlur={enabledFields[fieldToPrefKey.cybersecurityAmount] === "no" ? () => {} : handleBlur}
-                message={enabledFields[fieldToPrefKey.cybersecurityAmount] === "no" ? "" : (touched.cybersecurityAmount && errors.cybersecurityAmount ? errors.cybersecurityAmount : "")}
-                messageType={enabledFields[fieldToPrefKey.cybersecurityAmount] === "no" ? "" : (touched.cybersecurityAmount && errors.cybersecurityAmount === "This field is valid" ? "success" : touched.cybersecurityAmount && errors.cybersecurityAmount ? "error" : "")}
+                onChange={
+                  enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"
+                    ? () => {}
+                    : handleChange
+                }
+                onBlur={
+                  enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"
+                    ? () => {}
+                    : handleBlur
+                }
+                message={
+                  enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"
+                    ? ""
+                    : touched.cybersecurityAmount && errors.cybersecurityAmount
+                    ? errors.cybersecurityAmount
+                    : ""
+                }
+                messageType={
+                  enabledFields[fieldToPrefKey.cybersecurityAmount] === "no"
+                    ? ""
+                    : touched.cybersecurityAmount &&
+                      errors.cybersecurityAmount === "This field is valid"
+                    ? "success"
+                    : touched.cybersecurityAmount && errors.cybersecurityAmount
+                    ? "error"
+                    : ""
+                }
               />
             </div>
 
@@ -271,6 +460,13 @@ function ExtraData() {
       <div className="sticky top-0">
         <FormImg src={"login-img.png"} />
       </div>
+      {showModal && (
+        <SubmissionModal
+          onBack={handleBack}
+          onContinue={handleContinue}
+          onClose={handleClose}
+        />
+      )}
     </ProcessWrapper>
   );
 }

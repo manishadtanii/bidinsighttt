@@ -13,6 +13,7 @@ import ProcessWrapper from "../components/ProcessWrapper";
 function HelpOurAi() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [skipPop, setSkipPop] = useState(false)
 
   const data = {
     title: "Help Our A.I. Get Smarter!",
@@ -30,6 +31,11 @@ function HelpOurAi() {
     steps: 6,
     activeStep: 4,
   };
+
+  function skipHandle(){
+    setSkipPop(true)
+    navigate("/extra-data")
+  }
 
   const formFooter = {
     back: {
@@ -154,7 +160,7 @@ function HelpOurAi() {
               ))}
             </div>
             <div>
-              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={handleSkip} />
+              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={skipHandle} />
             </div>
           </form>
         </div>
