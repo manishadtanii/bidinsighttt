@@ -102,13 +102,10 @@ function Login() {
     if (!valid) return;
     try {
       const res = await api.post("/auth/login/", fields);
+
+      console.log(res.data.access);
       if (res.data && res.data.access) {
         localStorage.setItem("access_token", res.data.access);
-      }
-
-      console.log(res.data);
-      if (res.data && res.data.refresh) {
-        localStorage.setItem("refresh_token", res.data.refresh);
       }
       navigate("/dashboard");
     } catch (err) {
