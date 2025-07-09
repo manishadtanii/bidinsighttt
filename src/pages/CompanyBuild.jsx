@@ -14,10 +14,10 @@ import api from "../utils/axios"; // <-- Import your custom axios instance
 
 
 function CompanyBuild() {
-  // Redux se user data lo
-  const { fullName, email } = useSelector((state) => state.register.userData);
-  // Password navigate state se lo
+  
   const location = useLocation();
+  const fullName = location.state?.fullName || "";
+  const email = location.state?.email || "";
   const password = location.state?.password || "";
 
   // Company fields
