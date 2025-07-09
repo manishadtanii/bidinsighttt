@@ -24,7 +24,7 @@ function Dashboard() {
   const perPage = 25;
   const bidsSectionRef = useRef(null);
   const [count, setCount] = useState(0);
-  const [sidebarToggle, setSidebarToggle] = useState(true);
+  const [sidebarToggle, setSidebarToggle] = useState(false);
 
   const middle = [
     { id: 1, title: "Total Bids", num: totalResults },
