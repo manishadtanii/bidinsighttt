@@ -97,7 +97,7 @@ function Dashboard() {
 
   return (
     <div className="bg-blue h-screen overflow-scroll">
-      <FilterPanel />
+      {/* <FilterPanel /> */}
       <div className="container-fixed py-10 px-4">
         <div className="dashboard-header  flex justify-between items-center">
           <div className="title">
