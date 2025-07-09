@@ -1,7 +1,8 @@
+// ✅ Updated HelpOurAi.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { saveInsuranceData } from "../redux/onboardingSlice";
+import { saveInsuranceData, setSkippedInsurance } from "../redux/onboardingSlice"; // ✅ added setSkippedInsurance
 
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
@@ -11,8 +12,8 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function HelpOurAi() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const data = {
     title: "Help Our A.I. Get Smarter!",
@@ -30,6 +31,16 @@ function HelpOurAi() {
     steps: 6,
     activeStep: 4,
   };
+
+  function skipHandle() {
+    const allNo = {};
+    fields.forEach((f) => {
+      allNo[f.name] = "yes";
+    });
+    dispatch(saveInsuranceData(allNo));
+    dispatch(setSkippedInsurance(true)); // ✅ set skip flag in redux
+    navigate("/extra-data");
+  }
 
   const formFooter = {
     back: {
@@ -94,24 +105,13 @@ function HelpOurAi() {
   const handleNextClick = (e) => {
     e.preventDefault();
     setShowValidation(true);
-
     const allFilled = fields.every((field) => formValues[field.name]);
     if (allFilled) {
       dispatch(saveInsuranceData(formValues));
+      dispatch(setSkippedInsurance(false)); // ✅ reset skip flag if user completes form
       navigate("/extra-data");
     }
   };
-
-  const handleSkip = () => {
-    const allNo = {};
-    fields.forEach((f) => {
-      allNo[f.name] = "no";
-    });
-    dispatch(saveInsuranceData(allNo));
-    setAllDisabled(true);
-    navigate("/extra-data");
-  };
-
 
   return (
     <ProcessWrapper>
@@ -146,12 +146,9 @@ function HelpOurAi() {
                 </div>
               ))}
             </div>
-
-            <FormFooter
-              data={formFooter}
-              onNextClick={handleNextClick}
-              onSkipClick={handleSkip}
-            />
+            <div>
+              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={skipHandle} />
+            </div>
           </form>
         </div>
       </div>
