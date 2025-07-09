@@ -8,6 +8,7 @@ import BidTable from "../components/BidTable";
 import api from "../utils/axios";
 import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const data = {
@@ -25,7 +26,7 @@ function Dashboard() {
   const bidsSectionRef = useRef(null);
   const [count, setCount] = useState(0);
   const [sidebarToggle, setSidebarToggle] = useState(false);
-
+  const navigate = useNavigate();
   const middle = [
     { id: 1, title: "Total Bids", num: totalResults },
     { id: 2, title: "Active Bids", num: count },
@@ -38,8 +39,17 @@ function Dashboard() {
     async function fetchBids() {
       setLoading(true);
       setError("");
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        setError("User not logged in");
+        setBids([]); // clear old data
+        setLoading(false);
+        navigate("/login")
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("refresh_token");
         // /bids/?bid_name=DC Motor Test Stand&page=${currentPage}&pageSize=25
         const res = await api.get(
           `https://apibid.collegedwarka.com/api/bids/?pageSize=25&page=${currentPage}&bid_type=Active`,
@@ -47,7 +57,7 @@ function Dashboard() {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
         );
-
+          
         setCount(res.data.count);
         console.log(
           `https://apibid.collegedwarka.com/api/bids/?pageSize=${currentPage}5&page=1&bid_type=Active`

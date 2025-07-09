@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   saveGeographicCoverage,
@@ -12,6 +12,7 @@ import FormImg from "../components/FormImg";
 import FormMultiSelect from "../components/FormMultiSelect";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/axios"; // Make sure your axios instance is imported
 
 function GeographicCoverage() {
   const data = {
@@ -62,8 +63,30 @@ function GeographicCoverage() {
   const [selectionError, setSelectionError] = useState("");
   const [selectionSuccess, setSelectionSuccess] = useState("");
   const [touched, setTouched] = useState(false);
+  const [stateOptions, setStateOptions] = useState([]); // State for API states
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Fetch states from API on mount
+  useEffect(() => {
+    async function fetchStates() {
+      try {
+        const res = await api.get("/auth/states/");
+        // Assuming API returns: [{ id: 1, name: "California" }, ...]
+        if (Array.isArray(res.data)) {
+          setStateOptions(
+            res.data.map((item) => ({
+              value: item.id,
+              label: item.name,
+            }))
+          );
+        }
+      } catch (err) {
+        setStateOptions([{ value: "", label: "Error loading states" }]);
+      }
+    }
+    fetchStates();
+  }, []);
 
   const handleNationwide = () => {
     setNationwideSelected(true);
@@ -183,19 +206,15 @@ function GeographicCoverage() {
                 ))}
               </div>
 
-              {/* Industries */}
+              {/* Industries (now States from API) */}
               <FormMultiSelect
-                label="Or Select Industries"
+                label="Or Select State"
                 name="industries"
-                placeholder="Choose industries (Max 10)"
-                options={[
-                  { label: "IT", value: "it" },
-                  { label: "Construction", value: "construction" },
-                  { label: "Healthcare", value: "healthcare" },
-                  { label: "Finance", value: "finance" },
-                ]}
+                placeholder="Choose State (Max 10)"
+                options={stateOptions}
                 value={selectedIndustries}
                 onChange={handleIndustryChange}
+                menuPlacement="auto" // <-- Add this line
               />
               <div style={{ marginTop: 14 }}>
                 {selectionError && touched && (

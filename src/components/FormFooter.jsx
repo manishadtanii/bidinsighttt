@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function FormFooter({ data, onNextClick }) {
+function FormFooter({ data, onNextClick, onSkipClick }) {
   const { back, next, skip } = data;
 
   return (
@@ -30,6 +30,7 @@ function FormFooter({ data, onNextClick }) {
           <Link
             to={skip.link}
             className="text-white text-lg p-3 lg:p-4 font-h transition-all duration-300"
+             onClick={onSkipClick}
           >
             {skip.text}
           </Link>

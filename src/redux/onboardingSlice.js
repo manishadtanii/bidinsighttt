@@ -21,6 +21,7 @@ const initialState = {
     environmentalAmount: "",
     cybersecurityAmount: "",
   },
+  skippedInsurance: false, // ✅ NEW FLAG
 };
 
 const onboardingSlice = createSlice({
@@ -43,6 +44,12 @@ const onboardingSlice = createSlice({
     saveInsuranceAmounts: (state, action) => {
       state.insuranceAmounts = { ...action.payload };
     },
+
+    // ✅ NEW ACTIONS:
+    setSkippedInsurance: (state, action) => {
+      state.skippedInsurance = action.payload;
+    },
+
     clearOnboardingData: (state) => {
       Object.assign(state, initialState);
     },
@@ -55,6 +62,7 @@ export const {
   saveInsuranceData,
   saveInsuranceAmounts,
   clearOnboardingData,
+  setSkippedInsurance, // ✅ EXPORT THIS TOO
 } = onboardingSlice.actions;
 
 export default onboardingSlice.reducer;

@@ -9,6 +9,29 @@ function formatDate(dateStr) {
   return `${month}, ${day}`;
 }
 
+// Helper to get countdown in days (UTC safe)
+function getCountdown(closingDateStr) {
+  if (!closingDateStr) return "-";
+
+  const closing = new Date(closingDateStr);
+  const now = new Date();
+
+  // console.log("Closing Date (parsed):", closing);
+  // console.log("Current Date (now):", now);
+
+  // Calculate difference in milliseconds
+  const diffInMs = closing.getTime() - now.getTime();
+
+  // Convert to days
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (isNaN(diffInDays)) return "-";
+  if (diffInDays < 0) return "Closed";
+  if (diffInDays === 0) return "Closes today";
+  return `${diffInDays} day${diffInDays > 1 ? "s" : ""}`;
+}
+
+
 const sortFunctions = {
   az: (a, b, key) => {
     const aVal = (a[key] || "").toString().toLowerCase();
@@ -58,7 +81,12 @@ const BidTable = ({ bids = [] }) => {
       <option className="" value="az">A → Z</option>
       <option className="" value="za">Z → A</option>
     </select>
-  );
+  );  
+
+  // const date = new Date();
+  // const currentDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  // console.log("Current Date:", currentDate);
+
 
   return (
     <div className=" rounded-2xl bg-btn text-white my-[50px] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid">
@@ -71,11 +99,14 @@ const BidTable = ({ bids = [] }) => {
             <th className="px-4 py-2 font-inter text-lg">
               Bid Name {renderSelect("bid_name")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-2 font-inter text-lg"> 
               Open Date {renderSelect("opening_date")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
               Closed Date {renderSelect("closing_date")}
+            </th>
+            <th className="px-4 py-2 font-inter text-lg">
+              Countdown {renderSelect("closing_date")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
               Status {renderSelect("status")}
@@ -103,6 +134,9 @@ const BidTable = ({ bids = [] }) => {
                 <td className="px-4 py-4 font-medium font-inter">{truncateBidName(bid.bid_name)}</td>
                 <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date) || "-"}</td>
                 <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
+                 <td className="px-4 py-4 font-medium font-inter">
+                {getCountdown(bid.closing_date)}
+              </td>
                 <td className="px-4 py-4 font-medium font-inter">{bid.bid_type}</td>
                 {/* <td className="px-4 py-4 font-medium font-inter">
                   <span className={`bg-white inline-flex items-center gap-1 text-xs font-medium px-4 py-3 rounded-full ${
