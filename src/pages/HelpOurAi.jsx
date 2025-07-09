@@ -1,9 +1,7 @@
-// ✅ Updated HelpOurAi.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { saveInsuranceData, setSkippedInsurance } from "../redux/onboardingSlice"; // ✅ added setSkippedInsurance
-
+import { saveInsuranceData, setSkippedInsurance } from "../redux/onboardingSlice"; 
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";

@@ -16,8 +16,8 @@ function getCountdown(closingDateStr) {
   const closing = new Date(closingDateStr);
   const now = new Date();
 
-  console.log("Closing Date (parsed):", closing);
-  console.log("Current Date (now):", now);
+  // console.log("Closing Date (parsed):", closing);
+  // console.log("Current Date (now):", now);
 
   // Calculate difference in milliseconds
   const diffInMs = closing.getTime() - now.getTime();
