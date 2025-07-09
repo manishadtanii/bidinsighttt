@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageChange }) => {
   const totalPages = Math.ceil(totalResults / perPage);
+  const [inputPage, setInputPage] = useState(currentPage);
+
+  useEffect(() => {
+    setInputPage(currentPage); // sync input field with prop
+  }, [currentPage]);
 
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -9,58 +14,62 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
     }
   };
 
-  const generatePageNumbers = () => {
-    const pages = [];
-    const start = Math.max(1, currentPage - 2);
-    const end = Math.min(totalPages, currentPage + 2);
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setInputPage(value);
     }
+  };
 
-    return pages;
+  const handleInputBlur = () => {
+    const page = parseInt(inputPage, 10);
+    if (!isNaN(page) && page !== currentPage && page >= 1 && page <= totalPages) {
+      goToPage(page);
+    } else {
+      setInputPage(currentPage);
+    }
   };
 
   const startResult = (currentPage - 1) * perPage + 1;
   const endResult = Math.min(currentPage * perPage, totalResults);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 text-white">
+    <div className="flex items-center justify-between px-4 py-3 text-white flex-wrap gap-3">
       {/* Left - Results Info */}
       <div className="text-sm">
         <span className="font-inter font-semibold text-sm">
-          {startResult} - {endResult} of {totalResults} results found
+          {startResult} - {endResult} of {totalResults} results
         </span>
       </div>
 
       {/* Center - Pagination */}
-      <div className="flex items-center space-x-2 text-sm">
-        <button onClick={() => goToPage(currentPage - 1)} className="text-white" disabled={currentPage === 1}>
-          &lt;
+      <div className="flex items-center gap-1 text-sm bg-btn px-3 py-2 rounded-full">
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          className="px-3 py-1"
+          disabled={currentPage === 1}
+        >
+          Prev
         </button>
 
-        {generatePageNumbers().map((page) => (
-          <button
-            key={page}
-            onClick={() => goToPage(page)}
-            className={`w-8 h-8 rounded-full ${
-              currentPage === page ? 'bg-blue-600 text-white' : 'text-gray-400'
-            }`}
-          >
-            {page}
-          </button>
-        ))}
+        <span className="px-3 py-1 font-bold text-white bg-blue-600 rounded-full flex items-center gap-2">
+          Page
+          <input
+            type="text"
+            value={inputPage}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            className="w-10 text-center bg-transparent border-b border-white outline-none"
+          />
+          of {totalPages}
+        </span>
 
-        {currentPage + 2 < totalPages && <span>...</span>}
-
-        {currentPage + 2 < totalPages && (
-          <button onClick={() => goToPage(totalPages)} className="hover:text-gray-400">
-            {totalPages}
-          </button>
-        )}
-
-        <button onClick={() => goToPage(currentPage + 1)} className="text-white" disabled={currentPage === totalPages}>
-          &gt;
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          className="px-3 py-1"
+          disabled={currentPage === totalPages}
+        >
+          Next
         </button>
       </div>
 
@@ -74,3 +83,4 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
 };
 
 export default Pagination;
+  

@@ -32,6 +32,7 @@ function FormMultiSelect({
         // required={required}
         value={value}
         onChange={handleChange}
+        menuPlacement="top"
         styles={{
           control: (base) => ({
             ...base,

@@ -1,71 +1,6 @@
-// import React, { useState } from "react";
-// import FormHeader from "../components/FormHeader";
-// import HeroHeading from "../components/HeroHeading";
-// import FormField from "../components/FormField";
-// import FormPassword from "../components/FormPassword";
-// import FormFooter from "../components/FormFooter";
-// import { Link } from "react-router-dom";
-// import FormImg from "../components/FormImg";
-// import ProcessWrapper from "../components/ProcessWrapper";
-
-// function Register() {
-//   // Validation state
-//   const [fields, setFields] = useState({
-//     fullName: "",
-//     email: "",
-//     password: "",
-//     confirmPassword: "",
-//   });
-//   const [touched, setTouched] = useState({
-//     fullName: false,
-//     email: false,
-//     password: false,
-//     confirmPassword: false,
-//   });
-//   const [errors, setErrors] = useState({
-//     fullName: "",
-//     email: "",
-//     password: "",
-//     confirmPassword: "",
-//   });
-//   const [checkboxChecked, setCheckboxChecked] = useState(false);
-//   const [checkboxMessage, setCheckboxMessage] = useState("");
-//   const [checkboxMessageType, setCheckboxMessageType] = useState("");
-
-//   // Email regex
-//   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//   // Password checks
-//   const passwordChecks = [
-//     {
-//       test: (v) => v.length >= 8,
-//       message: "At least 8 characters",
-//     },
-//     {
-//       test: (v) => /[A-Z]/.test(v),
-//       message: "At least one uppercase letter",
-//     },
-//     {
-//       test: (v) => /[a-z]/.test(v),
-//       message: "At least one lowercase letter",
-//     },
-//     {
-//       test: (v) => /[0-9]/.test(v),
-//       message: "At least one number",
-//     },
-//     {
-//       test: (v) => /[^A-Za-z0-9]/.test(v),
-//       message: "At least one special character",
-//     },
-//   ];
-
-//   // Handle input change
-//   const handleChange = (e) => {
-//     const { name, value } = e.targ
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { saveRegisterData } from "../redux/registerSlice";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormField from "../components/FormField";
@@ -208,8 +143,7 @@ function Register() {
       setCheckboxMessageType("");
       // Log all field values after all fields are filled and valid
       console.log("Register fields:", fields);
-      dispatch(saveRegisterData({ fullName: fields.fullName, email: fields.email }));
-      navigate("/company-build", { state: { password: fields.password } });
+      navigate("/company-build", { state: { fullName: fields.fullName, email: fields.email, password: fields.password } });
     } else {
       setCheckboxMessage("");
       setCheckboxMessageType("");
