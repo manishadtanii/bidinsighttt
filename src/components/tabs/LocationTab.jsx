@@ -217,13 +217,6 @@
 
 
 
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { Trash2, Search } from "lucide-react";
 import api from "../../utils/axios";
@@ -231,25 +224,17 @@ import api from "../../utils/axios";
 const LocationTab = ({ filters, setFilters, onApply }) => {
   const [statesData, setStatesData] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [expandedStates, setExpandedStates] = useState([]);
   const [isPrefilled, setIsPrefilled] = useState(false);
 
-  // ✅ Reset prefilled on mount to ensure city selection loads fresh
   useEffect(() => {
     setIsPrefilled(false);
   }, []);
 
-  // ✅ Load states and cities from API
   useEffect(() => {
     const fetchStates = async () => {
       try {
         const res = await api.get("/auth/states/");
-        const sorted = res.data
-          .map((state) => ({
-            ...state,
-            children: state.children?.sort((a, b) => a.name.localeCompare(b.name)),
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name));
+        const sorted = res.data.sort((a, b) => a.name.localeCompare(b.name));
         setStatesData(sorted);
       } catch (err) {
         console.error("Error fetching states:", err);
@@ -258,36 +243,27 @@ const LocationTab = ({ filters, setFilters, onApply }) => {
     fetchStates();
   }, []);
 
-  // ✅ Pre-fill selected cities from filters
   useEffect(() => {
     if (!isPrefilled && filters.location && statesData.length > 0) {
       const names = filters.location.split(",").map((name) => name.trim());
-      const allCities = statesData.flatMap((state) => state.children || []);
-      const matched = allCities.filter((city) => names.includes(city.name));
+      const matched = statesData.filter((state) => names.includes(state.name));
       setSelected(matched);
       setIsPrefilled(true);
     }
   }, [filters.location, statesData, isPrefilled]);
 
-  const toggleExpand = (stateName) => {
-    setExpandedStates((prev) =>
-      prev.includes(stateName)
-        ? prev.filter((name) => name !== stateName)
-        : [...prev, stateName]
+  const toggleSelect = (state) => {
+    setSelected((prev) =>
+      prev.find((item) => item.name === state.name)
+        ? prev.filter((item) => item.name !== state.name)
+        : [...prev, state]
     );
   };
 
-  const toggleSelect = (city) => {
-    setSelected((prev) => {
-      const exists = prev.find((item) => item.name === city.name);
-      return exists
-        ? prev.filter((item) => item.name !== city.name)
-        : [...prev, city];
-    });
-  };
-
-  const removeSelected = (name) => {
-    setSelected((prev) => prev.filter((item) => item.name !== name));
+  const handleApply = () => {
+    const locationString = selected.map((item) => item.name).join(",");
+    setFilters((prev) => ({ ...prev, location: locationString }));
+    onApply();
   };
 
   const handleCancel = () => {
@@ -296,15 +272,12 @@ const LocationTab = ({ filters, setFilters, onApply }) => {
     onApply();
   };
 
-  const handleApply = () => {
-    const locationString = selected.map((item) => item.name).join(", ");
-    setFilters((prev) => ({ ...prev, location: locationString }));
-    onApply();
+  const removeSelected = (name) => {
+    setSelected((prev) => prev.filter((item) => item.name !== name));
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
-      {/* 🔍 Search bar */}
       <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
@@ -316,10 +289,10 @@ const LocationTab = ({ filters, setFilters, onApply }) => {
         </div>
       </div>
 
-      {/* ✅ Selected Cities */}
+      {/* Selected */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-p font-medium">
-          Selected Cities <span className="text-primary">({selected.length})</span>
+          Selected States <span className="text-primary">({selected.length})</span>
         </h2>
         {selected.length > 0 && (
           <button onClick={() => setSelected([])} className="text-lg underline font-inter">
@@ -342,47 +315,26 @@ const LocationTab = ({ filters, setFilters, onApply }) => {
         ))}
       </div>
 
-      {/* 🗺️ States & Cities List */}
+      {/* States List */}
       <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
         <div className="font-semibold text-md p-2 border-b">States</div>
-        {statesData.map((state) => {
-          const isExpanded = expandedStates.includes(state.name);
-          return (
-            <div key={state.name} className="border-t-[2px] border-[#273BE280]">
-              <div className="flex items-center gap-3 font-inter text-xl px-4 py-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isExpanded}
-                  onChange={() => toggleExpand(state.name)}
-                  className="accent-primary"
-                />
-                <div className="font-medium">{state.name}</div>
-              </div>
-
-              {isExpanded && state.children && (
-                <div>
-                  {state.children.map((city) => (
-                    <label
-                      key={city.name}
-                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-[#273BE280] border-t-[2px]"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mt-1 accent-primary"
-                        checked={selected.some((item) => item.name === city.name)}
-                        onChange={() => toggleSelect(city)}
-                      />
-                      <div className="text-[16px]">{city.name}</div>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {statesData.map((state) => (
+          <label
+            key={state.name}
+            className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
+          >
+            <input
+              type="checkbox"
+              className="mt-1 accent-primary"
+              checked={selected.some((item) => item.name === state.name)}
+              onChange={() => toggleSelect(state)}
+            />
+            <div className="text-[16px]">{state.name}</div>
+          </label>
+        ))}
       </div>
 
-      {/* 🔘 Buttons */}
+      {/* Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
           onClick={handleCancel}
