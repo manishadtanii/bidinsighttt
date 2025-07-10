@@ -1,144 +1,102 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import StatusTab from './tabs/StatusTab';
+import CategoriesTab from './tabs/CategoriesTab';
+import KeywordTab from './tabs/KeywordTab';
+import LocationTab from './tabs/LocationTab';
+import PublishedDateTab from './tabs/PublishedDateTab';
+import ClosingDateTab from './tabs/ClosingDateTab';
+import SolicitationTypeTab from './tabs/SolicitationTypeTab';
 
-const FilterPanel = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const tabs = [
+  "Status",
+  "Categories",
+  "Keyword",
+  "Location",
+  "Published Date",
+  "Closing Date",
+  "Solicitation Type",
+];
 
-  const openPanels = () => setIsOpen(true);
-  const closePanels = () => setIsOpen(false);
+function FilterPanel({ filters, setFilters, onClose }) {
+  const [activeTab, setActiveTab] = useState("Status");
+
+  const commonProps = { filters, setFilters, onApply: onClose };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "Status":
+        return <StatusTab {...commonProps} />;
+      case "Categories":
+        return <CategoriesTab {...commonProps} />;
+      case "Keyword":
+        return <KeywordTab {...commonProps} />;
+      case "Location":
+        return <LocationTab {...commonProps} />;
+      case "Published Date":
+        return <PublishedDateTab {...commonProps} />;
+      case "Closing Date":
+        return <ClosingDateTab {...commonProps} />;
+      case "Solicitation Type":
+        return <SolicitationTypeTab {...commonProps} />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Toggle Button */}
-      <button
-        className="m-4 px-4 py-2 rounded-full bg-blue-600 text-white"
-        onClick={openPanels}
-      >
-        Open Filter
-      </button>
-
-      {/* Overlay Background */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10"
-          onClick={closePanels}
-        ></div>
-      )}
-
-      {/* Filter Sidebar */}
-      <motion.div
-        initial={{ x: "-100%" }}
-        animate={{ x: isOpen ? 0 : "-100%" }}
-        transition={{ type: "spring", stiffness: 80, damping: 20 }}
-        className="fixed top-0 left-0 h-full w-[300px] bg-gradient-to-b from-[#1a1f6e] to-[#2b2f80] text-white z-20 p-6 shadow-lg rounded-r-xl"
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Filter</h2>
-          <button className="text-xl" onClick={closePanels}>
-            ×
-          </button>
-        </div>
-
-        {/* Filter Options */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="font-semibold text-lg mb-2">Status</h3>
-            <div className="text-sm space-y-1">
-              <label className="block">
-                <input type="checkbox" className="mr-2" />
-                Open Solicitations
-              </label>
-              <label className="block">
-                <input type="checkbox" className="mr-2" />
-                Closed Solicitations
-              </label>
-              <label className="block">
-                <input type="checkbox" className="mr-2" />
-                Awarded Solicitations
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-2">Personalised</h3>
-            <label className="block text-sm">
-              <input type="checkbox" className="mr-2" />
-              My Invitations Only
-            </label>
-          </div>
-
-          {/* Expandable Sections */}
-          {["NIGP Categories", "Organization", "Location", "Published Date", "Closing Date", "Solicitation Type", "General Requirements", "Keywords"].map(
-            (item) => (
-              <div
-                key={item}
-                className="border-t border-white/30 pt-3 cursor-pointer flex justify-between items-center"
-              >
-                <span>{item}</span>
-                <span className="text-xl">+</span>
-              </div>
-            )
-          )}
-        </div>
-
-        <button className="mt-6 text-sm underline">Clear All</button>
-      </motion.div>
-
-      {/* Right Panel */}
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: isOpen ? 300 : "100%" }} // 300px offset for sidebar
-        transition={{ type: "spring", delay: 0.2 }}
-        className="fixed top-0 left-[300px] right-0 h-full bg-white z-10 px-6 py-10"
-      >
-        {/* Search Input and Button */}
-        <div className="flex justify-between items-center mb-10">
-          <div className="flex border border-blue-400 rounded-full px-4 py-2 w-[60%] items-center">
-            <i className="fas fa-search text-blue-600 mr-2"></i>
-            <input
-              type="text"
-              placeholder="Search titles or organization or location"
-              className="w-full outline-none bg-transparent"
-            />
-          </div>
-          <button className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full">
-            Save Search
-          </button>
-        </div>
-
-        {/* Duplicate Solicitations Section */}
+    <div className="absolute top-0 left-0 w-full h-screen z-50 flex">
+      {/* Sidebar */}
+      <div className="w-[30%] bg-blue text-white p-10 flex flex-col justify-between">
         <div>
-          <h3 className="font-semibold text-lg mb-2">Solicitations</h3>
-          <div className="text-sm space-y-2">
-            <label className="block">
-              <input type="checkbox" checked readOnly className="mr-2" />
-              Open Solicitations
-            </label>
-            <label className="block">
-              <input type="checkbox" className="mr-2" />
-              Closed Solicitations
-            </label>
-            <label className="block">
-              <input type="checkbox" className="mr-2" />
-              Awarded Solicitations
-            </label>
+          <div className="flex justify-between items-end mb-8">
+            <h1 className="font-archivo font-bold text-h3">Filter</h1>
+            <button onClick={onClose} className="text-p font-inter">
+              Close ✕
+            </button>
           </div>
-
-          <h3 className="font-semibold text-lg mt-6 mb-2">Personalised</h3>
-          <label className="block text-sm">
-            <input type="checkbox" className="mr-2" />
-            My Invitations Only
-          </label>
+          <ul className="space-y-4">
+            {tabs.map((tab) => (
+              <li
+                key={tab}
+                className={`cursor-pointer pt-2 ${activeTab === tab ? "font-bold" : ""}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                <div className="flex justify-between items-center font-inter text-p font-medium">
+                  <span>{tab}</span>
+                  <span>{activeTab === tab ? "−" : "+"}</span>
+                </div>
+                <img src="line.png" className="mt-3" alt="" />
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex mt-10 gap-4">
-          <button className="border border-black px-6 py-2 rounded-full">Cancel</button>
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-full">Search</button>
-        </div>
-      </motion.div>
+        {/* Clear All Button */}
+        <button
+          onClick={() => {
+            setFilters({
+              status: "",
+              categories: [],
+              keyword: "",
+              location: "",
+              publishedDate: { from: "", to: "" },
+              closingDate: { from: "", to: "" },
+              solicitationType: [],
+            });
+            setActiveTab("Status");
+          }}
+          className="text-p underline font-inter text-right"
+        >
+          Clear All
+        </button>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
+        <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
+      </div>
     </div>
   );
-};
+}
 
 export default FilterPanel;

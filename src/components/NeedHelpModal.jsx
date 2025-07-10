@@ -1,5 +1,5 @@
-import React from "react";
-import { X, CornerRightUp } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, ChevronUp, CornerDownRight } from "lucide-react";
 
 const faqs = [
   {
@@ -7,66 +7,76 @@ const faqs = [
     answer:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
   },
-  { question: "Lorem ipsum dolor sit amet?" },
-  { question: "Lorem ipsum dolor sit amet?" },
-  { question: "Lorem ipsum dolor sit amet?" },
-  { question: "Lorem ipsum dolor sit amet?" },
-  { question: "Lorem ipsum dolor sit amet?" },
+  {
+    question: "Lorem ipsum dolor sit amet?",
+    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
+  },
+  {
+    question: "Lorem ipsum dolor sit amet?",
+    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
+  },
+  {
+    question: "Lorem ipsum dolor sit amet?",
+    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
+  },
+  {
+    question: "Lorem ipsum dolor sit amet?",
+    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
+  },
+  {
+    question: "Lorem ipsum dolor sit amet?",
+    answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla faucibus. Sed scelerisque ultrices dui, vitae bibendum lorem bibendum ac. Duis eu nisi non orci fermentum commodo.",
+  },
 ];
 
 const NeedHelpModal = ({ onClose }) => {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const toggleAccordion = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div className="bg-gradient-to-br from-[#2B2F86] to-[#273BE2] rounded-[20px] p-6 md:p-10 w-full max-w-lg text-white relative shadow-xl border border-white/20">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 text-white/80 hover:text-white"
-        >
-          <X size={24} />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-blue text-white rounded-2xl w-full max-w-2xl p-6 relative border border-white/20">
+        
+        {/* Close button */}
+        <button className="absolute top-4 right-4 text-white text-2xl" onClick={onClose}>
+          &times;
         </button>
 
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-semibold mb-2">Need help</h2>
-          <p className="text-sm text-white/80">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-            accumsan eros non fringilla faucibus.
-          </p>
-        </div>
+        {/* Title */}
+        <h2 className="text-center mb-2 text-h3 text-g font-bold">Need help</h2>
+        <p className="text-center text-white/90 mb-6  max-w-xl mx-auto text-p font-inter">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan eros non fringilla
+          faucibus.
+        </p>
 
-        {/* FAQs */}
-        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-1">
-          {faqs.map((faq, idx) => (
+        {/* FAQ Accordion */}
+        <div className="space-y-3">
+          {faqs.map((faq, index) => (
             <div
-              key={idx}
-              className="bg-[#3543F0]/20 border border-white/20 rounded-xl p-4 flex flex-col gap-2"
+              key={index}
+              className="bg-white/10 border border-white/20 rounded-lg p-3 transition-all"
             >
-              <div className="flex items-start gap-2">
-                <CornerRightUp size={20} className="mt-1" />
-                <p className="text-white">{faq.question}</p>
+              <div
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => toggleAccordion(index)}
+              >
+                <div className="flex items-center gap-2 font-medium font-inter">
+                  <CornerDownRight size={18} />
+                  {faq.question}
+                </div>
+                {openIndex === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </div>
-              {faq.answer && (
-                <p className="text-sm text-white/70 pl-6">{faq.answer}</p>
+
+              {openIndex === index && faq.answer && (
+                <p className="text-sm text-white/90 mt-3 pl-6 pr-2 leading-relaxed font-inter">
+                  {faq.answer}
+                </p>
               )}
             </div>
           ))}
-        </div>
-
-        {/* Footer buttons */}
-        <div className="mt-6 flex flex-col md:flex-row justify-between gap-3">
-          <button
-            onClick={onClose}
-            className="w-full md:w-auto px-6 py-3 rounded-[20px] border border-white/40 text-white hover:bg-white/10 transition"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => alert("Continue clicked")}
-            className="w-full md:w-auto px-6 py-3 rounded-[20px] bg-[#3553FF] hover:bg-[#2f4bdd] transition text-white"
-          >
-            Understood, now continue
-          </button>
         </div>
       </div>
     </div>

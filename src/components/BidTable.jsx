@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 function formatDate(dateStr) {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  const month = date.toLocaleString("default", { month: "short" });
+  const month = date.toLocaleString("default", { month: "short" }); // e.g., "Jun"
   const day = date.getDate();
-  return `${month}, ${day}`;
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`; // e.g., "Jun 5, 2025"
 }
 
 // Helper to get countdown in days (UTC safe)

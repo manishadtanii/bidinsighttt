@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "/logo.png"; // Adjust if your path differs
+import NeedHelpModal from "./NeedHelpModal";
 
 function FormHeader({ title, link, steps = 0, activeStep = 0 }) {
   const location = useLocation();
-
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className="form-header mb-6">
       <div className="form-inner flex flex-col md:flex-row justify-between items-center">
@@ -17,7 +18,10 @@ function FormHeader({ title, link, steps = 0, activeStep = 0 }) {
 
         {/* Header Links */}
         <div className="header-link flex justify-between gap-4 w-full md:w-auto mt-4 md:mt-0">
-          <div  className="text-white text-lg hover:underline">
+          <div
+            className="text-white text-lg hover:underline"
+            onClick={() => setShowModal(true)}
+          >
             Need help?
           </div>
           <Link to={link} className="text-white text-lg hover:underline">
@@ -38,6 +42,9 @@ function FormHeader({ title, link, steps = 0, activeStep = 0 }) {
             ></div>
           ))}
         </div>
+      )}
+      {showModal && (
+        <NeedHelpModal onClose={() => setShowModal(false)} />
       )}
     </div>
   );
