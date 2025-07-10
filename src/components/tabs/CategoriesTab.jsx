@@ -141,11 +141,9 @@ const CategoriesTab = () => {
   const toggleSelect = (item) => {
     setSelected((prev) => {
       const exists = prev.find((s) => s.code === item.code);
-      if (exists) {
-        return prev.filter((s) => s.code !== item.code);
-      } else {
-        return [...prev, item];
-      }
+      return exists
+        ? prev.filter((s) => s.code !== item.code)
+        : [...prev, item];
     });
   };
 
@@ -153,9 +151,27 @@ const CategoriesTab = () => {
     setSelected((prev) => prev.filter((item) => item.code !== code));
   };
 
+  const toggleAllItems = (category) => {
+    const allSelected = category.children.every((child) =>
+      selected.some((s) => s.code === child.code)
+    );
+    if (allSelected) {
+      setSelected((prev) =>
+        prev.filter(
+          (item) => !category.children.some((child) => child.code === item.code)
+        )
+      );
+    } else {
+      const newItems = category.children.filter(
+        (child) => !selected.some((s) => s.code === child.code)
+      );
+      setSelected((prev) => [...prev, ...newItems]);
+    }
+  };
+
   return (
-    <div className="min-h-screen  flex flex-col justify-between p-10 ps-14">
-      {/* Search bar */}
+    <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
+      {/* Search */}
       <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
@@ -169,8 +185,10 @@ const CategoriesTab = () => {
           />
         </div>
       </div>
+
+      {/* Selected */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-p font-medium ">
+        <h2 className="text-p font-medium">
           Selected Categories{" "}
           <span className="text-primary">({selected.length})</span>
         </h2>
@@ -191,7 +209,7 @@ const CategoriesTab = () => {
         >
           <div className="flex items-center gap-10">
             <div className="font-medium text-lg">{item.code}</div>
-            <div className="font">
+            <div>
               <div>{item.name}</div>
               <div>{item.description}</div>
             </div>
@@ -205,58 +223,82 @@ const CategoriesTab = () => {
         </div>
       ))}
 
-      <div className=" border-[#273BE280] border-[2px] rounded-[10px] mt-6">
-        <div className="font-semibold text-md  p-2 border-b">Categories</div>
-        {mockData.map((cat) => (
-          <div key={cat.code}>
-            <button
-              onClick={() =>
-                setActiveCategory((prev) =>
-                  prev === cat.code ? null : cat.code
-                )
-              }
-              className="flex font-inter text-xl w-full px-4 py-3 border-[#273BE280] border-t-[2px] "
-            >
-              <div className="text-primary w-6">
-                {cat.children ? <i class="fas fa-chevron-right"></i> : ""}
-              </div>
-              <div className="w-20 font-semibold ">{cat.code}</div>
-              <div className="font-medium ">{cat.name}</div>
-            </button>
-            {activeCategory === cat.code && cat.children && (
-              <div className="">
-                {cat.children.map((child) => (
-                  <label
-                    key={child.code}
-                    className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-[#273BE280] border-t-[2px]"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-1 accent-primary"
-                      checked={selected.some(
-                        (item) => item.code === child.code
-                      )}
-                      onChange={() => toggleSelect(child)}
+      {/* Categories */}
+      <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
+        <div className="font-semibold text-md p-2 border-b">Categories</div>
+        {mockData.map((cat) => {
+          const allChildrenSelected = cat.children.every((child) =>
+            selected.some((item) => item.code === child.code)
+          );
+
+          return (
+            <div key={cat.code}>
+              <div
+                onClick={() =>
+                  setActiveCategory((prev) =>
+                    prev === cat.code ? null : cat.code
+                  )
+                }
+                className="flex items-center font-inter text-xl w-full px-4 py-3 border-t-[2px] border-[#273BE280] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  className="mr-3 accent-primary mt-1"
+                  checked={allChildrenSelected}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleAllItems(cat);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="text-primary w-6">
+                  {cat.children ? (
+                    <i
+                      className={`fas fa-chevron-${
+                        activeCategory === cat.code ? "down" : "right"
+                      }`}
                     />
-                    <div className="font-semibold text-lg">{child.code}</div>
-                    <div className="text-[16px] ">
-                      <div className=""> {child.name}</div>
-                      <div className="">{child.description}</div>
-                    </div>
-                  </label>
-                ))}
+                  ) : null}
+                </div>
+                <div className="w-20 font-semibold">{cat.code}</div>
+                <div className="font-medium">{cat.name}</div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {activeCategory === cat.code && (
+                <div>
+                  {cat.children.map((child) => (
+                    <label
+                      key={child.code}
+                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-t-[2px] border-[#273BE280]"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mt-1 accent-primary"
+                        checked={selected.some(
+                          (item) => item.code === child.code
+                        )}
+                        onChange={() => toggleSelect(child)}
+                      />
+                      <div className="font-semibold text-lg">{child.code}</div>
+                      <div className="text-[16px]">
+                        <div>{child.name}</div>
+                        <div>{child.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0 ">
+      <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button className="border-[2px] px-10 py-3 rounded-[20px] font-archivo text-xl transition-all">
           Cancel
         </button>
-        <button className="bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl  hover:bg-blue-700 transition-all">
+        <button className="bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl hover:bg-blue-700 transition-all">
           Search
         </button>
       </div>
