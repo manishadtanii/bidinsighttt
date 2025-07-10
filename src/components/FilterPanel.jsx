@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import StatusTab from './tabs/StatusTab'
-import CategoriesTab from './tabs/CategoriesTab'
-import KeywordTab from './tabs/KeywordTab'
-import LocationTab from './tabs/LocationTab'
-import PublishedDateTab from './tabs/PublishedDateTab'
-import ClosingDateTab from './tabs/ClosingDateTab'
-import SolicitationTypeTab from './tabs/SolicitationTypeTab'
+import SaveSearchForm from "./tabs/SaveSearchForm";
+import StatusTab from "./tabs/StatusTab";
+import CategoriesTab from "./tabs/CategoriesTab";
+import KeywordTab from "./tabs/KeywordTab";
+import LocationTab from "./tabs/LocationTab";
+import PublishedDateTab from "./tabs/PublishedDateTab";
+import ClosingDateTab from "./tabs/ClosingDateTab";
+import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
 
 // Dummy components for tabs — replace with your real ones
 // const StatusTab = () => <div className="p-6">Status Content</div>;
@@ -21,6 +22,7 @@ import SolicitationTypeTab from './tabs/SolicitationTypeTab'
 // );
 
 const tabs = [
+  "SaveSearchForm",
   "Status",
   "Categories",
   "Keyword",
@@ -31,10 +33,12 @@ const tabs = [
 ];
 
 function FilterPanel({ onClose }) {
-  const [activeTab, setActiveTab] = useState("Status");
+  const [activeTab, setActiveTab] = useState("SaveSearchForm");
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case "SaveSearchForm":
+        return <SaveSearchForm />;
       case "Status":
         return <StatusTab />;
       case "Categories":
@@ -92,7 +96,6 @@ function FilterPanel({ onClose }) {
       {/* Main content area */}
       <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
         <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
-        
       </div>
     </div>
   );
