@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ClosingDateTab = ({ filters, setFilters, onApply }) => {
+const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
   const today = new Date().toISOString().slice(0, 10);
   const { from = "", to = "" } = filters.closingDate || {};
 
@@ -64,6 +64,21 @@ const ClosingDateTab = ({ filters, setFilters, onApply }) => {
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
+        {/* Search bar */}
+        {/* <div className="flex justify-end mb-8">
+          <div className="relative w-[340px]">
+            <input
+              type="text"
+              placeholder="Search titles or organization or location"
+              className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
+              size={18}
+            />
+          </div>
+        </div> */}
+
         {/* Date */}
         <div>
           <label className="font-semibold block font-inter text-p mb-2">Date</label>

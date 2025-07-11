@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Search } from "lucide-react";
 import api from "../../utils/axios";
 
-const LocationTab = ({ filters, setFilters, onApply }) => {
+const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
   const [statesData, setStatesData] = useState([]);
 
   useEffect(() => {

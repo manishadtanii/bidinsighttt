@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const PublishedDateTab = ({ filters, setFilters, onApply }) => {
+const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
   const { from = "", to = "" } = filters.publishedDate || {};
   const today = new Date().toISOString().slice(0, 10);
   const [manualSelected, setManualSelected] = useState("");
