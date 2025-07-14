@@ -19,10 +19,12 @@ const tabs = [
 
 function FilterPanel({ filters, setFilters, onClose }) {
   const [activeTab, setActiveTab] = useState("Status");
-
   const commonProps = { filters, setFilters, onApply: onClose };
 
   const renderTabContent = () => {
+    console.log("Rendering Tab:", activeTab);
+    console.log("Current status in filters:", filters.status);
+
     switch (activeTab) {
       case "Status":
         return <StatusTab {...commonProps} />;
@@ -42,6 +44,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
         return null;
     }
   };
+
 
   return (
     <div className="absolute top-0 left-0 w-full h-screen z-50 flex">
@@ -67,6 +70,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
                 </div>
                 <img src="line.png" className="mt-3" alt="" />
               </li>
+
             ))}
           </ul>
         </div>

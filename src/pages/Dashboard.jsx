@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import AlertToggle from "../components/AlertToggle";
 import HeroHeading from "../components/HeroHeading";
 import BgCover from "../components/BgCover";
@@ -7,6 +7,7 @@ import api from "../utils/axios";
 import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import { useNavigate } from "react-router-dom";
+// import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -19,13 +20,17 @@ function Dashboard() {
     publishedDate: { from: "", to: "" },
     closingDate: { from: "", to: "" },
     solicitationType: [],
+    searchName: "",
   });
 
+  const [searchText, setSearchText] = useState("");
   const [bids, setBids] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [saveSearchToggle, setSaveSearchToggle] = useState(false);
+  const [savedSearches, setSavedSearches] = useState([]);
   const perPage = 25;
   const bidsSectionRef = useRef(null);
   const [count, setCount] = useState(0);
@@ -40,98 +45,110 @@ function Dashboard() {
     { id: 5, title: "Followed", num: "0/25" },
   ];
 
-  useEffect(() => {
-    async function fetchBids() {
-      setLoading(true);
-      setError("");
-      const token = localStorage.getItem("access_token");
+  const fetchSavedSearches = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await api.get("/bids/saved-filters/", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const saved = res.data.map((item) => item.name);
+      setSavedSearches(saved);
+    } catch (err) {
+      console.error("Failed to fetch saved searches", err);
+    }
+  };
 
-      if (!token) {
-        setError("User not logged in");
-        setBids([]);
-        setLoading(false);
-        navigate("/login");
-        return;
-      }
+  const fetchBids = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    const token = localStorage.getItem("access_token");
 
-      try {
-        const params = new URLSearchParams();
-        params.append("page", currentPage);
-        params.append("pageSize", perPage);
-
-        const statusMap = {
-          "Open Solicitations": "Active",
-          "Closed Solicitations": "Inactive",
-          "Awarded Solicitations": "Awarded",
-        };
-
-        const mappedStatus = statusMap[filters.status];
-        if (mappedStatus) params.append("bid_type", mappedStatus);
-        if (filters.keyword) params.append("bid_name", filters.keyword);
-        if (filters.location) {
-          const stateParam = filters.location.split(",").map(name => name.trim()).join(",");
-          params.append("state", stateParam);
-        }
-
-
-        // Published Date
-        if (filters.publishedDate?.from && filters.publishedDate?.to) {
-          const fromDate = new Date(filters.publishedDate.from);
-          const toDate = new Date(filters.publishedDate.to);
-          if (fromDate <= toDate) {
-            params.append("open_date_after", filters.publishedDate.from);
-            params.append("open_date_before", filters.publishedDate.to);
-          }
-        }
-
-        // Closing Date
-        if (filters.closingDate?.from && filters.closingDate?.to) {
-          const fromDate = new Date(filters.closingDate.from);
-          const toDate = new Date(filters.closingDate.to);
-          if (!isNaN(fromDate) && !isNaN(toDate) && fromDate <= toDate) {
-            params.append("close_date_after", filters.closingDate.from);
-            params.append("close_date_before", filters.closingDate.to);
-          }
-        }
-
-        console.log("Current Filters:", filters);
-        console.log("Query Params:", params.toString());
-
-        const res = await api.get(
-          `http://82.112.234.104:8001/api/bids/?${params.toString()}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
-        );
-
-        setCount(res.data.count);
-        const bidList = res.data.results || res.data;
-        setBids(bidList);
-        setTotalResults(res.data.count || bidList.length);
-      } catch (err) {
-        if (err.response?.data?.code === "token_not_valid") {
-          setError("Session expired. Please login again.");
-        } else {
-          setError("Failed to fetch bids");
-        }
-      } finally {
-        setLoading(false);
-      }
+    if (!token) {
+      setError("User not logged in");
+      setBids([]);
+      setLoading(false);
+      navigate("/login");
+      return;
     }
 
-    fetchBids();
-  }, [
-    currentPage,
-    filters.status,
-    filters.categories,
-    filters.keyword,
-    filters.location,
-    filters.publishedDate.from,
-    filters.publishedDate.to,
-    filters.closingDate.from,
-    filters.closingDate.to,
-    filters.solicitationType,
-  ]);
+    try {
+      const params = new URLSearchParams();
+      params.append("page", currentPage);
+      params.append("pageSize", perPage);
+
+      const statusMap = {
+        "Open Solicitations": "Active",
+        "Closed Solicitations": "Inactive",
+        "Awarded Solicitations": "Awarded",
+      };
+
+      const mappedStatus = statusMap[filters.status];
+      if (mappedStatus) params.append("bid_type", mappedStatus);
+      if (filters.keyword) params.append("bid_name", filters.keyword);
+      if (filters.location) {
+        const stateParam = filters.location
+          .split(",")
+          .map((name) => name.trim())
+          .join(",");
+        params.append("state", stateParam);
+      }
+
+      if (searchText.trim()) {
+        params.append("search", searchText.trim());
+      }
+
+      if (filters.publishedDate?.from && filters.publishedDate?.to) {
+        const fromDate = new Date(filters.publishedDate.from);
+        const toDate = new Date(filters.publishedDate.to);
+        if (fromDate <= toDate) {
+          params.append("open_date_after", filters.publishedDate.from);
+          params.append("open_date_before", filters.publishedDate.to);
+        }
+      }
+
+      if (filters.closingDate?.from && filters.closingDate?.to) {
+        const fromDate = new Date(filters.closingDate.from);
+        const toDate = new Date(filters.closingDate.to);
+        if (!isNaN(fromDate) && !isNaN(toDate) && fromDate <= toDate) {
+          params.append("close_date_after", filters.closingDate.from);
+          params.append("close_date_before", filters.closingDate.to);
+        }
+      }
+
+      const res = await api.get(
+        `/bids/?${params.toString()}`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+
+      setCount(res.data.count);
+      const bidList = res.data.results || res.data;
+      setBids(bidList);
+      setTotalResults(res.data.count || bidList.length);
+    } catch (err) {
+      if (err.response?.data?.code === "token_not_valid") {
+        setError("Session expired. Please login again.");
+      } else {
+        setError("Failed to fetch bids");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, filters, searchText, navigate]);
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchBids();
+    }, 600);
+
+    return () => clearTimeout(delayDebounce);
+  }, [fetchBids]);
+
+  useEffect(() => {
+    fetchSavedSearches();
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -149,9 +166,16 @@ function Dashboard() {
           onClose={() => setSidebarToggle(false)}
         />
       )}
+      {saveSearchToggle && (
+        <FilterPanelSaveSearch
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setSaveSearchToggle((prev) => !prev)}
+          onSave={() => fetchSavedSearches()}
+        />
+      )}
 
       <div className="container-fixed py-10 px-4">
-        {/* Header */}
         <div className="dashboard-header flex justify-between items-center">
           <HeroHeading data={data} />
           <div className="flex items-center gap-[15px]">
@@ -163,12 +187,13 @@ function Dashboard() {
                 type="text"
                 placeholder="Search titles or organization or location"
                 className="text-white bg-transparent w-[300px] border-none outline-none"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        {/* Middle Cards */}
         <div className="dashboard-middle">
           <div className="max-w-[1200px] py-[80px] flex justify-center mx-auto gap-8">
             {middle.map((item) => (
@@ -182,7 +207,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Feature Row */}
         <div className="dashboard-feature">
           <div className="flex justify-between">
             <div className="feature-left">
@@ -206,20 +230,29 @@ function Dashboard() {
                 </div>
                 <div className="saved-search bg-btn p-4 px-6 rounded-[30px] font-inter font-medium">
                   <select className="bg-transparent text-white">
-                    <option className="text-black" value="My Saved Searches" defaultValue>
+                    <option className="text-black" disabled selected>
                       My Saved Searches
                     </option>
+                    {savedSearches.map((search, index) => (
+                      <option key={index} className="text-black" value={search}>
+                        {search}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <BgCover>
-                  <div className="text-white">Save Search</div>
+                  <div
+                    className="text-white cursor-pointer"
+                    onClick={() => setSaveSearchToggle((prev) => !prev)}
+                  >
+                    Save Search
+                  </div>
                 </BgCover>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bid Table & Pagination */}
         <div ref={bidsSectionRef}>
           {loading ? (
             <div className="text-white text-center py-10">Loading...</div>

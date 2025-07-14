@@ -1,35 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 
-function StatusTab({ filters, setFilters, onApply }) {
-  const [localStatus, setLocalStatus] = useState(filters.status || "Closed Solicitations");
-  const [personalised, setPersonalised] = useState(filters.personalised || '');
 
+
+
+
+function StatusTab({ filters, setFilters, onApply }) {
   const handleSearchClick = () => {
-    setFilters((prev) => ({
-      ...prev,
-      status: localStatus,
-      personalised: personalised,
-    }));
-    onApply?.(); // optional close/callback from parent
+    onApply?.(); // Only close the filter panel
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div>
-        {/* Search bar (UI only for now) */}
-        {/* <div className="flex justify-end mb-8">
-          <div className="relative w-[340px]">
-            <input
-              type="text"
-              placeholder="Search titles or organization or location"
-              className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={18} />
-          </div>
-        </div> */}  
 
-        {/* Solicitations Radio */}
+
+        
         <div className="space-y-6">
           <div>
             <h2 className="text-p font-inter font-medium mb-2">Solicitations</h2>
@@ -40,9 +26,11 @@ function StatusTab({ filters, setFilters, onApply }) {
                     type="radio"
                     name="solicitation"
                     value={option}
-                    checked={localStatus === option}
-                    onChange={() => setLocalStatus(option)}
-                    className="accent-purple-600" 
+                    checked={filters.status === option}
+                    onChange={() =>
+                      setFilters((prev) => ({ ...prev, status: option }))
+                    }
+                    className="accent-purple-600"
                   />
                   <span className="font-inter text-xl">{option}</span>
                 </label>
@@ -57,8 +45,10 @@ function StatusTab({ filters, setFilters, onApply }) {
                 type="radio"
                 name="personalised"
                 value="My Invitations Only"
-                checked={personalised === 'My Invitations Only'}
-                onChange={() => setPersonalised('My Invitations Only')}
+                checked={filters.personalised === 'My Invitations Only'}
+                onChange={() =>
+                  setFilters((prev) => ({ ...prev, personalised: 'My Invitations Only' }))
+                }
                 className="accent-purple-600"
               />
               <span className="font-inter text-xl">My Invitations Only</span>
@@ -71,10 +61,13 @@ function StatusTab({ filters, setFilters, onApply }) {
       <div className="flex gap-4">
         <button
           className="border-[2px] px-10 py-3 rounded-[20px] font-archivo text-xl transition-all"
-          onClick={() => {
-            setLocalStatus('');
-            setPersonalised('');
-          }}
+          onClick={() =>
+            setFilters((prev) => ({
+              ...prev,
+              status: "",
+              personalised: "",
+            }))
+          }
         >
           Cancel
         </button>
@@ -88,5 +81,6 @@ function StatusTab({ filters, setFilters, onApply }) {
     </div>
   );
 }
+
 
 export default StatusTab;

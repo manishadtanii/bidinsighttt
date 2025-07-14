@@ -82,7 +82,7 @@ const BidTable = ({ bids = [] }) => {
       <option className="" value="az">A → Z</option>
       <option className="" value="za">Z → A</option>
     </select>
-  );  
+  );
 
   // const date = new Date();
   // const currentDate = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
@@ -100,7 +100,7 @@ const BidTable = ({ bids = [] }) => {
             <th className="px-4 py-2 font-inter text-lg">
               Bid Name {renderSelect("bid_name")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg"> 
+            <th className="px-4 py-2 font-inter text-lg">
               Open Date {renderSelect("opening_date")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
@@ -135,9 +135,25 @@ const BidTable = ({ bids = [] }) => {
                 <td className="px-4 py-4 font-medium font-inter">{truncateBidName(bid.bid_name)}</td>
                 <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date) || "-"}</td>
                 <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
-                 <td className="px-4 py-4 font-medium font-inter">
-                {getCountdown(bid.closing_date)}
-              </td>
+                <td className="px-4 py-4 font-medium font-inter">
+                  {(() => {
+                    const raw = getCountdown(bid.closing_date);
+                    if (raw === "-" || raw === "Closed" || raw === "Closes today") return raw;
+
+                    const days = parseInt(raw.split(" ")[0]);
+                    const years = Math.floor(days / 365);
+                    const months = Math.floor((days % 365) / 30);
+
+                    const label = `${years > 0 ? `${years}y` : ""}${months > 0 ? ` ${months}m` : ""}`.trim();
+
+                    return (
+                      <span title={`${days} days`}>
+                        {label}
+                      </span>
+                    );
+                  })()}
+                </td>
+
                 <td className="px-4 py-4 font-medium font-inter">{bid.bid_type}</td>
                 {/* <td className="px-4 py-4 font-medium font-inter">
                   <span className={`bg-white inline-flex items-center gap-1 text-xs font-medium px-4 py-3 rounded-full ${
