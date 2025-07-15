@@ -1,4 +1,4 @@
-//                           import React, { useEffect, useState, useRef, useCallback } from "react";
+// import React, { useEffect, useState, useRef, useCallback } from "react";
 // import AlertToggle from "../components/AlertToggle";
 // import HeroHeading from "../components/HeroHeading";
 // import BgCover from "../components/BgCover";
@@ -6,11 +6,12 @@
 // import api from "../utils/axios";
 // import Pagination from "../components/Pagination";
 // import FilterPanel from "../components/FilterPanel";
-// import { useNavigate } from "react-router-dom";
 // import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
+// import { useNavigate } from "react-router-dom";
 
 // function Dashboard() {
 //   const data = { title: "Dashboard" };
+//   const navigate = useNavigate();
 
 //   const [filters, setFilters] = useState({
 //     status: "Open Solicitations",
@@ -20,7 +21,17 @@
 //     publishedDate: { from: "", to: "" },
 //     closingDate: { from: "", to: "" },
 //     solicitationType: [],
+//   });
+
+//   const [saveSearchFilters, setSaveSearchFilters] = useState({
 //     searchName: "",
+//     status: "",
+//     categories: [],
+//     keyword: "",
+//     location: "",
+//     publishedDate: { from: "", to: "" },
+//     closingDate: { from: "", to: "" },
+//     solicitationType: [],
 //   });
 
 //   const [searchText, setSearchText] = useState("");
@@ -29,17 +40,18 @@
 //   const [error, setError] = useState("");
 //   const [currentPage, setCurrentPage] = useState(1);
 //   const [totalResults, setTotalResults] = useState(0);
+//   const [count, setCount] = useState(0);
 //   const [saveSearchToggle, setSaveSearchToggle] = useState(false);
 //   const [savedSearches, setSavedSearches] = useState([]);
 //   const [sidebarToggle, setSidebarToggle] = useState(false);
 //   const [activeFilterTab, setActiveFilterTab] = useState(() => {
 //     return localStorage.getItem("lastActiveFilterTab") || "Status";
 //   });
+//   const [selectedSavedSearch, setSelectedSavedSearch] = useState("");
+//   const [searchOption, setSearchOption] = useState("create");
 
 //   const perPage = 25;
 //   const bidsSectionRef = useRef(null);
-//   const [count, setCount] = useState(0);
-//   const navigate = useNavigate();
 
 //   const middle = [
 //     { id: 1, title: "Total Bids", num: totalResults },
@@ -62,11 +74,108 @@
 //     }
 //   };
 
+//   const handleSavedSearchSelect = async (searchName) => {
+//     const token = localStorage.getItem("access_token");
+
+//     try {
+//       const res = await api.get("/bids/saved-filters/", {
+//         headers: token ? { Authorization: `Bearer ${token}` } : {},
+//       });
+
+//       const matched = res.data.find((item) => item.name === searchName);
+
+//       if (matched) {
+//         const urlParams = new URLSearchParams(matched.query_string);
+
+//         const parsedFilters = {
+//           searchName: matched.name,
+//           status: "",
+//           categories: [],
+//           keyword: urlParams.get("bid_name") || "",
+//           location: urlParams.get("state") || "",
+//           publishedDate: {
+//             from: urlParams.get("open_date_after") || "",
+//             to: urlParams.get("open_date_before") || "",
+//           },
+//           closingDate: {
+//             from: urlParams.get("close_date_after") || "",
+//             to: urlParams.get("close_date_before") || "",
+//           },
+//           solicitationType: urlParams.get("solicitation")
+//             ? urlParams.get("solicitation").split(",")
+//             : [],
+//         };
+
+//         const bidType = urlParams.get("bid_type");
+//         if (bidType === "Active") parsedFilters.status = "Open Solicitations";
+//         else if (bidType === "Inactive") parsedFilters.status = "Closed Solicitations";
+//         else if (bidType === "Awarded") parsedFilters.status = "Awarded Solicitations";
+
+//         setFilters(parsedFilters);
+//         setSaveSearchFilters(parsedFilters);
+//         setSelectedSavedSearch(searchName);
+//         setSearchOption("replace");
+//       }
+//     } catch (err) {
+//       console.error("❌ Failed to fetch saved search filters", err);
+//     }
+//   };
+
+//   const postSaveSearch = async (data) => {
+//     const token = localStorage.getItem("access_token");
+//     const filtersToUse = data.filters;
+//     const params = new URLSearchParams();
+//     params.append("page", currentPage);
+//     params.append("pageSize", perPage);
+//     const statusMap = {
+//       "Open Solicitations": "Active",
+//       "Closed Solicitations": "Inactive",
+//       "Awarded Solicitations": "Awarded",
+//     };
+//     const mappedStatus = statusMap[filtersToUse.status];
+//     if (mappedStatus) params.append("bid_type", mappedStatus);
+//     if (filtersToUse.keyword) params.append("bid_name", filtersToUse.keyword);
+//     if (filtersToUse.location) {
+//       const stateParam = filtersToUse.location
+//         .split(",")
+//         .map((name) => name.trim())
+//         .join(",");
+//       params.append("state", stateParam);
+//     }
+//     if (filtersToUse.publishedDate?.from && filtersToUse.publishedDate?.to) {
+//       params.append("open_date_after", filtersToUse.publishedDate.from);
+//       params.append("open_date_before", filtersToUse.publishedDate.to);
+//     }
+//     if (filtersToUse.closingDate?.from && filtersToUse.closingDate?.to) {
+//       params.append("close_date_after", filtersToUse.closingDate.from);
+//       params.append("close_date_before", filtersToUse.closingDate.to);
+//     }
+//     if (
+//       Array.isArray(filtersToUse.solicitationType) &&
+//       filtersToUse.solicitationType.length > 0
+//     ) {
+//       params.append("solicitation", filtersToUse.solicitationType.join(","));
+//     }
+//     const queryString = `?${params.toString()}`;
+//     try {
+//       const body = {
+//         name: data.name,
+//         query_string: queryString,
+//         is_default: data.isDefault,
+//       };
+//       await api.post("/bids/saved-filters/", body, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+//       fetchSavedSearches();
+//     } catch (err) {
+//       console.error("❌ Failed to save search", err);
+//     }
+//   };
+
 //   const fetchBids = useCallback(async () => {
 //     setLoading(true);
 //     setError("");
 //     const token = localStorage.getItem("access_token");
-
 //     if (!token) {
 //       setError("User not logged in");
 //       setBids([]);
@@ -74,18 +183,15 @@
 //       navigate("/login");
 //       return;
 //     }
-
 //     try {
 //       const params = new URLSearchParams();
 //       params.append("page", currentPage);
 //       params.append("pageSize", perPage);
-
 //       const statusMap = {
 //         "Open Solicitations": "Active",
 //         "Closed Solicitations": "Inactive",
 //         "Awarded Solicitations": "Awarded",
 //       };
-
 //       const mappedStatus = statusMap[filters.status];
 //       if (mappedStatus) params.append("bid_type", mappedStatus);
 //       if (filters.keyword) params.append("bid_name", filters.keyword);
@@ -96,11 +202,9 @@
 //           .join(",");
 //         params.append("state", stateParam);
 //       }
-
 //       if (searchText.trim()) {
 //         params.append("search", searchText.trim());
 //       }
-
 //       if (filters.publishedDate?.from && filters.publishedDate?.to) {
 //         const fromDate = new Date(filters.publishedDate.from);
 //         const toDate = new Date(filters.publishedDate.to);
@@ -109,7 +213,6 @@
 //           params.append("open_date_before", filters.publishedDate.to);
 //         }
 //       }
-
 //       if (filters.closingDate?.from && filters.closingDate?.to) {
 //         const fromDate = new Date(filters.closingDate.from);
 //         const toDate = new Date(filters.closingDate.to);
@@ -118,15 +221,15 @@
 //           params.append("close_date_before", filters.closingDate.to);
 //         }
 //       }
-
-//       if (Array.isArray(filters.solicitationType) && filters.solicitationType.length > 0) {
+//       if (
+//         Array.isArray(filters.solicitationType) &&
+//         filters.solicitationType.length > 0
+//       ) {
 //         params.append("solicitation", filters.solicitationType.join(","));
 //       }
-
 //       const res = await api.get(`/bids/?${params.toString()}`, {
 //         headers: token ? { Authorization: `Bearer ${token}` } : {},
 //       });
-//       console.log(params.toString());
 //       setCount(res.data.count);
 //       const bidList = res.data.results || res.data;
 //       setBids(bidList);
@@ -146,7 +249,6 @@
 //     const delayDebounce = setTimeout(() => {
 //       fetchBids();
 //     }, 600);
-
 //     return () => clearTimeout(delayDebounce);
 //   }, [fetchBids]);
 
@@ -181,17 +283,19 @@
 //           }}
 //         />
 //       )}
+
 //       {saveSearchToggle && (
 //         <FilterPanelSaveSearch
-//           filters={filters}
-//           setFilters={setFilters}
-//           onClose={() => setSaveSearchToggle((prev) => !prev)}
-//           onSave={fetchSavedSearches}
+//           filters={saveSearchFilters}
+//           setFilters={setSaveSearchFilters}
+//           onClose={() => setSaveSearchToggle(false)}
+//           onSave={postSaveSearch}
+//           selectedSearch={selectedSavedSearch} // Optional for modal state sync
+//           mode={searchOption} // Optional for modal mode sync
 //         />
 //       )}
 
 //       <div className="container-fixed py-10 px-4">
-//         {/* Header */}
 //         <div className="dashboard-header flex justify-between items-center">
 //           <HeroHeading data={data} />
 //           <div className="flex items-center gap-[15px]">
@@ -210,7 +314,6 @@
 //           </div>
 //         </div>
 
-//         {/* Stats */}
 //         <div className="dashboard-middle">
 //           <div className="max-w-[1200px] py-[80px] flex justify-center mx-auto gap-8">
 //             {middle.map((item) => (
@@ -224,7 +327,6 @@
 //           </div>
 //         </div>
 
-//         {/* Top Right Controls */}
 //         <div className="dashboard-feature">
 //           <div className="flex justify-between">
 //             <div className="feature-left">
@@ -246,11 +348,13 @@
 //                 <div className="bg-btn p-4 rounded-[16px]" id="export">
 //                   <img src="export.png" className="w-6" alt="Export" />
 //                 </div>
-//                 <div className="saved-search bg-btn p-4 px-6 rounded-[30px] font-inter font-medium">
-//                   <select className="bg-transparent text-white">
-//                     <option className="text-black" disabled selected>
-//                       My Saved Searches
-//                     </option>
+//                 <div className="saved-search bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium">
+//                   <select
+//                     className="bg-transparent text-white"
+//                     value={selectedSavedSearch}
+//                     onChange={(e) => handleSavedSearchSelect(e.target.value)}
+//                   >
+//                     <option value="">My Saved Searches</option>
 //                     {savedSearches.map((search, index) => (
 //                       <option key={index} className="text-black" value={search}>
 //                         {search}
@@ -261,17 +365,17 @@
 //                 <BgCover>
 //                   <div
 //                     className="text-white cursor-pointer"
-//                     onClick={() => setSaveSearchToggle((prev) => !prev)}
+//                     onClick={() => setSaveSearchToggle(true)}
 //                   >
 //                     Save Search
 //                   </div>
 //                 </BgCover>
 //               </div>
 //             </div>
+
 //           </div>
 //         </div>
 
-//         {/* Table + Pagination */}
 //         <div ref={bidsSectionRef}>
 //           {loading ? (
 //             <div className="text-white text-center py-10">Loading...</div>
@@ -294,6 +398,13 @@
 // }
 
 // export default Dashboard;
+
+
+
+
+
+
+
 
 
 
@@ -456,21 +567,35 @@ function Dashboard() {
     ) {
       params.append("solicitation", filtersToUse.solicitationType.join(","));
     }
+
     const queryString = `?${params.toString()}`;
+
     try {
       const body = {
         name: data.name,
         query_string: queryString,
         is_default: data.isDefault,
       };
+
       await api.post("/bids/saved-filters/", body, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      // Update saved searches list
       fetchSavedSearches();
+
+      // ✅ Immediately apply saved search
+      setSelectedSavedSearch(data.name);
+      setFilters(filtersToUse);
+      setSaveSearchFilters(filtersToUse);
+      setSearchOption("replace");
+      setSaveSearchToggle(false); // close the modal
+
     } catch (err) {
       console.error("❌ Failed to save search", err);
     }
   };
+
 
   const fetchBids = useCallback(async () => {
     setLoading(true);
