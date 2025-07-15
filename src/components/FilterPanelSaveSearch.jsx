@@ -232,11 +232,6 @@
 
 // export default FilterPanelSaveSearch;
 
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import SaveSearchForm from "./tabs/SavedSearchForm";
 import StatusTab from "./tabs/StatusTab";
@@ -246,7 +241,6 @@ import LocationTab from "./tabs/LocationTab";
 import PublishedDateTab from "./tabs/PublishedDateTab";
 import ClosingDateTab from "./tabs/ClosingDateTab";
 import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
-import api from "../utils/axios"; // replace with your axios instance path
 
 const tabs = [
   "Save Search Form",
@@ -259,57 +253,100 @@ const tabs = [
   "Solicitation Type",
 ];
 
-const initialSaveFilters = {
-  searchName: "",
-  status: "",
-  categories: [],
-  keyword: "",
-  location: "",
-  publishedDate: { from: "", to: "" },
-  closingDate: { from: "", to: "" },
-  solicitationType: [],
-};
-
-function FilterPanelSaveSearch({ filters, setFilters, onClose, onSave }) {
+function FilterPanelSaveSearch({
+  filters: saveSearchFilters,
+  setFilters: setSaveSearchFilters,
+  onClose,
+  onSave,
+  selectedSearch = "",
+  mode = "create", // "create" or "replace"
+}) {
   const [activeTab, setActiveTab] = useState("Save Search Form");
-  const [savedFilters, setSavedFilters] = useState([]);
+  const [defaultSearch, setDefaultSearch] = useState(false);
+  const [searchOption, setSearchOption] = useState("create");
+  const [selectedSavedSearch, setSelectedSavedSearch] = useState("");
 
-  // 🔁 Fetch saved filters from backend
+
+  // Autofill searchName if in replace mode
   useEffect(() => {
-    const fetchSavedFilters = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const res = await api.get("/bids/saved-filters/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log(res.data);
-        setSavedFilters(res.data?.results || []);
-      } catch (error) {
-        console.error("❌ Error fetching saved filters:", error);
-      }
+    if (mode === "replace" && selectedSearch) {
+      setSaveSearchFilters((prev) => ({
+        ...prev,
+        searchName: selectedSearch,
+      }));
+    }
+  }, [mode, selectedSearch, setSaveSearchFilters]);
+
+  const buildQueryString = (filters) => {
+    const params = new URLSearchParams();
+
+    const statusMap = {
+      "Open Solicitations": "Active",
+      "Closed Solicitations": "Inactive",
+      "Awarded Solicitations": "Awarded",
     };
 
-    fetchSavedFilters();
-  }, []);
+    const mappedStatus = statusMap[filters.status];
+    if (mappedStatus) params.append("bid_type", mappedStatus);
+    if (filters.keyword) params.append("bid_name", filters.keyword);
 
-  const handleSaveSearchSubmit = (data) => {
-    console.log("✅ Final Save Search Data:", data);
-
-    if (data.action === "create" && data.name?.trim()) {
-      onSave?.({ name: data.name.trim() });
+    if (filters.location) {
+      const stateParam = filters.location
+        .split(",")
+        .map((name) => name.trim())
+        .join(",");
+      params.append("state", stateParam);
     }
 
-    onClose(); // Close modal
+    if (filters.categories?.length)
+      params.append("categories", filters.categories.join(","));
+
+    if (filters.solicitationType?.length)
+      params.append("solicitation", filters.solicitationType.join(","));
+
+    const { from: pubFrom, to: pubTo } = filters.publishedDate || {};
+    if (pubFrom) params.append("open_date_after", pubFrom);
+    if (pubTo) params.append("open_date_before", pubTo);
+
+    const { from: closeFrom, to: closeTo } = filters.closingDate || {};
+    if (closeFrom) params.append("close_date_after", closeFrom);
+    if (closeTo) params.append("close_date_before", closeTo);
+
+    return `?${params.toString()}`;
+  };
+
+  const handleSaveSearchSubmit = (data) => {
+    if (!data.name?.trim()) return;
+
+    const queryString = buildQueryString(saveSearchFilters);
+    onSave?.({
+      name: data.name.trim(),
+      isDefault: defaultSearch,
+      filters: saveSearchFilters,
+      query_string: queryString,
+    });
+
+    onClose();
   };
 
   const handleClearAll = () => {
-    setFilters(initialSaveFilters);
+    setSaveSearchFilters({
+      searchName: "",
+      status: "",
+      categories: [],
+      keyword: "",
+      location: "",
+      publishedDate: { from: "", to: "" },
+      closingDate: { from: "", to: "" },
+      solicitationType: [],
+    });
     setActiveTab("Save Search Form");
   };
 
-  const tabProps = { filters, setFilters };
+  const tabProps = {
+    filters: saveSearchFilters,
+    setFilters: setSaveSearchFilters,
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -317,11 +354,16 @@ function FilterPanelSaveSearch({ filters, setFilters, onClose, onSave }) {
         return (
           <SaveSearchForm
             {...tabProps}
-            savedFilters={savedFilters} // ✅ pass fetched data here
             onCancel={onClose}
             onSubmit={handleSaveSearchSubmit}
-            onSave={onSave}
+            defaultSearch={defaultSearch}
+            setDefaultSearch={setDefaultSearch}
+            searchOption={searchOption}
+            setSearchOption={setSearchOption}
+            selectedSavedSearch={selectedSavedSearch}
+            setSelectedSavedSearch={setSelectedSavedSearch}
           />
+
         );
       case "Status":
         return <StatusTab {...tabProps} />;
@@ -388,3 +430,7 @@ function FilterPanelSaveSearch({ filters, setFilters, onClose, onSave }) {
 }
 
 export default FilterPanelSaveSearch;
+
+
+
+

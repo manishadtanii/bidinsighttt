@@ -4,6 +4,7 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
   const { from = "", to = "" } = filters.publishedDate || {};
   const today = new Date().toISOString().slice(0, 10);
   const [manualSelected, setManualSelected] = useState("");
+  
 
   // Auto detect filter type when external filters change
   useEffect(() => {
@@ -60,35 +61,31 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
     onApply?.();
   };
 
+  const todayyy = new Date().toLocaleDateString("en-US"); // MM/DD/YYYY format
+
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
         {/* Date */}
-        <div>
-          <label className="font-semibold block font-inter text-p mb-2">Date</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="publishedDateFilter"
-              value="date"
-              checked={manualSelected === "date"}
-              onChange={(e) => handleRadioChange(e.target.value)}
-              className="accent-purple-600"
-            />
-            <input
-              type="date"
-              disabled={manualSelected !== "date"}
-              className="border border-gray-300 rounded-md px-2 py-1 font-inter text-xl w-[200px]"
-              value={manualSelected === "date" ? from : ""}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  publishedDate: { from: e.target.value, to: e.target.value },
-                }))
-              }
-            />
-          </div>
-        </div>
+      
+
+<div>
+  <label className="font-semibold block font-inter text-p mb-2">Last Login</label>
+  <div className="flex items-center space-x-2">
+    <input
+      type="radio"
+      name="publishedDateFilter"
+      value="date"
+      checked={manualSelected === "date"}
+      onChange={(e) => handleRadioChange(e.target.value)}
+      className="accent-purple-600"
+    />
+    <span className="font-inter text-xl">
+      {todayyy}
+    </span>
+  </div>
+</div>
+
 
         {/* Within */}
         <div>

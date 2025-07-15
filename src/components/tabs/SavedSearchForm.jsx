@@ -116,13 +116,7 @@
 // };
 
 // export default SavedSearchForm;
-
-
-
-
-
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 const SavedSearchForm = ({
   filters,
@@ -130,19 +124,16 @@ const SavedSearchForm = ({
   onCancel,
   onSubmit,
   savedFilters = [],
+  defaultSearch,
+  setDefaultSearch,
+  searchOption,
+  setSearchOption,
+  selectedSavedSearch,
+  setSelectedSavedSearch,
 }) => {
-  const [searchOption, setSearchOption] = useState("replace");
-  const [defaultSearch, setDefaultSearch] = useState(false);
-  const [selectedSavedSearch, setSelectedSavedSearch] = useState("");
-  const [savedSearches, setSavedSearches] = useState([]);
-
-  // ✅ Whenever savedFilters updates, extract the search names
-  useEffect(() => {
-    if (Array.isArray(savedFilters)) {
-      const names = savedFilters.map((item) => item.search_name || item.name);
-      setSavedSearches(names);
-    }
-  }, [savedFilters]);
+  const savedSearches = Array.isArray(savedFilters)
+    ? savedFilters.map((item) => item.search_name || item.name)
+    : [];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -159,10 +150,7 @@ const SavedSearchForm = ({
 
     const data = {
       action: searchOption,
-      name:
-        searchOption === "create"
-          ? filters.searchName
-          : selectedSavedSearch,
+      name: searchOption === "create" ? filters.searchName : selectedSavedSearch,
       isDefault: defaultSearch,
     };
 
@@ -189,9 +177,7 @@ const SavedSearchForm = ({
               onChange={() => setSearchOption("create")}
               className="accent-blue-600"
             />
-            <span className="font-inter text-[22px]">
-              Create a new saved search
-            </span>
+            <span className="font-inter text-[22px]">Create a new saved search</span>
           </label>
 
           <label className="flex items-center space-x-2">
@@ -203,17 +189,13 @@ const SavedSearchForm = ({
               onChange={() => setSearchOption("replace")}
               className="accent-blue-600"
             />
-            <span className="font-inter text-[22px]">
-              Replace an existing saved search
-            </span>
+            <span className="font-inter text-[22px]">Replace an existing saved search</span>
           </label>
         </div>
 
         {/* Input or Dropdown */}
         <div className="mt-8">
-          <label className="block font-medium mb-4 font-inter text-p">
-            Search Name
-          </label>
+          <label className="block font-medium mb-4 font-inter text-p">Search Name</label>
 
           {searchOption === "create" ? (
             <input
@@ -231,7 +213,6 @@ const SavedSearchForm = ({
           ) : (
             <div className="border border-primary bg-btn rounded-full px-4 py-2 inline-block">
               <select
-                className=""
                 value={selectedSavedSearch}
                 onChange={(e) => setSelectedSavedSearch(e.target.value)}
               >
