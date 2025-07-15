@@ -96,7 +96,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="bg-blue h-screen overflow-scroll">
+    <div className="bg-blue  overflow-scroll pt-[100px]">
       {/* <FilterPanel/> */}
       {sidebarToggle && (
         <FilterPanel onClose={()=> setSidebarToggle((prev) => !prev)} />
@@ -108,8 +108,7 @@ function Dashboard() {
             <HeroHeading data={data} />
           </div>
           <div className="flex items-center gap-[15px]">
-            <span className="font-inter text-[#DBDBDB]">Alert</span>{" "}
-            <AlertToggle />
+            
             <div className="search-box bg-btn p-4 px-6 flex gap-3 items-center rounded-[30px]">
               <i class="far text-white fa-search"></i>
               <input
@@ -117,7 +116,8 @@ function Dashboard() {
                 placeholder="Search titles or organization or location"
                 className="text-white bg-transparent w-[300px]  border-none outline-none"
               />
-            </div>
+            </div><span className="font-inter text-[#DBDBDB]">Alert</span>{" "}
+            <AlertToggle />
           </div>
         </div>
         <div className="dashboard-middle">

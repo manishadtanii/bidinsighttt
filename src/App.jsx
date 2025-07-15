@@ -16,6 +16,7 @@ import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
 import Dashboard from "./pages/Dashboard";
 import Plan from "./pages/Plan";
+import SummaryPage from "./pages/SummaryPage";
 
 const App = () => {
   useEffect(() => {
@@ -40,6 +41,7 @@ const App = () => {
           <Route path="/email-verification" element={<EmailVerification />} />
           <Route path="/verification" element={<Verification />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/summary" element={<SummaryPage />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
