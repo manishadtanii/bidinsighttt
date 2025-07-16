@@ -1,25 +1,12 @@
-import React, { useState } from "react";
-import SaveSearchForm from "./tabs/SaveSearchForm";
-import StatusTab from "./tabs/StatusTab";
-import CategoriesTab from "./tabs/CategoriesTab";
-import KeywordTab from "./tabs/KeywordTab";
-import LocationTab from "./tabs/LocationTab";
-import PublishedDateTab from "./tabs/PublishedDateTab";
-import ClosingDateTab from "./tabs/ClosingDateTab";
-import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
+import React, { useState, useEffect } from "react";
 
-// Dummy components for tabs — replace with your real ones
-// const StatusTab = () => <div className="p-6">Status Content</div>;
-// const CategoriesTab = () => <div className="p-6">Categories Content</div>;
-// const KeywordTab = () => <div className="p-6">Keyword Content</div>;
-// const LocationTab = () => <div className="p-6">Location Content</div>;
-// const PublishedDateTab = () => (
-//   <div className="p-6">Published Date Content</div>
-// );
-// const ClosingDateTab = () => <div className="p-6">Closing Date Content</div>;
-// const SolicitationTypeTab = () => (
-//   <div className="p-6">Solicitation Type Content</div>
-// );
+import StatusTab from './tabs/StatusTab';
+import CategoriesTab from './tabs/CategoriesTab';
+import KeywordTab from './tabs/KeywordTab';
+import LocationTab from './tabs/LocationTab';
+import PublishedDateTab from './tabs/PublishedDateTab';
+import ClosingDateTab from './tabs/ClosingDateTab';
+import SolicitationTypeTab from './tabs/SolicitationTypeTab';
 
 const tabs = [
   "SaveSearchForm",
@@ -32,27 +19,36 @@ const tabs = [
   "Solicitation Type",
 ];
 
-function FilterPanel({ onClose }) {
-  const [activeTab, setActiveTab] = useState("SaveSearchForm");
+function FilterPanel({ filters, setFilters, onClose }) {
+  // Load last active tab from localStorage or default to "Status"
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("lastActiveFilterTab") || "Status";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("lastActiveFilterTab", activeTab);
+  }, [activeTab]);
+
+  const commonProps = { filters, setFilters, onApply: onClose };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "SaveSearchForm":
         return <SaveSearchForm />;
       case "Status":
-        return <StatusTab />;
+        return <StatusTab {...commonProps} />;
       case "Categories":
-        return <CategoriesTab />;
+        return <CategoriesTab {...commonProps} />;
       case "Keyword":
-        return <KeywordTab />;
+        return <KeywordTab {...commonProps} />;
       case "Location":
-        return <LocationTab />;
+        return <LocationTab {...commonProps} />;
       case "Published Date":
-        return <PublishedDateTab />;
+        return <PublishedDateTab {...commonProps} />;
       case "Closing Date":
-        return <ClosingDateTab />;
+        return <ClosingDateTab {...commonProps} />;
       case "Solicitation Type":
-        return <SolicitationTypeTab />;
+        return <SolicitationTypeTab {...commonProps} />;
       default:
         return null;
     }
@@ -65,7 +61,7 @@ function FilterPanel({ onClose }) {
         <div>
           <div className="flex justify-between items-end mb-8">
             <h1 className="font-archivo font-bold text-h3">Filter</h1>
-            <button onClick={onClose} className="text-p font-inter ">
+            <button onClick={onClose} className="text-p font-inter">
               Close ✕
             </button>
           </div>
@@ -73,7 +69,7 @@ function FilterPanel({ onClose }) {
             {tabs.map((tab) => (
               <li
                 key={tab}
-                className="cursor-pointer pt-2"
+                className={`cursor-pointer pt-2 ${activeTab === tab ? "font-bold" : ""}`}
                 onClick={() => setActiveTab(tab)}
               >
                 <div className="flex justify-between items-center font-inter text-p font-medium">
@@ -85,15 +81,29 @@ function FilterPanel({ onClose }) {
             ))}
           </ul>
         </div>
+
+        {/* Clear All Button */}
         <button
-          onClick={() => setActiveTab(null)}
+          onClick={() => {
+            setFilters({
+              status: "",
+              categories: [],
+              keyword: "",
+              location: "",
+              publishedDate: { from: "", to: "" },
+              closingDate: { from: "", to: "" },
+              solicitationType: [],
+            });
+            setActiveTab("Status");
+            localStorage.setItem("lastActiveFilterTab", "Status");
+          }}
           className="text-p underline font-inter text-right"
         >
           Clear All
         </button>
       </div>
 
-      {/* Main content area */}
+      {/* Main Content Area */}
       <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
         <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
       </div>
