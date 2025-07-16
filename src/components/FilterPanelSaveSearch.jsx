@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import SaveSearchForm from "./tabs/SavedSearchForm";
 import StatusTab from "./tabs/StatusTab";
@@ -13,7 +11,8 @@ import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
 const tabs = [
   "Save Search Form",
   "Status",
-  "Categories",
+  "NAICSCode",
+  "UNSPSCCode",
   "Keyword",
   "Location",
   "Published Date",
@@ -21,7 +20,7 @@ const tabs = [
   "Solicitation Type",
 ];
 
-function FilterPanelSaveSearch({ 
+function FilterPanelSaveSearch({
   filters: saveSearchFilters,
   setFilters: setSaveSearchFilters,
   onClose,
@@ -33,7 +32,6 @@ function FilterPanelSaveSearch({
   const [defaultSearch, setDefaultSearch] = useState(false);
   const [searchOption, setSearchOption] = useState("create");
   const [selectedSavedSearch, setSelectedSavedSearch] = useState("");
-
 
   // Autofill searchName if in replace mode
   useEffect(() => {
@@ -131,12 +129,13 @@ function FilterPanelSaveSearch({
             selectedSavedSearch={selectedSavedSearch}
             setSelectedSavedSearch={setSelectedSavedSearch}
           />
-
         );
       case "Status":
         return <StatusTab {...tabProps} />;
-      case "Categories":
-        return <CategoriesTab {...tabProps} />;
+      case "UNSPSCCode":
+        return <UNSPSCCode {...commonProps} />;
+      case "NAICSCode":
+        return <NAICSCode {...commonProps} />;
       case "Keyword":
         return <KeywordTab {...tabProps} />;
       case "Location":
@@ -198,7 +197,3 @@ function FilterPanelSaveSearch({
 }
 
 export default FilterPanelSaveSearch;
-
-
-
-

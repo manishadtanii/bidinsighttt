@@ -18,6 +18,7 @@ import Dashboard from "./pages/Dashboard";
 import Plan from "./pages/Plan";
 import Loader from "./components/Loader";
 import SummaryPage from "./pages/SummaryPage";
+import Pricing from "./pages/Pricing";
 
 const App = () => {
   useEffect(() => {
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="/verification" element={<Verification />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/summary" element={<SummaryPage />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>

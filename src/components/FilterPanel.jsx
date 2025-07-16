@@ -7,10 +7,13 @@ import LocationTab from './tabs/LocationTab';
 import PublishedDateTab from './tabs/PublishedDateTab';
 import ClosingDateTab from './tabs/ClosingDateTab';
 import SolicitationTypeTab from './tabs/SolicitationTypeTab';
+import UNSPSCCode from "./tabs/UNSPSCCode";
+import NAICSCode from "./tabs/NAICSCode";
 
 const tabs = [
   "Status",
-  "Categories",
+  "NAICSCode",
+  "UNSPSCCode",
   "Keyword",
   "Location",
   "Published Date",
@@ -34,8 +37,10 @@ function FilterPanel({ filters, setFilters, onClose }) {
     switch (activeTab) {
       case "Status":
         return <StatusTab {...commonProps} />;
-      case "Categories":
-        return <CategoriesTab {...commonProps} />;
+      case "UNSPSCCode":
+        return <UNSPSCCode {...commonProps} />;
+      case "NAICSCode":
+        return <NAICSCode {...commonProps} />;
       case "Keyword":
         return <KeywordTab {...commonProps} />;
       case "Location":
