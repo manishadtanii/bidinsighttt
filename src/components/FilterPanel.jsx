@@ -9,7 +9,6 @@ import ClosingDateTab from './tabs/ClosingDateTab';
 import SolicitationTypeTab from './tabs/SolicitationTypeTab';
 
 const tabs = [
-  "SaveSearchForm",
   "Status",
   "Categories",
   "Keyword",
@@ -33,8 +32,6 @@ function FilterPanel({ filters, setFilters, onClose }) {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "SaveSearchForm":
-        return <SaveSearchForm />;
       case "Status":
         return <StatusTab {...commonProps} />;
       case "Categories":
@@ -55,7 +52,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-screen z-50 flex">
+    <div className="fixed top-0 left-0 w-full h-screen z-[500] flex">
       {/* Sidebar */}
       <div className="w-[30%] bg-blue text-white p-10 flex flex-col justify-between">
         <div>

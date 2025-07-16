@@ -16,6 +16,7 @@ import EmailVerification from "./components/EmailVerification";
 import Verification from "./pages/Verification";
 import Dashboard from "./pages/Dashboard";
 import Plan from "./pages/Plan";
+import Loader from "./components/Loader";
 import SummaryPage from "./pages/SummaryPage";
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
       <LayoutWrapper>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/loader" element={<Loader />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/company-build" element={<CompanyBuild />} />

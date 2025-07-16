@@ -55,25 +55,6 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
     onApply?.();
   };
 
-  const toggleAllCities = (cat) => {
-    const allCitiesSelected = cat.children.every((child) =>
-      selected.some((item) => item.name === child.name)
-    );
-
-    if (allCitiesSelected) {
-      setSelected((prev) =>
-        prev.filter(
-          (item) => !cat.children.some((child) => child.name === item.name)
-        )
-      );
-    } else {
-      const newCities = cat.children.filter(
-        (child) => !selected.some((item) => item.name === child.name)
-      );
-      setSelected((prev) => [...prev, ...newCities]);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
       <div className="flex justify-end mb-8">
@@ -137,74 +118,7 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
         ))}
       </div>
 
-      {/* States and cities list */}
-      <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
-        <div className="font-semibold text-md p-2 border-b">States</div>
-        {mockData.map((cat) => {
-          const allCitiesSelected = cat.children.every((child) =>
-            selected.some((item) => item.name === child.name)
-          );
-
-          return (
-            <div key={cat.name}>
-              <div
-                className="flex items-center font-inter text-xl w-full px-4 py-3 border-[#273BE280] border-t-[2px] cursor-pointer"
-                onClick={() =>
-                  setActiveCategory((prev) =>
-                    prev === cat.name ? null : cat.name
-                  )
-                }
-              >
-                <input
-                  type="checkbox"
-                  className="mr-3 accent-primary mt-1"
-                  checked={allCitiesSelected}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    toggleAllCities(cat);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="text-primary w-6">
-                  {cat.children ? (
-                    <i
-                      className={`far fa-chevron-${
-                        activeCategory === cat.name ? "down" : "right"
-                      }`}
-                    ></i>
-                  ) : (
-                    ""
-                  )}
-                </div>
-                <div className="font-medium ms-2">{cat.name}</div>
-              </div>
-
-              {activeCategory === cat.name && cat.children && (
-                <div>
-                  {cat.children.map((child) => (
-                    <label
-                      key={child.name}
-                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-[#273BE280] border-t-[2px]"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mt-1 accent-primary"
-                        checked={selected.some(
-                          (item) => item.name === child.name
-                        )}
-                        onChange={() => toggleSelect(child)}
-                      />
-                      <div className="text-[16px]">{child.name}</div>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Action buttons */}
+      {/* Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
           onClick={handleCancel}

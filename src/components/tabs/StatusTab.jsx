@@ -117,15 +117,8 @@ function StatusTab({ filters, setFilters, onApply }) {
           <div>
             <h2 className="text-p font-inter font-medium mb-2">Solicitations</h2>
             <div className="space-y-3">
-              {[
-                "Open Solicitations",
-                "Closed Solicitations",
-                "Awarded Solicitations",
-              ].map((option) => (
-                <label
-                  key={option}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
+              {["Open Solicitations", "Closed Solicitations", "Awarded Solicitations"].map((option) => (
+                <label key={option} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="radio"
                     name="solicitation"

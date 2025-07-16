@@ -5,7 +5,7 @@ import BidTracking from '../sections/summary/BidTracking'
 import AiFeature from '../sections/summary/AiFeature'
 import SimilarBids from '../sections/summary/SimilarBids'
 
-function Summary() {
+function SummaryPage() {
   return (
     <div className='py-[120px] bg-blue'>
       <div className="min-h-screen bg-gradient-to-br text-white p-4 sm:p-6 lg:p-10">
@@ -56,4 +56,4 @@ function Summary() {
   )
 }
 
-export default Summary
+export default SummaryPage

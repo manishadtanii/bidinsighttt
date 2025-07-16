@@ -12,8 +12,7 @@ export default {
         "summary": "url('/bg-summary.png')",
         "hero-pattern": "url('/images/hero.jpg')",
         "footer-texture": "url('/images/footer-texture.png')",
-        "btn":"linear-gradient(178.55deg, rgba(255, 255, 255, 0.1) 1.23%, rgba(153, 153, 153, 0.1) 98.77%);",
-        'btn-diagonal': 'linear-gradient(220.21deg, #132EC9 0.45%, #2D54E7 99.55%)',
+        "btn":"linear-gradient(178.55deg, rgba(255, 255, 255, 0.1) 1.23%, rgba(153, 153, 153, 0.1) 98.77%);"
       },
       fontFamily: {
         archivo: ["Archivo", "sans-serif"], // default font

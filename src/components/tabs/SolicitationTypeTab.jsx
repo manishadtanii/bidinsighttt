@@ -147,7 +147,7 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
         </div>
       </div>
 
-      {/* Action buttons */}
+      {/* Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
           onClick={handleCancel}
