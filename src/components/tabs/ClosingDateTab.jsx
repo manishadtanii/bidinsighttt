@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
+const ClosingDateTab = ({
+  filters = {},
+  setFilters = () => {},
+  onApply = () => {},
+  searchOption = "create",
+  setShowValidation = () => {},
+  setActiveTab = () => {},
+  setTriggerSave = () => {},
+}) => {
   const today = new Date().toISOString().slice(0, 10);
   const { from = "", to = "" } = filters.closingDate || {};
 
@@ -10,11 +18,12 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
   useEffect(() => {
     if (!from || !to) {
       setManualSelected("timeline");
-    }
-    else if (from === to) {
+    } else if (from === to) {
       setManualSelected("date");
     } else {
-      const diff = Math.floor((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24));
+      const diff = Math.floor(
+        (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
+      );
       if (to === today && [7, 30, 90].includes(diff)) {
         setManualSelected("within");
       } else {
@@ -53,35 +62,30 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
       ...prev,
       closingDate: { from: "", to: "" },
     }));
-    setManualSelected(""); // reset UI
+    setManualSelected("");
     onApply?.();
   };
 
   const handleApply = () => {
+    const isEmpty = searchOption === "create" && !filters.searchName?.trim();
+    if (isEmpty) {
+      setShowValidation(true);
+      setActiveTab("Save Search Form");
+      return;
+    }
+
+    setTriggerSave(true); // Auto-submit SaveSearchForm
     onApply?.();
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
-        {/* Search bar */}
-        {/* <div className="flex justify-end mb-8">
-          <div className="relative w-[340px]">
-            <input
-              type="text"
-              placeholder="Search titles or organization or location"
-              className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
-              size={18}
-            />
-          </div>
-        </div> */}
-
         {/* Date */}
         <div>
-          <label className="font-semibold block font-inter text-p mb-2">Date</label>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Date
+          </label>
           <div className="flex items-center space-x-2">
             <input
               type="radio"
@@ -99,7 +103,10 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
               onChange={(e) =>
                 setFilters((prev) => ({
                   ...prev,
-                  closingDate: { from: e.target.value, to: e.target.value },
+                  closingDate: {
+                    from: e.target.value,
+                    to: e.target.value,
+                  },
                 }))
               }
             />
@@ -108,7 +115,9 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
 
         {/* Within */}
         <div>
-          <label className="font-semibold block font-inter text-p mb-2">Within</label>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Within
+          </label>
           <div className="flex items-center space-x-2">
             <input
               type="radio"
@@ -123,7 +132,10 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
               className="border border-gray-300 rounded-md font-inter text-xl px-2 py-1 w-[200px]"
               value={
                 manualSelected === "within"
-                  ? String((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24))
+                  ? String(
+                      (new Date(to) - new Date(from)) /
+                      (1000 * 60 * 60 * 24)
+                    )
                   : ""
               }
               onChange={(e) => {
@@ -149,7 +161,9 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
 
         {/* Timeline */}
         <div>
-          <label className="font-semibold block font-inter text-p mb-2">Timeline</label>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Timeline
+          </label>
           <div className="flex items-start space-x-2 mb-1">
             <input
               type="radio"
@@ -160,7 +174,9 @@ const ClosingDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {
               className="accent-purple-600"
             />
             <div>
-              <div className="font-inter text-xl text-gray-800 mb-2">Starting</div>
+              <div className="font-inter text-xl text-gray-800 mb-2">
+                Starting
+              </div>
               <input
                 type="date"
                 disabled={manualSelected !== "timeline"}

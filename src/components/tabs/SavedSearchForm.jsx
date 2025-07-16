@@ -116,7 +116,8 @@
 // };
 
 // export default SavedSearchForm;
-import React from "react";
+
+import React, { useEffect } from "react";
 
 const SavedSearchForm = ({
   filters,
@@ -130,21 +131,23 @@ const SavedSearchForm = ({
   setSearchOption,
   selectedSavedSearch,
   setSelectedSavedSearch,
+  showValidation = false,
+  setShowValidation = () => {},
+  triggerSave = false,
+  setTriggerSave = () => {},
 }) => {
   const savedSearches = Array.isArray(savedFilters)
     ? savedFilters.map((item) => item.search_name || item.name)
     : [];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleFormSubmit = () => {
     if (searchOption === "replace" && !selectedSavedSearch) {
       alert("Please select a saved search to replace.");
       return;
     }
 
     if (searchOption === "create" && !filters.searchName.trim()) {
-      alert("Please enter a search name to create.");
+      setShowValidation(true);
       return;
     }
 
@@ -154,9 +157,23 @@ const SavedSearchForm = ({
       isDefault: defaultSearch,
     };
 
-    console.log("🔍 SaveSearch Submitted: ", data);
     onSubmit?.(data);
+    setShowValidation(false);
   };
+
+  // Form submit by button
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleFormSubmit();
+  };
+
+  // Auto trigger from other tabs
+  useEffect(() => {
+    if (triggerSave) {
+      handleFormSubmit();
+      setTriggerSave(false);
+    }
+  }, [triggerSave]);
 
   return (
     <form
@@ -198,18 +215,27 @@ const SavedSearchForm = ({
           <label className="block font-medium mb-4 font-inter text-p">Search Name</label>
 
           {searchOption === "create" ? (
-            <input
-              type="text"
-              placeholder="Enter search name"
-              value={filters.searchName}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  searchName: e.target.value,
-                }))
-              }
-              className="border border-[#273BE280] rounded-lg px-4 py-2 font-inter text-xl"
-            />
+            <>
+              <input
+                type="text"
+                placeholder="Enter search name"
+                value={filters.searchName}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    searchName: e.target.value,
+                  }))
+                }
+                className={`border ${
+                  showValidation && !filters.searchName?.trim()
+                    ? "border-red-500"
+                    : "border-[#273BE280]"
+                } rounded-lg px-4 py-2 font-inter text-xl`}
+              />
+              {showValidation && !filters.searchName?.trim() && (
+                <p className="text-red-500 text-sm mt-1">This field is required</p>
+              )}
+            </>
           ) : (
             <div className="border border-primary bg-btn rounded-full px-4 py-2 inline-block">
               <select

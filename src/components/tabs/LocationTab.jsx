@@ -2,8 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Search } from "lucide-react";
 import api from "../../utils/axios";
 
-const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
+const LocationTab = ({
+  filters = {},
+  setFilters = () => { },
+  onApply = () => { },
+  setActiveTab = () => { },
+  searchOption = "create",
+  setShowValidation = () => { },
+  setTriggerSave = () => { },
+}) => {
   const [statesData, setStatesData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchStates = async () => {
@@ -48,12 +57,37 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
 
   const handleCancel = () => {
     setFilters((prev) => ({ ...prev, location: "" }));
-    onApply?.();
+
+    if (searchOption === "create") {
+      setActiveTab("Save Search Form");
+      setShowValidation(false);
+    } else {
+      onApply?.(); // only call onApply in dashboard mode
+    }
   };
 
   const handleApply = () => {
-    onApply?.();
+    const isEmpty = searchOption === "create" && !filters.searchName?.trim();
+
+    if (isEmpty) {
+      setShowValidation(true);
+      setActiveTab("Save Search Form");
+      return;
+    }
+
+    if (searchOption === "create") {
+      setTriggerSave(true); // trigger save
+    } else {
+      onApply?.(); // regular filter mode
+    }
   };
+
+  // Filtered state list
+  const filteredStates = searchTerm
+    ? statesData.filter((state) =>
+      state.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    : statesData;
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
@@ -61,10 +95,15 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
         <div className="relative w-[340px]">
           <input
             type="text"
-            placeholder="Search titles or organization or location"
+            placeholder="Search states"
             className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={18} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
+            size={18}
+          />
         </div>
       </div>
 
@@ -75,9 +114,7 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
         </h2>
         {selected.length > 0 && (
           <button
-            onClick={() =>
-              setFilters((prev) => ({ ...prev, location: "" }))
-            }
+            onClick={() => setFilters((prev) => ({ ...prev, location: "" }))}
             className="text-lg underline font-inter"
           >
             Clear All
@@ -92,7 +129,10 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
             className="flex border-[2px] gap-3 px-5 rounded-[30px] border-primary items-center justify-between text-lg py-2 font-inter"
           >
             <div>{item.name}</div>
-            <button onClick={() => removeSelected(item.name)} className="text-primary">
+            <button
+              onClick={() => removeSelected(item.name)}
+              className="text-primary"
+            >
               <Trash2 size={16} />
             </button>
           </div>
@@ -102,7 +142,7 @@ const LocationTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }
       {/* States List */}
       <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
         <div className="font-semibold text-md p-2 border-b">States</div>
-        {statesData.map((state) => (
+        {filteredStates.map((state) => (
           <label
             key={state.name}
             className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"

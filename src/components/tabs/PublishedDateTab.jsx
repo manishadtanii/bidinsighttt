@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
 
-const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () => {} }) => {
+const PublishedDateTab = ({
+  filters = {},
+  setFilters = () => {},
+  onApply = () => {},
+  searchOption = "create",
+  setShowValidation = () => {},
+  setActiveTab = () => {},
+  setTriggerSave = () => {},
+}) => {
   const { from = "", to = "" } = filters.publishedDate || {};
   const today = new Date().toISOString().slice(0, 10);
   const [manualSelected, setManualSelected] = useState("");
-  
 
-  // Auto detect filter type when external filters change
   useEffect(() => {
     if (!from || !to) {
       setManualSelected("timeline");
     } else if (from === to) {
       setManualSelected("date");
     } else {
-      const diff = Math.floor((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24));
+      const diff = Math.floor(
+        (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
+      );
       const toDate = new Date(to).toISOString().slice(0, 10);
       if (toDate === today && [7, 30, 90].includes(diff)) {
         setManualSelected("within");
@@ -32,7 +40,7 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
       }));
     } else if (value === "within") {
       const past = new Date();
-      past.setDate(past.getDate() - 7); // default to 7 days
+      past.setDate(past.getDate() - 7);
       setFilters((prev) => ({
         ...prev,
         publishedDate: {
@@ -53,43 +61,50 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
       ...prev,
       publishedDate: { from: "", to: "" },
     }));
-    setManualSelected(""); // reset selection
+    setManualSelected("");
     onApply?.();
   };
 
   const handleApply = () => {
+    const isEmpty = searchOption === "create" && !filters.searchName?.trim();
+    if (isEmpty) {
+      setShowValidation(true);
+      setActiveTab("Save Search Form");
+      return;
+    }
+
+    setTriggerSave(true); // Auto-submit SaveSearchForm
     onApply?.();
   };
 
-  const todayyy = new Date().toLocaleDateString("en-US"); // MM/DD/YYYY format
+  const todayFormatted = new Date().toLocaleDateString("en-US");
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
         {/* Date */}
-      
-
-<div>
-  <label className="font-semibold block font-inter text-p mb-2">Last Login</label>
-  <div className="flex items-center space-x-2">
-    <input
-      type="radio"
-      name="publishedDateFilter"
-      value="date"
-      checked={manualSelected === "date"}
-      onChange={(e) => handleRadioChange(e.target.value)}
-      className="accent-purple-600"
-    />
-    <span className="font-inter text-xl">
-      {todayyy}
-    </span>
-  </div>
-</div>
-
+        <div>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Last Login
+          </label>
+          <div className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="publishedDateFilter"
+              value="date"
+              checked={manualSelected === "date"}
+              onChange={(e) => handleRadioChange(e.target.value)}
+              className="accent-purple-600"
+            />
+            <span className="font-inter text-xl">{todayFormatted}</span>
+          </div>
+        </div>
 
         {/* Within */}
         <div>
-          <label className="font-semibold block font-inter text-p mb-2">Within</label>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Within
+          </label>
           <div className="flex items-center space-x-2">
             <input
               type="radio"
@@ -104,7 +119,9 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
               className="border border-gray-300 rounded-md font-inter text-xl px-2 py-1 w-[200px]"
               value={
                 manualSelected === "within"
-                  ? Math.floor((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24))
+                  ? Math.floor(
+                      (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
+                    )
                   : ""
               }
               onChange={(e) => {
@@ -130,7 +147,9 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
 
         {/* Timeline */}
         <div>
-          <label className="font-semibold block font-inter text-p mb-2">Timeline</label>
+          <label className="font-semibold block font-inter text-p mb-2">
+            Timeline
+          </label>
           <div className="flex items-start space-x-2 mb-1">
             <input
               type="radio"
@@ -141,7 +160,9 @@ const PublishedDateTab = ({ filters = {}, setFilters = () => {}, onApply = () =>
               className="accent-purple-600"
             />
             <div>
-              <div className="font-inter text-xl text-gray-800 mb-2">Starting</div>
+              <div className="font-inter text-xl text-gray-800 mb-2">
+                Starting
+              </div>
               <input
                 type="date"
                 disabled={manualSelected !== "timeline"}

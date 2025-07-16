@@ -19,7 +19,6 @@ const tabs = [
 ];
 
 function FilterPanel({ filters, setFilters, onClose }) {
-  // Load last active tab from localStorage or default to "Status"
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("lastActiveFilterTab") || "Status";
   });
@@ -28,7 +27,15 @@ function FilterPanel({ filters, setFilters, onClose }) {
     localStorage.setItem("lastActiveFilterTab", activeTab);
   }, [activeTab]);
 
-  const commonProps = { filters, setFilters, onApply: onClose };
+  const commonProps = {
+    filters,
+    setFilters,
+    onApply: onClose, // passed to every tab
+    searchOption: "filter", // optional: ensures tabs know this is not "create"
+    setShowValidation: () => {}, // no-op for filter mode
+    setTriggerSave: () => {},    // no-op for filter mode
+    setActiveTab: setActiveTab   // allows tab to switch back if needed
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -100,7 +107,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
         </button>
       </div>
 
-      {/* Main Content Area */}
+      {/* Tab Content */}
       <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
         <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
       </div>
