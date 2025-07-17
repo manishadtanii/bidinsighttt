@@ -64,7 +64,7 @@ function Dashboard() {
   const bidsSectionRef = useRef(null);
 
   const middle = [
-    { id: 1, title: "Total Bids", num: totalResults },
+    // { id: 1, title: "Total Bids", num: totalResults },
     { id: 2, title: "Active Bids", num: count },
     { id: 3, title: "New Bids", num: count },
     { id: 4, title: "Saved", num: "0" },

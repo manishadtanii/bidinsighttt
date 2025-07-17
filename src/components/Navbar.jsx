@@ -49,16 +49,20 @@ const Navbar = () => {
 
         {/* Right Buttons (Desktop) */}
         <div className="hidden md:flex items-center space-x-3">
-          <button className="bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20">
+          {/* <button className="bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20">
             <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </button>
+          </button> */}
           <Link
             to="/login"
             className="flex items-center space-x-2 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20 font-semibold"
           >
-            <FontAwesomeIcon icon={faUser} />
-            <span className="font-h text-base xl:text-lg">Register / Login</span>
+            {localStorage.getItem("access_token") ? (
+              <FontAwesomeIcon icon={faUser} />
+            ) : (
+              <span className="font-h text-base xl:text-lg">Register / Login</span>
+            )}
           </Link>
+
         </div>
 
         {/* Hamburger (Mobile) */}
