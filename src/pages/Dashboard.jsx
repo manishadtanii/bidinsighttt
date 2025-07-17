@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, use } from "react";
 import AlertToggle from "../components/AlertToggle";
 import HeroHeading from "../components/HeroHeading";
 import BgCover from "../components/BgCover";
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const data = { title: "Dashboard" };
   const navigate = useNavigate();
+  const tableRef = useRef();
 
   const [filters, setFilters] = useState({
     status: "Open Solicitations",
@@ -69,6 +70,13 @@ function Dashboard() {
     { id: 4, title: "Saved", num: "0" },
     { id: 5, title: "Followed", num: "0/25" },
   ];
+
+  const handleExport = () => {
+    if (tableRef.current) {
+      tableRef.current.exportToCSV(); // call child method
+    }
+  };
+
   // list karraha hai only
   const fetchSavedSearches = async () => {
     const token = localStorage.getItem("access_token");
@@ -77,14 +85,12 @@ function Dashboard() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const saved = res.data.map((item) => item.name);
+      // console.log(saved[0])
       setSavedSearches(saved);
     } catch (err) {
       console.error("Failed to fetch saved searches", err);
     }
   };
-
-
-
 
   const handleSavedSearchSelect = async (searchName) => {
     const token = localStorage.getItem("access_token");
@@ -99,26 +105,26 @@ function Dashboard() {
         const filtersToUse = Object.fromEntries(urlParams.entries());
 
         // ✅ Step 1: Convert flat query to your filter format
-       const finalFilters = {
-  status: filtersToUse?.bid_type || "Open Solicitations",
-  keyword: filtersToUse?.bid_name || "",
-  location: filtersToUse?.state || "",
-  publishedDate: {
-    from: filtersToUse?.open_date_after || "",
-    to: filtersToUse?.open_date_before || "",
-  },
-  closingDate: {
-    from: filtersToUse?.close_date_after || "",
-    to: filtersToUse?.close_date_before || "",
-  },
-  solicitationType: filtersToUse?.solicitation?.split(",") || [],
-  naics_codes: filtersToUse?.naics_codes?.split(",") || [],
-  unspsc_codes: filtersToUse?.unspsc_codes?.split(",") || [],
-  includeKeywords: filtersToUse?.include?.split(",") || [],
-  excludeKeywords: filtersToUse?.exclude?.split(",") || [],
-};
+        const finalFilters = {
+          status: filtersToUse?.bid_type || "Open Solicitations",
+          keyword: filtersToUse?.bid_name || "",
+          location: filtersToUse?.state || "",
+          publishedDate: {
+            from: filtersToUse?.open_date_after || "",
+            to: filtersToUse?.open_date_before || "",
+          },
+          closingDate: {
+            from: filtersToUse?.close_date_after || "",
+            to: filtersToUse?.close_date_before || "",
+          },
+          solicitationType: filtersToUse?.solicitation?.split(",") || [],
+          naics_codes: filtersToUse?.naics_codes?.split(",") || [],
+          unspsc_codes: filtersToUse?.unspsc_codes?.split(",") || [],
+          includeKeywords: filtersToUse?.include?.split(",") || [],
+          excludeKeywords: filtersToUse?.exclude?.split(",") || [],
+        };
 
-console.log("Applying final filters: ", finalFilters);
+        console.log("Applying final filters: ", finalFilters);
 
         // ✅ Step 2: Set all states
         setSaveSearchFilters(finalFilters);
@@ -134,8 +140,10 @@ console.log("Applying final filters: ", finalFilters);
       console.error("❌ Failed to fetch saved search filters", err);
     }
   };
-
-
+  // useEffect(() => {
+  //   console.log(savedSearches[0])
+  //   handleSavedSearchSelect(savedSearches[0]);
+  // }, [savedSearches]);
 
   const postSaveSearch = async (data) => {
     console.log(data.filters)
@@ -222,8 +230,10 @@ console.log("Applying final filters: ", finalFilters);
       // ✅ Set only needed values in filters (remove searchName)
       const { searchName, ...filtersWithoutSearchName } = filtersToUse;
 
-      fetchSavedSearches();
+      await fetchSavedSearches();
       setSelectedSavedSearch(data.name);
+      handleSavedSearchSelect(data.name);
+
       if (searchOption === "apply") {
         setFilters(filtersWithoutSearchName);
       }
@@ -433,10 +443,9 @@ console.log("Applying final filters: ", finalFilters);
       setLoading(false);
     }
   };
-useEffect(() => {
-  console.log("Updated filters: ", filters);
-}, [filters]);
-
+  useEffect(() => {
+    console.log("Updated filters: ", filters);
+  }, [filters]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -552,22 +561,30 @@ useEffect(() => {
 
               <div className="feature-right">
                 <div className="flex gap-4">
-                  <div className="bg-btn p-4 rounded-[16px]" id="export">
+                  <div className="bg-btn p-4 rounded-[16px] cursor-pointer" onClick={handleExport} id="export">
                     <img src="export.png" className="w-6" alt="Export" />
                   </div>
                   <div className="saved-search bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium">
+
                     <select
+                      key={savedSearches.length}
                       className="bg-transparent text-white"
                       value={selectedSavedSearch}
                       onChange={(e) => handleSavedSearchSelect(e.target.value)}
                     >
-                      <option value="">My Saved Searches</option>
+                      {/* <option value="My Saved Search" className="text-black">
+                        My Saved Searches
+                      </option> */}
+
                       {savedSearches.map((search, index) => (
                         <option key={index} className="text-black" value={search}>
+                          {/* {console.log(search)} */}
                           {search}
                         </option>
                       ))}
                     </select>
+
+
                   </div>
                   <BgCover>
                     <div
@@ -588,7 +605,7 @@ useEffect(() => {
             ) : error ? (
               <div className="text-red-400 text-center py-10">{error}</div>
             ) : (
-              <BidTable bids={bids} />
+              <BidTable bids={bids} ref={tableRef} />
             )}
 
             <Pagination

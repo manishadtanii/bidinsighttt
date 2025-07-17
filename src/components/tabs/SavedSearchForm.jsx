@@ -41,7 +41,14 @@ const SavedSearchForm = ({
 
     onSubmit?.(data);
     setShowValidation(false);
+
+
+    if (isCreate) {
+    setSelectedSavedSearch(filters.searchName.trim());
+  }
   };
+
+   
 
   useEffect(() => {
     if (triggerSave) {

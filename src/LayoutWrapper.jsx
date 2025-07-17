@@ -16,9 +16,11 @@ const LayoutWrapper = ({ children }) => {
     "/industry-categories",
     "/extra-data",
     "/verification",
-    "/dashboard",
+    // "/dashboard",
     "/plan",
-    "/loader"
+    "/loader",
+    // "/summary",
+    "/pricing"
   ];
 
   const isHidden = hiddenRoutes.includes(location.pathname);

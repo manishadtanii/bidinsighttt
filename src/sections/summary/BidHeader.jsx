@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 const BidHeader = ({
   title = "No Title",
   org = "Unknown Organization",
-  location = "Unknown Location", // pass state.name here
+  location = "Unknown Location",
   postedDate = "-",
-  deadline = "2025-07-31T23:59:59Z", // fallback to ensure countdown works
+  deadline = "2025-07-31T23:59:59Z",
 }) => {
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -13,6 +13,17 @@ const BidHeader = ({
     minutes: 0,
     seconds: 0,
   });
+
+  // ✅ Format date to "Month Day, Year"
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    if (isNaN(date)) return "-";
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   useEffect(() => {
     let interval;
@@ -39,7 +50,7 @@ const BidHeader = ({
     updateCountdown();
     interval = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(interval); // ✅ cleanup
+    return () => clearInterval(interval);
   }, [deadline]);
 
   const progressPercent = Math.max(
@@ -60,9 +71,9 @@ const BidHeader = ({
             <div className="flex flex-wrap md:flex-nowrap justify-between gap-6 text-sm md:text-base">
               {[
                 { icon: "fa-map-marker-alt", label: "Location", value: location },
-                { icon: "fa-calendar-alt", label: "Posted", value: postedDate },
-                { icon: "fa-history", label: "Deadline", value: deadline },
-                { icon: "fa-external-link", label: "Open Source", value: "Yes" },
+                { icon: "fa-calendar-alt", label: "Posted", value: formatDate(postedDate) },
+                { icon: "fa-history", label: "Deadline", value: formatDate(deadline) },
+                { icon: "fa-external-link", label: "Open Source" },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center flex-col text-center gap-2">
                   <i className={`fas text-xl ${item.icon}`}></i>

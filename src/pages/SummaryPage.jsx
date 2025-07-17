@@ -6,6 +6,7 @@ import BidTracking from "../sections/summary/BidTracking";
 import AiFeature from "../sections/summary/AiFeature";
 import SimilarBids from "../sections/summary/SimilarBids";
 import api from "../utils/axios";
+// import "../custom.css"; // Ensure this is imported for custom styles
 
 function SummaryPage() {
   const { id } = useParams();
