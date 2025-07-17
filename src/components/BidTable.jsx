@@ -124,12 +124,12 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
   const renderSelect = (key) => (
     <select
       onChange={(e) => handleSort(key, e.target.value)}
-      className="bg-transparent text-white text-xs outline-none w-4"
+      className="bg-transparent  text-white text-xs outline-none w-4"
       value={sortConfig.key === key ? sortConfig.order : ""}
     >
       <option value=""></option>
-      <option value="az">A → Z</option>
-      <option value="za">Z → A</option>
+      <option value="az" className="text-blue-900 font-bold">A → Z</option>
+      <option value="za" className="text-blue-900 font-bold">Z → A</option>
     </select>
   );
 
@@ -171,22 +171,16 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
         </thead>
         <tbody>
           {data.map((bid) => {
-            const statusLabel =
-              typeof bid.status === "boolean"
-                ? bid.status
-                  ? "Active"
-                  : "Inactive"
-                : bid.status;
+            const statusLabel = bid.bid_type || "Unknown";
 
             const countdownRaw = getCountdown(bid.closing_date);
             let countdownDisplay = countdownRaw;
+
             if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
               const days = parseInt(countdownRaw.split(" ")[0]);
               const years = Math.floor(days / 365);
               const months = Math.floor((days % 365) / 30);
-              countdownDisplay = `${years ? `${years}y ` : ""}${
-                months ? `${months}m` : ""
-              }`.trim();
+              countdownDisplay = `${years ? `${years}y ` : ""}${months ? `${months}m` : ""}`.trim();
             }
 
             return (
@@ -224,9 +218,8 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
                 <td className="px-4 py-4 text-center">
                   <button>
                     <i
-                      className={`fas ${
-                        bid.followed ? "fa-minus-circle" : "fa-plus-circle"
-                      }`}
+                      className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"
+                        }`}
                     ></i>
                   </button>
                 </td>
@@ -234,6 +227,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
             );
           })}
         </tbody>
+
       </table>
     </div>
   );
