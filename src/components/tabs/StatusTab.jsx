@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 function StatusTab({
@@ -10,6 +9,10 @@ function StatusTab({
   setShowValidation,
   setTriggerSave,
 }) {
+
+
+  console.log(filters)
+
  const handleSearchClick = () => {
   const isEmpty = searchOption === "create" && !filters.searchName?.trim();
 

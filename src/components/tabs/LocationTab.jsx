@@ -60,10 +60,11 @@ const LocationTab = ({
 
     if (searchOption === "create") {
       setActiveTab("Save Search Form");
-      setShowValidation(false);
+      setTimeout(() => setTriggerSave(true), 0); // delay to allow tab switch
     } else {
-      onApply?.(); // only call onApply in dashboard mode
+      onApply?.();
     }
+
   };
 
   const handleApply = () => {

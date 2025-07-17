@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import AlertToggle from "../components/AlertToggle";
 import HeroHeading from "../components/HeroHeading";
@@ -65,6 +53,10 @@ function Dashboard() {
   const perPage = 25;
   const bidsSectionRef = useRef(null);
 
+
+
+
+
   const middle = [
     { id: 1, title: "Total Bids", num: totalResults },
     { id: 2, title: "Active Bids", num: count },
@@ -73,6 +65,9 @@ function Dashboard() {
     { id: 5, title: "Followed", num: "0/25" },
   ];
 
+
+
+
   const fetchSavedSearches = async () => {
     const token = localStorage.getItem("access_token");
     try {
@@ -80,6 +75,7 @@ function Dashboard() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const saved = res.data.map((item) => item.name);
+      console.log(saved)
       setSavedSearches(saved);
     } catch (err) {
       console.error("Failed to fetch saved searches", err);
@@ -93,7 +89,6 @@ function Dashboard() {
       const res = await api.get("/bids/saved-filters/", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-
       const matched = res.data.find((item) => item.name === searchName);
 
       if (matched) {
@@ -187,15 +182,21 @@ function Dashboard() {
 
       // ✅ Immediately apply saved search
       setSelectedSavedSearch(data.name);
-      setFilters(filtersToUse);
-      setSaveSearchFilters(filtersToUse);
+      setFilters(filtersToUse);             // for <FilterPanel />
+      setSaveSearchFilters(filtersToUse);   // for <FilterPanelSaveSearch />
       setSearchOption("replace");
-      setSaveSearchToggle(false); // close the modal
+      setSaveSearchToggle(false);           // Close modal
+
+      fetchBids();                          // ✅ Refetch bids instantly (main fix)
 
     } catch (err) {
       console.error("❌ Failed to save search", err);
     }
   };
+
+
+
+
 
 
   const fetchBids = useCallback(async () => {
@@ -273,6 +274,12 @@ function Dashboard() {
     }
   }, [currentPage, filters, searchText, navigate]);
 
+
+
+
+
+
+
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       fetchBids();
@@ -314,7 +321,7 @@ function Dashboard() {
 
       {saveSearchToggle && (
         <FilterPanelSaveSearch
-          filters={saveSearchFilters} 
+          filters={saveSearchFilters}
           setFilters={setSaveSearchFilters}
           onClose={() => setSaveSearchToggle(false)}
           onSave={postSaveSearch}
