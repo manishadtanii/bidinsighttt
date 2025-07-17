@@ -1,5 +1,3 @@
-
-
 import React, { useEffect } from "react";
 
 const SavedSearchForm = ({
@@ -19,24 +17,25 @@ const SavedSearchForm = ({
   triggerSave = false,
   setTriggerSave = () => {},
 }) => {
-  const savedSearches = Array.isArray(savedFilters)
-    ? savedFilters.map((item) => item.search_name || item.name)
-    : [];
+  const savedSearches = Array.isArray(savedFilters) ? savedFilters : [];
 
   const handleFormSubmit = () => {
-    if (searchOption === "replace" && !selectedSavedSearch) {
-      alert("Please select a saved search to replace.");
+    const isCreate = searchOption === "create";
+    const isReplace = searchOption === "replace";
+
+    if (isCreate && !filters.searchName?.trim()) {
+      setShowValidation(true);
       return;
     }
 
-    if (searchOption === "create" && !filters.searchName.trim()) {
-      setShowValidation(true);
+    if (isReplace && !selectedSavedSearch?.trim()) {
+      alert("Please select a saved search to replace.");
       return;
     }
 
     const data = {
       action: searchOption,
-      name: searchOption === "create" ? filters.searchName : selectedSavedSearch,
+      name: isCreate ? filters.searchName.trim() : selectedSavedSearch.trim(),
       isDefault: defaultSearch,
     };
 
@@ -44,21 +43,17 @@ const SavedSearchForm = ({
     setShowValidation(false);
   };
 
-  // Form submit by button
+  useEffect(() => {
+    if (triggerSave) {
+      handleFormSubmit();
+      setTriggerSave(false);
+    }
+  }, [triggerSave]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleFormSubmit();
   };
-
-  // Auto trigger from other tabs
-useEffect(() => {
-  if (triggerSave) {
-    handleFormSubmit(); // ✅ correct method
-    setTriggerSave(false);
-  }
-}, [triggerSave]);
-
-
 
   return (
     <form
@@ -68,7 +63,7 @@ useEffect(() => {
       <div>
         <h2 className="font-medium mb-4 font-inter text-p">Search</h2>
 
-        {/* Radio options */}
+        {/* Radio buttons */}
         <div className="space-y-2">
           <label className="flex items-center space-x-2">
             <input
@@ -95,52 +90,58 @@ useEffect(() => {
           </label>
         </div>
 
-        {/* Input or Dropdown */}
-        <div className="mt-8">
-          <label className="block font-medium mb-4 font-inter text-p">Search Name</label>
+        {/* Create: Input field */}
+        {searchOption === "create" && (
+          <>
+            <label className="block font-medium mb-4 font-inter text-p mt-8">Search Name</label>
+            <input
+              type="text"
+              placeholder="Enter search name"
+              value={filters.searchName || ""}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  searchName: e.target.value,
+                }))
+              }
+              className={`border ${
+                showValidation && !filters.searchName?.trim()
+                  ? "border-red-500"
+                  : "border-[#273BE280]"
+              } rounded-lg px-4 py-2 font-inter text-xl`}
+            />
+            {showValidation && !filters.searchName?.trim() && (
+              <p className="text-red-500 text-sm mt-1">This field is required</p>
+            )}
+          </>
+        )}
 
-          {searchOption === "create" ? (
-            <>
-              <input
-                type="text"
-                placeholder="Enter search name"
-                value={filters.searchName}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    searchName: e.target.value,
-                  }))
-                }
-                className={`border ${
-                  showValidation && !filters.searchName?.trim()
-                    ? "border-red-500"
-                    : "border-[#273BE280]"
-                } rounded-lg px-4 py-2 font-inter text-xl`}
-              />
-              {showValidation && !filters.searchName?.trim() && (
-                <p className="text-red-500 text-sm mt-1">This field is required</p>
-              )}
-            </>
-          ) : (
-            <div className="border border-primary bg-btn rounded-full px-4 py-2 inline-block">
-              <select
-                value={selectedSavedSearch}
-                onChange={(e) => setSelectedSavedSearch(e.target.value)}
-              >
-                <option value="" disabled hidden>
-                  My Saved Searches
+        {/* Replace: Dropdown */}
+        {searchOption === "replace" && (
+          <div className="form-group mt-8">
+            <label
+              htmlFor="existingSearch"
+              className="font-medium mb-4 font-inter text-p block"
+            >
+              Replace an existing saved search
+            </label>
+            <select
+              id="existingSearch"
+              className="form-control border border-primary rounded-lg px-4 py-2 font-inter text-xl"
+              value={selectedSavedSearch}
+              onChange={(e) => setSelectedSavedSearch(e.target.value)}
+            >
+              <option value="">Select saved search</option>
+              {savedSearches.map((name, index) => (
+                <option key={index} value={name}>
+                  {name}
                 </option>
-                {savedSearches.map((search) => (
-                  <option key={search} value={search}>
-                    {search}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
+              ))}
+            </select>
+          </div>
+        )}
 
-        {/* Default checkbox */}
+        {/* Checkbox */}
         <div className="mt-6 flex items-center space-x-2">
           <input
             type="checkbox"
@@ -155,7 +156,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* Footer buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
           type="button"

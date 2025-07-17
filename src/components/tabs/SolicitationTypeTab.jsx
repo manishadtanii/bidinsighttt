@@ -4,11 +4,12 @@ import api from "../../utils/axios";
 
 const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = () => { } }) => {
   const [options, setOptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // ✅ Search state
 
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await api.get("/bids/solicitation/"); // 👈 Replace with your actual endpoint
+        const res = await api.get("/bids/solicitation/");
         const sorted = res.data.sort((a, b) => a.name.localeCompare(b.name));
         setOptions(sorted);
       } catch (err) {
@@ -22,7 +23,6 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
     ? filters.solicitationType
     : [];
 
-
   const toggleSelect = (item) => {
     const isAlreadySelected = selectedNames.includes(item.name);
     const updated = isAlreadySelected
@@ -31,10 +31,9 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
 
     setFilters((prev) => ({
       ...prev,
-      solicitationType: updated, // ✅ Fixed here
+      solicitationType: updated,
     }));
   };
-
 
   const removeSelected = (name) => {
     const updated = selectedNames.filter((n) => n !== name);
@@ -64,9 +63,13 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
     } else {
       const allNames = options.map((item) => item.name);
       setFilters((prev) => ({ ...prev, solicitationType: allNames }));
-
     }
   };
+
+  // ✅ Filtered data based on search term
+  const filteredOptions = options.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
@@ -75,6 +78,8 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
         <div className="relative w-[340px]">
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // ✅ On change handler
             placeholder="Search titles or organization or location"
             className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
           />
@@ -128,9 +133,9 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
           </button>
         </div>
 
-        {/* Bid Type Items */}
+        {/* Filtered Options */}
         <div className="divide-y divide-[#273BE280]">
-          {options.map((item) => (
+          {filteredOptions.map((item) => (
             <label
               key={item.name}
               className="flex items-center px-4 py-2 cursor-pointer text-[22px] font-inter"

@@ -40,6 +40,9 @@ header {
   background-repeat: no-repeat;
   background-size: cover;
 }
+.summary{
+  @apply bg-summary bg-image border border-white text-white p-6 rounded-2xl;
+}
 /* .bg-primary {
   background: #273be2;
 }
@@ -298,84 +301,12 @@ p {
   background-color: #999999;
   transform: translateX(94%);
 }
-
-
-
-
-
-
-
-
-
-
-
-
- body {
-      margin: 0;
-      overflow: hidden;
-    }
-    canvas {
-      display: block;
-    }
-
-
-#loader {
-  position: fixed;
-  
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 1000;
-  -webkit-transition: 0.3s ease opacity;
-  transition: 0.3s ease opacity;
-}
-#loader .wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#loader .loading {
-  color: #fff;
-  --duration: 1000ms;
-  font-family: "Inter Tight", sans-serif;
-  font-size: 24px;
-  position: relative;
-  white-space: nowrap;
-  user-select: none;
-}
-#loader .loading span {
-  --x: 0;
-  --y: 0;
-  --move-y: 0;
-  --move-y-s: 0;
-  --delay: 0ms;
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  text-indent: calc(var(--x) * -1);
-  overflow: hidden;
-  transform: translate(var(--x), var(--y));
-}
-#loader .loading.start div {
+.tooltip{
+  transition: .5s;
   opacity: 0;
+  visibility: hidden;
 }
-#loader .loading.start span {
-  animation: move var(--duration) ease-in-out var(--delay);
-}
-
-@keyframes move {
-  30% {
-    transform: translate(var(--x), var(--move-y));
-  }
-  82% {
-    transform: translate(var(--x), var(--move-y-s));
-  }
+.tooltip-wrapper:hover .tooltip{
+  opacity: 1;
+  visibility: visible;
 }

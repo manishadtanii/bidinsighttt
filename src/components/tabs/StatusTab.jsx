@@ -9,26 +9,22 @@ function StatusTab({
   setShowValidation,
   setTriggerSave,
 }) {
+  const handleSearchClick = () => {
+    const isCreating = searchOption === "create";
+    const nameMissing = !filters.searchName?.trim();
 
+    if (isCreating && nameMissing) {
+      setShowValidation?.(true);
+      setActiveTab?.("Save Search Form");
+      return;
+    }
 
-  console.log(filters)
-
- const handleSearchClick = () => {
-  const isEmpty = searchOption === "create" && !filters.searchName?.trim();
-
-  if (isEmpty) {
-    setShowValidation?.(true);
-    setActiveTab?.("Save Search Form");
-    return;
-  }
-
-  if (searchOption === "create") {
-    setTriggerSave?.(true); // SaveSearch mode
-  } else {
-    onApply?.(); // Filter mode: CLOSE FILTER PANEL
-  }
-};
-
+    if (isCreating) {
+      setTriggerSave?.(true); // Will be handled in SavedSearchForm
+    } else {
+      onApply?.(); // Just apply filters, no Save
+    }
+  };
 
   const handleCancel = () => {
     setFilters((prev) => ({
@@ -66,7 +62,7 @@ function StatusTab({
             </div>
           </div>
 
-          {/* Personalised */}
+          {/* Personalised Filter */}
           <div>
             <h2 className="text-p font-inter font-medium mb-2">Personalised</h2>
             <label className="flex items-center space-x-2 cursor-pointer">
@@ -74,9 +70,12 @@ function StatusTab({
                 type="radio"
                 name="personalised"
                 value="My Invitations Only"
-                checked={filters.personalised === 'My Invitations Only'}
+                checked={filters.personalised === "My Invitations Only"}
                 onChange={() =>
-                  setFilters((prev) => ({ ...prev, personalised: 'My Invitations Only' }))
+                  setFilters((prev) => ({
+                    ...prev,
+                    personalised: "My Invitations Only",
+                  }))
                 }
                 className="accent-purple-600"
               />
@@ -86,7 +85,7 @@ function StatusTab({
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* Footer Buttons */}
       <div className="flex gap-4 pt-10">
         <button
           className="border-[2px] px-10 py-3 rounded-[20px] font-archivo text-xl transition-all"

@@ -1,20 +1,19 @@
-
-
-
-import React, { useState, useEffect } from "react";
-import SaveSearchForm from "./tabs/SavedSearchForm";
+import React, { useState } from "react";
+import SavedSearchForm from "./tabs/SavedSearchForm";
 import StatusTab from "./tabs/StatusTab";
-import CategoriesTab from "./tabs/CategoriesTab";
 import KeywordTab from "./tabs/KeywordTab";
 import LocationTab from "./tabs/LocationTab";
 import PublishedDateTab from "./tabs/PublishedDateTab";
 import ClosingDateTab from "./tabs/ClosingDateTab";
 import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
+import NAICSCode from "./tabs/NAICSCode";
+import UNSPSCCode from "./tabs/UNSPSCCode";
 
 const tabs = [
   "Save Search Form",
   "Status",
-  "Categories",
+  "NAICSCode",
+  "UNSPSCCode",
   "Keyword",
   "Location",
   "Published Date",
@@ -29,23 +28,15 @@ function FilterPanelSaveSearch({
   onSave,
   selectedSearch = "",
   mode = "create",
+  savedSearches = [],
 }) {
   const [activeTab, setActiveTab] = useState("Save Search Form");
   const [defaultSearch, setDefaultSearch] = useState(false);
   const [searchOption, setSearchOption] = useState(mode);
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(selectedSearch);
-
   const [showValidation, setShowValidation] = useState(false);
   const [triggerSave, setTriggerSave] = useState(false);
 
-  // Sync selectedSearch into form if mode is replace
-  useEffect(() => {
-    if (mode === "replace" && selectedSearch) {
-      setFilters((prev) => ({ ...prev, searchName: selectedSearch }));
-    }
-  }, [mode, selectedSearch, setFilters]);
-
-  // Called only by SaveSearchForm on final submit
   const handleSaveSearchSubmit = (data) => {
     if (!data.name?.trim()) {
       setShowValidation(true);
@@ -63,7 +54,6 @@ function FilterPanelSaveSearch({
     onClose();
   };
 
-  // Trigger from any tab to Save Form
   const handleSaveSearchClickFromAnyTab = () => {
     if (!filters.searchName?.trim()) {
       setShowValidation(true);
@@ -83,7 +73,12 @@ function FilterPanelSaveSearch({
       publishedDate: { from: "", to: "" },
       closingDate: { from: "", to: "" },
       solicitationType: [],
+      naics_codes: [],
+      unspsc_codes: [],
+      includeKeywords: [],
+      excludeKeywords: [],
     });
+
     setActiveTab("Save Search Form");
     setDefaultSearch(false);
     setSelectedSavedSearch("");
@@ -105,7 +100,7 @@ function FilterPanelSaveSearch({
     switch (activeTab) {
       case "Save Search Form":
         return (
-          <SaveSearchForm
+          <SavedSearchForm
             {...sharedProps}
             onCancel={onClose}
             onSubmit={handleSaveSearchSubmit}
@@ -119,12 +114,15 @@ function FilterPanelSaveSearch({
             setShowValidation={setShowValidation}
             triggerSave={triggerSave}
             setTriggerSave={setTriggerSave}
+            savedFilters={savedSearches}
           />
         );
       case "Status":
         return <StatusTab {...sharedProps} />;
-      case "Categories":
-        return <CategoriesTab {...sharedProps} />;
+      case "NAICSCode":
+        return <NAICSCode {...sharedProps} />;
+      case "UNSPSCCode":
+        return <UNSPSCCode {...sharedProps} />;
       case "Keyword":
         return <KeywordTab {...sharedProps} />;
       case "Location":
@@ -141,8 +139,7 @@ function FilterPanelSaveSearch({
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-screen z-50 flex">
-      {/* Sidebar */}
+    <div className="fixed top-0 left-0 w-full h-screen z-50 flex">
       <div className="w-[30%] bg-blue text-white p-10 flex flex-col justify-between">
         <div>
           <div className="flex justify-between items-end mb-8">
@@ -177,7 +174,6 @@ function FilterPanelSaveSearch({
         </button>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
         <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
       </div>
@@ -186,4 +182,3 @@ function FilterPanelSaveSearch({
 }
 
 export default FilterPanelSaveSearch;
-

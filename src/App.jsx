@@ -17,6 +17,8 @@ import Verification from "./pages/Verification";
 import Dashboard from "./pages/Dashboard";
 import Plan from "./pages/Plan";
 import Loader from "./components/Loader";
+import SummaryPage from "./pages/SummaryPage";
+import Pricing from "./pages/Pricing";
 
 const App = () => {
   useEffect(() => {
@@ -25,6 +27,7 @@ const App = () => {
       once: true,
     });
   }, []);
+
   return (
     // <Router>
       <LayoutWrapper>
@@ -42,6 +45,14 @@ const App = () => {
           <Route path="/email-verification" element={<EmailVerification />} />
           <Route path="/verification" element={<Verification />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Remove or keep the base /summary route if needed */}
+          {/* <Route path="/summary" element={<SummaryPage />} /> */}
+
+          {/* Dynamic route for bid detail page */}
+          <Route path="/summary/:id" element={<SummaryPage />} />
+
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
@@ -49,10 +60,7 @@ const App = () => {
   );
 };
 
-// hello
 export default App;
-
-
 
 
 

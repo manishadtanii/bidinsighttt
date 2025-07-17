@@ -1,9 +1,9 @@
-// TagInput.jsx
 import React, { useState, useRef, useEffect } from 'react';
 
 export default function TagInput({
   placeholder = "Type and hit Enter",
-  defaultTags = []
+  defaultTags = [],
+  onTagsChange = () => {} // ✅ New: fallback no-op
 }) {
   const [tags, setTags] = useState(defaultTags);
   const textareaRef = useRef(null);
@@ -11,6 +11,11 @@ export default function TagInput({
   useEffect(() => {
     setTags(defaultTags);
   }, [defaultTags]);
+
+  // ✅ Inform parent when tags change
+  useEffect(() => {
+    onTagsChange(tags);
+  }, [tags]);
 
   const addTag = (value) => {
     const trimmed = value.trim();
@@ -39,7 +44,7 @@ export default function TagInput({
       {tags.map((tag, i) => (
         <span
           key={i}
-          className="flex items-center  border border-primary rounded-full text-[16px] px-4 py-2"
+          className="flex items-center border border-primary rounded-full text-[16px] px-4 py-2"
         >
           {tag}
           <button
@@ -54,7 +59,6 @@ export default function TagInput({
       <textarea
         ref={textareaRef}
         rows={6}
-
         onKeyDown={handleKeyDown}
         className="flex-1 min-w-[100px] bg-transparent outline-none resize-none text-sm leading-tight"
         placeholder={placeholder}
@@ -62,6 +66,3 @@ export default function TagInput({
     </div>
   );
 }
-
-
- 

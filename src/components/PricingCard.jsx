@@ -3,7 +3,7 @@ import React from "react";
 
 function PricingCard({ title, price, features, delay }) {
   return (
-    <div className="bg-blue text-white p-6 rounded-3xl shadow-lg flex flex-col" data-aos="fade-up" data-aos-delay={delay}>
+    <div className="bg-blue text-white p-6 rounded-3xl shadow-lg flex flex-col border border-white border-1" data-aos="fade-up" data-aos-delay={delay}>
       <div className="mb-4 w-20 h-20">
         <img src="price-top.png" className="w-full" alt="" />
       </div>
@@ -15,8 +15,9 @@ function PricingCard({ title, price, features, delay }) {
         </div>
       </div>
       <p className="text-xl text-start mb-3 font-t">Lorem ipsum dolor sit amet</p>
-      <button className="my-3">
-        <img src="price-btn.png" alt="" />
+      <button className="bg-btn border border-white text-white p-4 font-inter font-medium rounded-2xl my-3">
+        {/* <img src="price-btn.png" alt="" /> */}
+        UpGrade to Plus
       </button>
       <div className="body-t font-t font-semibold my-2 text-start">
         Lorem ipsum dolor sit amet

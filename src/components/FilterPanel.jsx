@@ -7,11 +7,16 @@ import LocationTab from './tabs/LocationTab';
 import PublishedDateTab from './tabs/PublishedDateTab';
 import ClosingDateTab from './tabs/ClosingDateTab';
 import SolicitationTypeTab from './tabs/SolicitationTypeTab';
+import UNSPSCCode from "./tabs/UNSPSCCode";
+import NAICSCode from "./tabs/NAICSCode";
 
 const tabs = [
   "Status",
-  "Categories",
+  "NAICSCode",
+  "UNSPSCCode",
   "Keyword",
+  // "Include Keywords",
+  // "Exclude Keywords",
   "Location",
   "Published Date",
   "Closing Date",
@@ -30,21 +35,45 @@ function FilterPanel({ filters, setFilters, onClose }) {
   const commonProps = {
     filters,
     setFilters,
-    onApply: onClose, // passed to every tab
-    searchOption: "filter", // optional: ensures tabs know this is not "create"
-    setShowValidation: () => {}, // no-op for filter mode
-    setTriggerSave: () => {},    // no-op for filter mode
-    setActiveTab: setActiveTab   // allows tab to switch back if needed
+    onApply: onClose,
+    searchOption: "filter",
+    setShowValidation: () => {},
+    setTriggerSave: () => {},
+    setActiveTab,
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      status: "",
+      categories: [],
+      keyword: "",
+      location: "",
+      publishedDate: { from: "", to: "" },
+      closingDate: { from: "", to: "" },
+      solicitationType: [],
+      naics_codes: [],
+      unspsc_codes: [],
+      includeKeywords: [],
+      excludeKeywords: [],
+    });
+    setActiveTab("Status");
+    localStorage.setItem("lastActiveFilterTab", "Status");
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "Status":
         return <StatusTab {...commonProps} />;
-      case "Categories":
-        return <CategoriesTab {...commonProps} />;
+      case "NAICSCode":
+        return <NAICSCode {...commonProps} />;
+      case "UNSPSCCode":
+        return <UNSPSCCode {...commonProps} />;
       case "Keyword":
-        return <KeywordTab {...commonProps} />;
+        return <KeywordTab {...commonProps} mode="keyword" />;
+      case "Include Keywords":
+        return <KeywordTab {...commonProps} mode="include" />;
+      case "Exclude Keywords":
+        return <KeywordTab {...commonProps} mode="exclude" />;
       case "Location":
         return <LocationTab {...commonProps} />;
       case "Published Date":
@@ -59,7 +88,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-screen z-50 flex">
+    <div className="fixed top-0 left-0 w-full h-screen z-[500] flex">
       {/* Sidebar */}
       <div className="w-[30%] bg-blue text-white p-10 flex flex-col justify-between">
         <div>
@@ -69,6 +98,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
               Close ✕
             </button>
           </div>
+
           <ul className="space-y-4">
             {tabs.map((tab) => (
               <li
@@ -80,34 +110,21 @@ function FilterPanel({ filters, setFilters, onClose }) {
                   <span>{tab}</span>
                   <span>{activeTab === tab ? "−" : "+"}</span>
                 </div>
-                <img src="line.png" className="mt-3" alt="" />
+                <img src="line.png" className="mt-3" alt="divider" />
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Clear All Button */}
         <button
-          onClick={() => {
-            setFilters({
-              status: "",
-              categories: [],
-              keyword: "",
-              location: "",
-              publishedDate: { from: "", to: "" },
-              closingDate: { from: "", to: "" },
-              solicitationType: [],
-            });
-            setActiveTab("Status");
-            localStorage.setItem("lastActiveFilterTab", "Status");
-          }}
+          onClick={clearAllFilters}
           className="text-p underline font-inter text-right"
         >
           Clear All
         </button>
       </div>
 
-      {/* Tab Content */}
+      {/* Content Area */}
       <div className="flex-1 bg-white flex flex-col justify-between w-[70%]">
         <div className="flex-1 overflow-y-auto">{renderTabContent()}</div>
       </div>

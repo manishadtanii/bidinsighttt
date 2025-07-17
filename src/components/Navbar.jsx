@@ -29,7 +29,7 @@ const Navbar = () => {
           to="/"
           className="flex items-center space-x-2  bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md"
         >
-          <img src="icon.png" className="w-5 h-5" />
+          <img src="./icon.png" className="w-5 h-5" />
           <span className="text-lg font-semibold font-h">BidInsight</span>
         </Link>
 
