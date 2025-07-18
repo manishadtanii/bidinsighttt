@@ -60,7 +60,8 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
-      {/* 🔍 Search */}
+      <div className="">
+        {/* 🔍 Search */}
       <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
@@ -156,6 +157,7 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
             </div>
           );
         })}
+      </div>
       </div>
 
       {/* 🟩 Buttons */}

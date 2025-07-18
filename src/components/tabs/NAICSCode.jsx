@@ -53,7 +53,8 @@ const NAICSCode = ({ filters, setFilters, onApply }) => {
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14 overflow-y-auto">
-      {/* Search */}
+      <div className="">
+        {/* Search */}
       <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
@@ -125,6 +126,7 @@ const NAICSCode = ({ filters, setFilters, onApply }) => {
           })}
         </div>
       )}
+      </div>
 
       {/* Action Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">

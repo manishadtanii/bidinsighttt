@@ -92,7 +92,8 @@ const LocationTab = ({
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
-      <div className="flex justify-end mb-8">
+      <div className="">
+        <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
             type="text"
@@ -157,6 +158,7 @@ const LocationTab = ({
             <div className="text-[16px]">{state.name}</div>
           </label>
         ))}
+      </div>
       </div>
 
       {/* Buttons */}
