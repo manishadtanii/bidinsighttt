@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TagInput from './TagInput';
 
 function KeywordTab({
@@ -10,30 +10,49 @@ function KeywordTab({
   setShowValidation,
   setTriggerSave,
 }) {
-  const includeTags = filters.includeKeywords || [];
-  const excludeTags = filters.excludeKeywords || [];
+  const [showExampleInclude, setShowExampleInclude] = useState(true);
+  const [showExampleExclude, setShowExampleExclude] = useState(true);
+
+  const defaultIncludeExample = ['example include'];
+  const defaultExcludeExample = ['example exclude'];
+
+  const includeTags = showExampleInclude && (!filters.includeKeywords || filters.includeKeywords.length === 0)
+    ? defaultIncludeExample
+    : filters.includeKeywords;
+
+  const excludeTags = showExampleExclude && (!filters.excludeKeywords || filters.excludeKeywords.length === 0)
+    ? defaultExcludeExample
+    : filters.excludeKeywords;
 
   const handleIncludeChange = (tags) => {
+    const realTags = tags.includes(defaultIncludeExample[0]) ? tags.filter(tag => tag !== defaultIncludeExample[0]) : tags;
+
+    if (showExampleInclude) setShowExampleInclude(false); // turn off example
+
     setFilters((prev) => ({
       ...prev,
-      includeKeywords: tags,
+      includeKeywords: realTags,
     }));
   };
 
   const handleExcludeChange = (tags) => {
+    const realTags = tags.includes(defaultExcludeExample[0]) ? tags.filter(tag => tag !== defaultExcludeExample[0]) : tags;
+
+    if (showExampleExclude) setShowExampleExclude(false); // turn off example
+
     setFilters((prev) => ({
       ...prev,
-      excludeKeywords: tags,
+      excludeKeywords: realTags,
     }));
   };
 
   const handleSearchClick = () => {
-    const isCreateMode = searchOption === "create";
+    const isCreateMode = searchOption === 'create';
     const isEmpty = isCreateMode && !filters.searchName?.trim();
 
     if (isEmpty) {
       setShowValidation?.(true);
-      setActiveTab?.("Save Search Form");
+      setActiveTab?.('Save Search Form');
       return;
     }
 
@@ -46,7 +65,7 @@ function KeywordTab({
 
   const handleCancel = () => {
     setShowValidation?.(false);
-    setActiveTab?.("Save Search Form");
+    setActiveTab?.('Save Search Form');
   };
 
   return (
@@ -56,7 +75,7 @@ function KeywordTab({
         <div className="mb-6">
           <h3 className="font-semibold block font-inter text-p mb-4">Include</h3>
           <TagInput
-            placeholder="Add keywords…"
+            placeholder="Add keywords…   eg: 'sustainability'"
             defaultTags={includeTags}
             onTagsChange={handleIncludeChange}
           />
@@ -66,7 +85,7 @@ function KeywordTab({
         <div className="mb-6">
           <h3 className="font-semibold block font-inter text-p mb-4">Exclude</h3>
           <TagInput
-            placeholder="Add keywords…"
+            placeholder="Add keywords…  eg: 'sustainability'"
             defaultTags={excludeTags}
             onTagsChange={handleExcludeChange}
           />

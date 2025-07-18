@@ -174,13 +174,36 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
             const statusLabel = bid.bid_type || "Unknown";
 
             const countdownRaw = getCountdown(bid.closing_date);
-            let countdownDisplay = countdownRaw;
+let countdownDisplay = countdownRaw;
 
-            if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
-              const days = parseInt(countdownRaw.split(" ")[0]);
-              const years = Math.floor(days / 365);
-              const months = Math.floor((days % 365) / 30);
-              countdownDisplay = `${years ? `${years}y ` : ""}${months ? `${months}m` : ""}`.trim();
+if (bid.status === false) {
+  // ✅ Show "Closed" directly for inactive
+  countdownDisplay = "Closed";
+} else if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
+  const daysMatch = countdownRaw.match(/\d+/);
+  const days = daysMatch ? parseInt(daysMatch[0], 10) : 0;
+
+  const years = Math.floor(days / 365);
+  const months = Math.floor((days % 365) / 30);
+  const remainingDays = days % 30;
+
+  let countdownParts = [];
+
+  if (years > 0) countdownParts.push(`${years}y`);
+  if (months > 0) countdownParts.push(`${months}m`);
+
+  // ✅ Only show days if no years or months
+  if (years === 0 && months === 0) {
+    countdownParts.push(`${remainingDays}d`);
+  }
+
+  countdownDisplay = countdownParts.join(" ");
+}
+
+
+            // ✅ If bid is inactive, force "Closed"
+            if (bid.status === false) {
+              countdownDisplay = "Closed";
             }
 
             return (
@@ -201,10 +224,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
                 <td className="px-4 py-4 font-medium font-inter">
                   {formatDate(bid.closing_date)}
                 </td>
-                <td
-                  className="px-4 py-4 font-medium font-inter"
-                  title={countdownRaw}
-                >
+                <td className="px-4 py-4 font-medium font-inter" title={countdownRaw}>
                   {countdownDisplay}
                 </td>
                 <td className="px-4 py-4 font-medium font-inter">
@@ -218,14 +238,14 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
                 <td className="px-4 py-4 text-center">
                   <button>
                     <i
-                      className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"
-                        }`}
+                      className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"}`}
                     ></i>
                   </button>
                 </td>
               </tr>
             );
           })}
+
         </tbody>
 
       </table>

@@ -8,6 +8,8 @@ import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -59,6 +61,19 @@ function Dashboard() {
   const [activeFilterTab, setActiveFilterTab] = useState(() => localStorage.getItem("lastActiveFilterTab") || "Status");
   const [selectedSavedSearch, setSelectedSavedSearch] = useState("");
   const [searchOption, setSearchOption] = useState("create");
+  const [filtersRestored, setFiltersRestored] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+
+
+  useEffect(() => {
+    localStorage.setItem("dashboardFilters", JSON.stringify(filters));
+  }, [filters]);
+
+  useEffect(() => {
+    localStorage.setItem("dashboardAppliedFilters", JSON.stringify(appliedFilters));
+  }, [appliedFilters]);
+
 
   const perPage = 25;
   const bidsSectionRef = useRef(null);
@@ -78,6 +93,43 @@ function Dashboard() {
   };
 
   // list karraha hai only
+
+  useEffect(() => {
+    const restoreFilters = () => {
+      const storedFilters = localStorage.getItem("dashboardFilters");
+      const storedAppliedFilters = localStorage.getItem("dashboardAppliedFilters");
+
+      if (storedFilters) {
+        try {
+          setFilters(JSON.parse(storedFilters));
+        } catch (e) {
+          console.error("❌ Failed to parse storedFilters", e);
+        }
+      }
+
+      if (storedAppliedFilters) {
+        try {
+          setAppliedFilters(JSON.parse(storedAppliedFilters));
+        } catch (e) {
+          console.error("❌ Failed to parse storedAppliedFilters", e);
+        }
+      }
+
+      setFiltersRestored(true);
+    };
+
+    restoreFilters();
+
+    // Re-run when window regains focus (user returns from summary page)
+    window.addEventListener("focus", restoreFilters);
+
+    return () => {
+      window.removeEventListener("focus", restoreFilters);
+    };
+  }, []);
+
+
+
   const fetchSavedSearches = async () => {
     const token = localStorage.getItem("access_token");
     try {
@@ -140,10 +192,8 @@ function Dashboard() {
       console.error("❌ Failed to fetch saved search filters", err);
     }
   };
-  // useEffect(() => {
-  //   console.log(savedSearches[0])
-  //   handleSavedSearchSelect(savedSearches[0]);
-  // }, [savedSearches]);
+
+  
 
   const postSaveSearch = async (data) => {
     console.log(data.filters)
@@ -443,16 +493,18 @@ function Dashboard() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    console.log("Updated filters: ", filters);
-  }, [filters]);
+
 
   useEffect(() => {
+    if (!filtersRestored) return;
+
     const delayDebounce = setTimeout(() => {
       fetchBids();
     }, 600);
+
     return () => clearTimeout(delayDebounce);
-  }, [appliedFilters, currentPage, searchText]);
+  }, [appliedFilters, currentPage, searchText, filtersRestored]);
+
 
   useEffect(() => {
     fetchSavedSearches();

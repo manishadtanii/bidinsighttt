@@ -2,34 +2,44 @@ import React, { useEffect, useState } from "react";
 
 const PublishedDateTab = ({
   filters = {},
-  setFilters = () => {},
-  onApply = () => {},
+  setFilters = () => { },
+  onApply = () => { },
   searchOption = "create",
-  setShowValidation = () => {},
-  setActiveTab = () => {},
-  setTriggerSave = () => {},
+  setShowValidation = () => { },
+  setActiveTab = () => { },
+  setTriggerSave = () => { },
 }) => {
   const { from = "", to = "" } = filters.publishedDate || {};
   const today = new Date().toISOString().slice(0, 10);
   const [manualSelected, setManualSelected] = useState("");
 
-  useEffect(() => {
-    if (!from || !to) {
-      setManualSelected("timeline");
-    } else if (from === to) {
-      setManualSelected("date");
-    } else {
-      const diff = Math.floor(
-        (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
-      );
-      const toDate = new Date(to).toISOString().slice(0, 10);
-      if (toDate === today && [7, 30, 90].includes(diff)) {
-        setManualSelected("within");
-      } else {
-        setManualSelected("timeline");
-      }
-    }
-  }, [from, to]);
+   useEffect(() => {
+  const isValidDate = (dateStr) => !isNaN(new Date(dateStr));
+
+  if (!isValidDate(from) || !isValidDate(to)) {
+    setManualSelected("timeline");
+    return;
+  }
+
+  if (from === to) {
+    setManualSelected("date");
+    return;
+  }
+
+  const diff = Math.floor(
+    (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
+  );
+
+  const toDate = new Date(to).toISOString().slice(0, 10);
+
+  if (toDate === today && [7, 30, 90].includes(diff)) {
+    setManualSelected("within");
+  } else {
+    setManualSelected("timeline");
+  }
+   }, [from, to]);
+
+
 
   const handleRadioChange = (value) => {
     setManualSelected(value);
@@ -118,12 +128,11 @@ const PublishedDateTab = ({
               disabled={manualSelected !== "within"}
               className="border border-gray-300 rounded-md font-inter text-xl px-2 py-1 w-[200px]"
               value={
-                manualSelected === "within"
-                  ? Math.floor(
-                      (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24)
-                    )
+                manualSelected === "within" && from && to && !isNaN(new Date(from)) && !isNaN(new Date(to))
+                  ? Math.floor((new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24))
                   : ""
               }
+
               onChange={(e) => {
                 const days = parseInt(e.target.value);
                 const past = new Date();
