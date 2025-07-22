@@ -111,7 +111,7 @@ const LocationTab = ({
 
       {/* Selected */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-p font-medium">
+        <h2 className="text-p font-medium font-inter">
           Selected States <span className="text-primary">({selected.length})</span>
         </h2>
         {selected.length > 0 && (
@@ -143,7 +143,7 @@ const LocationTab = ({
 
       {/* States List */}
       <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
-        <div className="font-semibold text-md p-2 border-b">States</div>
+        <div className="text-p font-medium font-inter border-b px-4 py-3">States</div>
         {filteredStates.map((state) => (
           <label
             key={state.name}

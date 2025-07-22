@@ -148,7 +148,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
         <thead>
           <tr className="text-white/80 text-xs border-b border-white/20">
             <th className="px-4 py-2 font-inter text-lg">
-              Jurisdiction {renderSelect("jurisdiction")}
+              Entity Type {renderSelect("jurisdiction")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
               Bid Name {renderSelect("bid_name")}
@@ -190,7 +190,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
                 onClick={() => handleRowClick(bid.id)}
               >
                 <td className="px-4 py-4 font-semibold font-inter">
-                  {truncate(bid.jurisdiction)}
+                  {truncate(bid.entity_type)}
                 </td>
                 <td className="px-4 py-4 font-medium font-inter">
                   {truncate(bid.bid_name)}

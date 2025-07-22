@@ -121,17 +121,17 @@ const SolicitationTypeTab = ({ filters = {}, setFilters = () => { }, onApply = (
       <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
         <div className="flex justify-between items-center px-4 py-3 border-b border-[#273BE280]">
           <div className="flex items-center space-x-2">
-            <input
+            {/* <input
               type="checkbox"
               className="accent-[#273BE280]"
               checked={isAllSelected}
               onChange={toggleAll}
-            />
+            /> */}
             <span className="text-p font-medium font-inter">Bid Types</span>
           </div>
-          <button onClick={toggleAll} className="text-xl underline">
+          {/* <button onClick={toggleAll} className="text-xl underline">
             {isAllSelected ? "Clear All" : "Select All"}
-          </button>
+          </button> */}
         </div>
 
         {/* Filtered Options */}

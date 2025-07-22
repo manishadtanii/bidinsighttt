@@ -102,7 +102,7 @@ const NAICSCode = ({ filters, setFilters, onApply }) => {
       {/* List */}
       {!loading && !error && (
         <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6 overflow-y-auto">
-          <div className="font-semibold text-md p-2 border-b">Available NAICS Codes</div>
+          <div className="text-p font-medium font-inter border-b px-4 py-3">Available NAICS Codes</div>
           {filteredData.length === 0 && (
             <div className="p-4 text-center text-gray-500">No results found</div>
           )}

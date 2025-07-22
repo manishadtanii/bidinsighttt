@@ -12,8 +12,8 @@ import NAICSCode from "./tabs/NAICSCode";
 
 const tabs = [
   "Status",
-  "NAICSCode",
-  "UNSPSCCode",
+  "NAICS Code",
+  "UNSPSC Code",
   "Keyword",
   // "Include Keywords",
   // "Exclude Keywords",
@@ -64,9 +64,9 @@ function FilterPanel({ filters, setFilters, onClose }) {
     switch (activeTab) {
       case "Status":
         return <StatusTab {...commonProps} />;
-      case "NAICSCode":
+      case "NAICS Code":
         return <NAICSCode {...commonProps} />;
-      case "UNSPSCCode":
+      case "UNSPSC Code":
         return <UNSPSCCode {...commonProps} />;
       case "Keyword":
         return <KeywordTab {...commonProps} mode="keyword" />;
