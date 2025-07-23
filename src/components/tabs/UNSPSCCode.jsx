@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Search } from "lucide-react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import api from "../../utils/axios";
 
 const UNSPSCCode = ({ filters, setFilters, onApply }) => {
@@ -7,16 +8,16 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
   const [unspscData, setUnspscData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Array of selected codes only, as string[]
   const selectedCodes = filters.unspsc_codes || [];
 
-  // 1️⃣ Update selected unspsc_codes (as plain string array)
   const updateSelected = (updatedCodes) => {
     setFilters((prev) => ({ ...prev, unspsc_codes: updatedCodes }));
   };
 
-  // 2️⃣ Toggle individual code
   const toggleSelect = (code) => {
     const updated = selectedCodes.includes(code)
       ? selectedCodes.filter((c) => c !== code)
@@ -24,12 +25,10 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
     updateSelected(updated);
   };
 
-  // 3️⃣ Remove code
   const removeSelected = (code) => {
     updateSelected(selectedCodes.filter((c) => c !== code));
   };
 
-  // 4️⃣ Toggle entire category
   const toggleAllItems = (category) => {
     const allCodes = category.children?.map((child) => child.code) || [];
     const allSelected = allCodes.every((code) => selectedCodes.includes(code));
@@ -39,24 +38,46 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
     updateSelected(updated);
   };
 
-  // 5️⃣ Fetch UNSPSC list from API
-  useEffect(() => {
-    const fetchUNSPSC = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("/bids/unspsc-codes/");
-        setUnspscData(res.data.results || []);
-        setError("");
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load UNSPSC codes.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 🧠 Fetch data (initial + paginated)
+  const fetchUNSPSC = async (pageNum = 1, append = false) => {
+    try {
+      setLoading(true);
+      const res = await api.get("/bids/unspsc-codes/", {
+        params: {
+          code: search || undefined,
+          page: pageNum,
+          page_size: 20,
+        },
+      });
 
-    fetchUNSPSC();
-  }, []);
+      const results = res.data.results || [];
+      setUnspscData((prev) => (append ? [...prev, ...results] : results));
+      setHasMore(results.length > 0);
+      setError("");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load UNSPSC codes.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔍 Handle search debounce
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      setPage(1);
+      fetchUNSPSC(1, false);
+    }, 500);
+
+    return () => clearTimeout(debounce);
+  }, [search]);
+
+  // ➕ Fetch more data for infinite scroll
+  const fetchMoreData = () => {
+    const nextPage = page + 1;
+    fetchUNSPSC(nextPage, true);
+    setPage(nextPage);
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
@@ -65,7 +86,9 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
         <div className="relative w-[340px]">
           <input
             type="text"
-            placeholder="Search titles or organization or location"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search UNSPSC code"
             className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={18} />
@@ -94,68 +117,84 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
         </div>
       ))}
 
-      {/* 📦 Render categories */}
-      <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
+      {/* 📦 Infinite Scroll List */}
+      <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6 max-h-[60vh] overflow-y-auto" id="scrollableDiv">
         <div className="font-semibold text-md p-2 border-b">Categories</div>
 
-        {loading && <p className="p-4 text-gray-500">Loading...</p>}
         {error && <p className="p-4 text-red-500">{error}</p>}
 
-        {!loading && !error && unspscData.map((cat) => {
-          const allSelected = cat.children?.every((child) => selectedCodes.includes(child.code));
+        <InfiniteScroll
+          dataLength={unspscData.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={<p className="p-4  text-gray-500"><img src="/loadunspsc.gif" alt="" /></p>}
+          endMessage={<p className="p-4 text-gray-400">No more data.</p>}
+          scrollableTarget="scrollableDiv"
+        >
+          {unspscData.map((cat) => {
+            const allSelected = cat.children?.every((child) =>
+              selectedCodes.includes(child.code)
+            );
 
-          return (
-            <div key={cat.code}>
-              <div
-                onClick={() => setActiveCategory((prev) => (prev === cat.code ? null : cat.code))}
-                className="flex items-center font-inter text-xl w-full px-4 py-3 border-t-[2px] border-[#273BE280] cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  className="mr-3 accent-primary mt-1"
-                  checked={allSelected}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    toggleAllItems(cat);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="text-primary w-6">
-                  {cat.children && (
-                   <i className={`fas fa-chevron-${activeCategory === cat.code ? "down" : "right"}`} />
-
-                  )}
-                </div>
-                <div className="w-20 font-semibold">{cat.code}</div>
-                <div className="font-medium">{cat.name}</div>
-              </div>
-
-              {/* 🔽 Expand children */}
-              {activeCategory === cat.code && (
-                <div>
-                  {cat.children?.map((child) => (
-                    <label
-                      key={child.code}
-                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-t-[2px] border-[#273BE280]"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mt-1 accent-primary"
-                        checked={selectedCodes.includes(child.code)}
-                        onChange={() => toggleSelect(child.code)}
+            return (
+              <div key={cat.code}>
+                <div
+                  onClick={() =>
+                    setActiveCategory((prev) =>
+                      prev === cat.code ? null : cat.code
+                    )
+                  }
+                  className="flex items-center font-inter text-xl w-full px-4 py-3 border-t-[2px] border-[#273BE280] cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    className="mr-3 accent-primary mt-1"
+                    checked={allSelected}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      toggleAllItems(cat);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className="text-primary w-6">
+                    {cat.children && (
+                      <i
+                        className={`fas fa-chevron-${
+                          activeCategory === cat.code ? "down" : "right"
+                        }`}
                       />
-                      <div className="font-semibold text-lg">{child.code}</div>
-                      <div className="text-[16px]">
-                        <div>{child.name}</div>
-                        <div>{child.description}</div>
-                      </div>
-                    </label>
-                  ))}
+                    )}
+                  </div>
+                  <div className="w-20 font-semibold">{cat.code}</div>
+                  <div className="font-medium">{cat.name}</div>
                 </div>
-              )}
-            </div>
-          );
-        })}
+
+                {activeCategory === cat.code && (
+                  <div>
+                    {cat.children?.map((child) => (
+                      <label
+                        key={child.code}
+                        className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-t-[2px] border-[#273BE280]"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mt-1 accent-primary"
+                          checked={selectedCodes.includes(child.code)}
+                          onChange={() => toggleSelect(child.code)}
+                        />
+                        <div className="font-semibold text-lg">{child.code}</div>
+                        <div className="text-[16px]">
+                          <div>{child.name}</div>
+                          <div>{child.description}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </InfiniteScroll>
       </div>
 
       {/* 🟩 Buttons */}
