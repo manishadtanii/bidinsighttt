@@ -12,8 +12,8 @@ import NAICSCode from "./tabs/NAICSCode";
 
 const tabs = [
   "Status",
-  "NAICSCode",
-  "UNSPSCCode",
+  "NAICS Code",
+  "UNSPSC Code",
   "Keyword",
   // "Include Keywords",
   // "Exclude Keywords",
@@ -32,10 +32,19 @@ function FilterPanel({ filters, setFilters, onClose }) {
     localStorage.setItem("lastActiveFilterTab", activeTab);
   }, [activeTab]);
 
+  const handleApplyFilters = () => {
+  // ✅ Save filters to localStorage
+  localStorage.setItem("dashboardFilters", JSON.stringify(filters));
+  localStorage.setItem("dashboardAppliedFilters", JSON.stringify(filters));
+
+  // ✅ Close the filter panel
+  onClose();
+};
+
   const commonProps = {
     filters,
     setFilters,
-    onApply: onClose,
+    onApply: handleApplyFilters,
     searchOption: "filter",
     setShowValidation: () => {},
     setTriggerSave: () => {},
@@ -64,9 +73,9 @@ function FilterPanel({ filters, setFilters, onClose }) {
     switch (activeTab) {
       case "Status":
         return <StatusTab {...commonProps} />;
-      case "NAICSCode":
+      case "NAICS Code":
         return <NAICSCode {...commonProps} />;
-      case "UNSPSCCode":
+      case "UNSPSC Code":
         return <UNSPSCCode {...commonProps} />;
       case "Keyword":
         return <KeywordTab {...commonProps} mode="keyword" />;

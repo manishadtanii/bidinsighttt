@@ -1,6 +1,8 @@
 import React from 'react';
 
 const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageChange }) => {
+    // console.log(currentPage, totalResults, perPage);
+
   const totalPages = Math.ceil(totalResults / perPage);
 
   const goToPage = (page) => {

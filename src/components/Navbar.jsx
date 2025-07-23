@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 const navItems = [
   { label: "Home", path: "/" },
   { label: "AI Toolset", path: "/ai-toolset" },
-  { label: "Bids", path: "/bids" },
+  { label: "Bids", path: "/dashboard" },
   { label: "Plans & Pricing", path: "/pricing" },
   { label: "About Us", path: "/about" },
   { label: "Help Center", path: "/help" },

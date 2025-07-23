@@ -148,7 +148,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
         <thead>
           <tr className="text-white/80 text-xs border-b border-white/20">
             <th className="px-4 py-2 font-inter text-lg">
-              Jurisdiction {renderSelect("jurisdiction")}
+              Entity Type {renderSelect("jurisdiction")}
             </th>
             <th className="px-4 py-2 font-inter text-lg">
               Bid Name {renderSelect("bid_name")}
@@ -174,31 +174,31 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
             const statusLabel = bid.bid_type || "Unknown";
 
             const countdownRaw = getCountdown(bid.closing_date);
-let countdownDisplay = countdownRaw;
+            let countdownDisplay = countdownRaw;
 
-if (bid.status === false) {
-  // ✅ Show "Closed" directly for inactive
-  countdownDisplay = "Closed";
-} else if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
-  const daysMatch = countdownRaw.match(/\d+/);
-  const days = daysMatch ? parseInt(daysMatch[0], 10) : 0;
+            if (bid.status === false) {
+              // ✅ Show "Closed" directly for inactive
+              countdownDisplay = "Closed";
+            } else if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
+              const daysMatch = countdownRaw.match(/\d+/);
+              const days = daysMatch ? parseInt(daysMatch[0], 10) : 0;
 
-  const years = Math.floor(days / 365);
-  const months = Math.floor((days % 365) / 30);
-  const remainingDays = days % 30;
+              const years = Math.floor(days / 365);
+              const months = Math.floor((days % 365) / 30);
+              const remainingDays = days % 30;
 
-  let countdownParts = [];
+              let countdownParts = [];
 
-  if (years > 0) countdownParts.push(`${years}y`);
-  if (months > 0) countdownParts.push(`${months}m`);
+              if (years > 0) countdownParts.push(`${years}y`);
+              if (months > 0) countdownParts.push(`${months}m`);
 
-  // ✅ Only show days if no years or months
-  if (years === 0 && months === 0) {
-    countdownParts.push(`${remainingDays}d`);
-  }
+              // ✅ Only show days if no years or months
+              if (years === 0 && months === 0) {
+                countdownParts.push(`${remainingDays}d`);
+              }
 
-  countdownDisplay = countdownParts.join(" ");
-}
+              countdownDisplay = countdownParts.join(" ");
+            }
 
 
             // ✅ If bid is inactive, force "Closed"
@@ -213,7 +213,7 @@ if (bid.status === false) {
                 onClick={() => handleRowClick(bid.id)}
               >
                 <td className="px-4 py-4 font-semibold font-inter">
-                  {truncate(bid.jurisdiction)}
+                  {truncate(bid.entity_type)}
                 </td>
                 <td className="px-4 py-4 font-medium font-inter">
                   {truncate(bid.bid_name)}
@@ -230,11 +230,28 @@ if (bid.status === false) {
                 <td className="px-4 py-4 font-medium font-inter">
                   {statusLabel}
                 </td>
-                <td className="px-4 py-4 text-center">
-                  <button onClick={(e) => handleShare(e, bid.id)}>
+                <td className="btn-box px-4 py-4 text-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // ✅ Prevents <tr> click
+                      if (navigator.share) {
+                        navigator
+                          .share({
+                            title: `Bid: ${bid.bid_name}`,
+                            text: `Check out this bid from ${bid.jurisdiction}`,
+                            url: `${window.location.origin}/summary/${bid.id}`,
+                          })
+                          .then(() => console.log("Shared successfully!"))
+                          .catch((err) => console.error("Share failed:", err));
+                      } else {
+                        alert("Sharing is not supported on this device.");
+                      }
+                    }}
+                  >
                     <i className="fas fa-share-alt"></i>
                   </button>
                 </td>
+
                 <td className="px-4 py-4 text-center">
                   <button>
                     <i

@@ -4,7 +4,7 @@ function AlertToggle() {
     const [active, setActive] = useState(false)
   return (
     <div>
-      <div class="on-off-toggle relative cursor-pointer">
+      <div className="on-off-toggle relative cursor-pointer">
         <label
           className={`on-off w-[90px] h-[50px] rounded-[32.58px] p-[5px] flex items-center justify-content-between ${active !== true?"": "active"}`}
           form="switch"
@@ -15,7 +15,7 @@ function AlertToggle() {
           <div className="on text-center w-[50%] text-primary font-medium">
             ON
           </div>
-          <span class="slider w-[41px] h-[40px] bg-primary block rounded-[50%] absolute top-[10]"></span>
+          <span className="slider w-[41px] h-[40px] bg-primary block rounded-[50%] absolute top-[10]"></span>
           <input
             type="checkbox"
             className="opacity-0 absolute top-0"

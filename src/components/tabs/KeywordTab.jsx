@@ -75,7 +75,7 @@ function KeywordTab({
         <div className="mb-6">
           <h3 className="font-semibold block font-inter text-p mb-4">Include</h3>
           <TagInput
-            placeholder="Add keywords…   eg: 'sustainability'"
+            placeholder="Add Keywords"
             defaultTags={includeTags}
             onTagsChange={handleIncludeChange}
           />
@@ -85,7 +85,7 @@ function KeywordTab({
         <div className="mb-6">
           <h3 className="font-semibold block font-inter text-p mb-4">Exclude</h3>
           <TagInput
-            placeholder="Add keywords…  eg: 'sustainability'"
+            placeholder="Add Keywords"
             defaultTags={excludeTags}
             onTagsChange={handleExcludeChange}
           />

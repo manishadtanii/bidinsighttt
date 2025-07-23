@@ -34,6 +34,7 @@ function StatusTab({
     }));
     setShowValidation?.(false);
     setActiveTab?.("Save Search Form");
+    onApply?.(); // Apply cleared filters
   };
 
   return (

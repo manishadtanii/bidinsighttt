@@ -13,12 +13,13 @@ const SavedSearchForm = ({
   selectedSavedSearch,
   setSelectedSavedSearch,
   showValidation = false,
+  onSelectSavedSearch = () => {},
   setShowValidation = () => {},
   triggerSave = false,
   setTriggerSave = () => {},
 }) => {
   const savedSearches = Array.isArray(savedFilters) ? savedFilters : [];
-
+  // console.log(savedSearches);
   const handleFormSubmit = () => {
     const isCreate = searchOption === "create";
     const isReplace = searchOption === "replace";
@@ -28,27 +29,30 @@ const SavedSearchForm = ({
       return;
     }
 
-    if (isReplace && !selectedSavedSearch?.trim()) {
+    if (isReplace && !selectedSavedSearch?.id) {
       alert("Please select a saved search to replace.");
       return;
     }
 
     const data = {
       action: searchOption,
-      name: isCreate ? filters.searchName.trim() : selectedSavedSearch.trim(),
+      name: isCreate
+        ? filters.searchName.trim()
+        : selectedSavedSearch?.name,
+      id: selectedSavedSearch?.id,
       isDefault: defaultSearch,
     };
 
     onSubmit?.(data);
     setShowValidation(false);
 
-
     if (isCreate) {
-    setSelectedSavedSearch(filters.searchName.trim());
-  }
+      setSelectedSavedSearch({
+        id: null,
+        name: filters.searchName.trim(),
+      });
+    }
   };
-
-   
 
   useEffect(() => {
     if (triggerSave) {
@@ -132,19 +136,27 @@ const SavedSearchForm = ({
             >
               Replace an existing saved search
             </label>
-            <select
-              id="existingSearch"
-              className="form-control border border-primary rounded-lg px-4 py-2 font-inter text-xl"
-              value={selectedSavedSearch}
-              onChange={(e) => setSelectedSavedSearch(e.target.value)}
-            >
-              <option value="">Select saved search</option>
-              {savedSearches.map((name, index) => (
-                <option key={index} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
+          <select
+  id="existingSearch"
+  className="form-control border border-primary rounded-lg px-4 py-2 font-inter text-xl"
+  value={selectedSavedSearch?.id || ""}
+  onChange={(e) => {
+    const selectedId = parseInt(e.target.value, 10);
+    const selected = savedSearches.find((s) => s.id === selectedId);
+    setSelectedSavedSearch(selected || null);
+    if (selected && typeof onSelectSavedSearch === "function") {
+      onSelectSavedSearch(selected);
+    }
+  }}
+>
+  <option value="">Select saved search</option>
+  {savedSearches.map((s) => (
+    <option key={s.id} value={s.id}>
+      {s.name} {/* ✅ Only string value here */}
+    </option>
+  ))}
+</select>
+
           </div>
         )}
 

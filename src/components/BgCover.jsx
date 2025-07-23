@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function BgCover({ children }) {
+  
   return (
     <div className="tooltip-wrapper relative">
       <div className="bg-btn border-1 border-solid border-white p-4 px-5 rounded-[30px] font-inter">
@@ -21,7 +22,7 @@ function BgCover({ children }) {
           <Link className=" bg-white text-[12px] font-inter font-light border-0 p-1 px-2 rounded-[8px]">
             Buy plan
           </Link>
-          <i class="fas fa-triangle text-[#7180FF] absolute rotate-180 top-[120%] right-[20%]"></i>
+          <i className="fas fa-triangle text-[#7180FF] absolute rotate-180 top-[120%] right-[20%]"></i>
         </div>
       </div>
     </div>

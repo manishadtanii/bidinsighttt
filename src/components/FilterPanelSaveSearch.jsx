@@ -8,6 +8,8 @@ import ClosingDateTab from "./tabs/ClosingDateTab";
 import SolicitationTypeTab from "./tabs/SolicitationTypeTab";
 import NAICSCode from "./tabs/NAICSCode";
 import UNSPSCCode from "./tabs/UNSPSCCode";
+import api from "../utils/axios";
+import { parseSavedSearch } from "../utils/parseSavedSearch";
 
 const tabs = [
   "Save Search Form",
@@ -29,6 +31,7 @@ function FilterPanelSaveSearch({
   selectedSearch = "",
   mode = "create",
   savedSearches = [],
+  onApply,
 }) {
   const [activeTab, setActiveTab] = useState("Save Search Form");
   const [defaultSearch, setDefaultSearch] = useState(false);
@@ -47,6 +50,8 @@ function FilterPanelSaveSearch({
       name: data.name.trim(),
       isDefault: defaultSearch,
       filters,
+      action: searchOption === "replace" ? "replace" : "create",
+      id: searchOption === "replace" ? selectedSavedSearch?.id : undefined, // ✅ important
     });
 
     setShowValidation(false);
@@ -86,6 +91,32 @@ function FilterPanelSaveSearch({
     setShowValidation(false);
   };
 
+  // ✅ NEW FUNCTION TO HANDLE REPLACE SELECTION
+  const handleSavedSearchSelect = async (selected) => {
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await api.get("/bids/saved-filters/", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const matched = res.data.find((item) => item.id === parseInt(selected.id));
+      if (!matched) return;
+
+      const parsedFilters = parseSavedSearch(matched.query_string);
+
+      setFilters(parsedFilters);
+      setSelectedSavedSearch({ id: matched.id, name: matched.name }); // ✅ store full object
+      setSearchOption("replace");
+
+      setTimeout(() => {
+        onApply?.();
+      }, 0);
+    } catch (err) {
+      console.error("❌ Failed to load saved search", err);
+    }
+  };
+
+
   const sharedProps = {
     filters,
     setFilters,
@@ -115,6 +146,7 @@ function FilterPanelSaveSearch({
             triggerSave={triggerSave}
             setTriggerSave={setTriggerSave}
             savedFilters={savedSearches}
+            onSelectSavedSearch={handleSavedSearchSelect} // ✅ pass here
           />
         );
       case "Status":

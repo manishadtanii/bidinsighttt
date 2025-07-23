@@ -45,7 +45,7 @@ const PublishedDateTab = ({
     setManualSelected(value);
     if (value === "date") {
       setFilters((prev) => ({
-        ...prev,
+        ...prev, 
         publishedDate: { from: today, to: today },
       }));
     } else if (value === "within") {
@@ -146,7 +146,7 @@ const PublishedDateTab = ({
                 }));
               }}
             >
-              <option value="">-Select-</option>
+              {/* <option value="">-Select-</option> */}
               <option value="7">Last 7 Days</option>
               <option value="30">Last 30 Days</option>
               <option value="90">Last 90 Days</option>
