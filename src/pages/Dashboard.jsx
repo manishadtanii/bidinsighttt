@@ -121,35 +121,47 @@ function Dashboard() {
           const parsedFilters = JSON.parse(storedFilters);
           setFilters(parsedFilters);
 
-          // ✅ Update URL too
           const urlParams = new URLSearchParams();
 
-          if (parsedFilters.status) urlParams.set("bid_type", parsedFilters.status);
-          if (parsedFilters.keyword) urlParams.set("bid_name", parsedFilters.keyword);
-          if (parsedFilters.location) urlParams.set("state", parsedFilters.location);
+          // ✅ Add filters one-by-one to URL if they exist
+          if (parsedFilters.status) urlParams.set("status", parsedFilters.status);
+          if (parsedFilters.keyword) urlParams.set("keyword", parsedFilters.keyword);
+          if (parsedFilters.location) urlParams.set("location", parsedFilters.location);
+
+          // ✅ Published Date
           if (parsedFilters.publishedDate?.from)
-            urlParams.set("open_date_after", parsedFilters.publishedDate.from);
+            urlParams.set("published_from", parsedFilters.publishedDate.from);
           if (parsedFilters.publishedDate?.to)
-            urlParams.set("open_date_before", parsedFilters.publishedDate.to);
+            urlParams.set("published_to", parsedFilters.publishedDate.to);
+
+          // ✅ Closing Date
           if (parsedFilters.closingDate?.from)
-            urlParams.set("close_date_after", parsedFilters.closingDate.from);
+            urlParams.set("closing_from", parsedFilters.closingDate.from);
           if (parsedFilters.closingDate?.to)
-            urlParams.set("close_date_before", parsedFilters.closingDate.to);
+            urlParams.set("closing_to", parsedFilters.closingDate.to);
+
+          // ✅ Multi-select Arrays
           if (parsedFilters.solicitationType?.length)
-            urlParams.set("solicitation", parsedFilters.solicitationType.join(","));
+            urlParams.set("solicitationType", parsedFilters.solicitationType.join(","));
+
           if (parsedFilters.naics_codes?.length)
             urlParams.set("naics_codes", parsedFilters.naics_codes.join(","));
+
           if (parsedFilters.unspsc_codes?.length)
             urlParams.set("unspsc_codes", parsedFilters.unspsc_codes.join(","));
+
           if (parsedFilters.includeKeywords?.length)
             urlParams.set("include", parsedFilters.includeKeywords.join(","));
+
           if (parsedFilters.excludeKeywords?.length)
             urlParams.set("exclude", parsedFilters.excludeKeywords.join(","));
 
+          // ✅ Add default pagination
           urlParams.set("page", "1");
           urlParams.set("pageSize", "25");
 
-          setSearchParams(urlParams); // ✅ Yeh line important hai
+          // ✅ Set in browser URL (without reload)
+          setSearchParams(urlParams);
 
         } catch (e) {
           console.error("❌ Failed to parse storedFilters", e);
@@ -169,11 +181,11 @@ function Dashboard() {
 
     restoreFilters();
 
+    // ✅ Re-apply filters when window regains focus
     window.addEventListener("focus", restoreFilters);
-    return () => {
-      window.removeEventListener("focus", restoreFilters);
-    };
+    return () => window.removeEventListener("focus", restoreFilters);
   }, []);
+
   // for filter functionality
   const fetchBids = useCallback(async () => {
     setLoading(true);
@@ -310,9 +322,12 @@ function Dashboard() {
       console.error("Failed to fetch saved searches", err);
     }
   };
+  const onApply = () => {
+    fetchBidsWithParams(filters); // or your own logic
+  };
+
 
   const handleSavedSearchSelect = async (searchId) => {
-
     const token = localStorage.getItem("access_token");
 
     try {
@@ -320,38 +335,46 @@ function Dashboard() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      const matched = res.data.find((item) => item.id === searchId); // ✅ Now both are numbers
+      const matched = res.data.find((item) => item.id === searchId);
+      if (!matched) return;
 
-      if (matched) {
-        const urlParams = new URLSearchParams(matched.query_string);
-        const filtersToUse = Object.fromEntries(urlParams.entries());
+      const urlParams = new URLSearchParams(matched.query_string);
+      const filtersToUse = Object.fromEntries(urlParams.entries());
 
-        const finalFilters = {
-          status: filtersToUse?.bid_type || "Open Solicitations",
-          keyword: filtersToUse?.bid_name || "",
-          location: filtersToUse?.state || "",
-          publishedDate: {
-            from: filtersToUse?.open_date_after || "",
-            to: filtersToUse?.open_date_before || "",
-          },
-          closingDate: {
-            from: filtersToUse?.close_date_after || "",
-            to: filtersToUse?.close_date_before || "",
-          },
-          solicitationType: filtersToUse?.solicitation?.split(",") || [],
-          naics_codes: filtersToUse?.naics_codes?.split(",") || [],
-          unspsc_codes: filtersToUse?.unspsc_codes?.split(",") || [],
-          includeKeywords: filtersToUse?.include?.split(",") || [],
-          excludeKeywords: filtersToUse?.exclude?.split(",") || [],
-        };
+      const finalFilters = {
+        status: filtersToUse?.bid_type || "Open Solicitations",
+        keyword: filtersToUse?.bid_name || "",
+        location: filtersToUse?.state || "",
+        publishedDate: {
+          from: filtersToUse?.open_date_after || "",
+          to: filtersToUse?.open_date_before || "",
+        },
+        closingDate: {
+          from: filtersToUse?.close_date_after || "",
+          to: filtersToUse?.close_date_before || "",
+        },
+        solicitationType: filtersToUse?.solicitation?.split(",") || [],
+        naics_codes: filtersToUse?.naics_codes?.split(",") || [],
+        unspsc_codes: filtersToUse?.unspsc_codes?.split(",") || [],
+        includeKeywords: filtersToUse?.include?.split(",") || [],
+        excludeKeywords: filtersToUse?.exclude?.split(",") || [],
+      };
 
-        applyFiltersGlobally(finalFilters);
-        setSelectedSavedSearch({ id: matched.id, name: matched.name });
-      }
+      setSelectedSavedSearch({ id: matched.id, name: matched.name });
+
+      // ✅ Wait for state update before calling onApply
+      applyFiltersGlobally(finalFilters); // internally this should call setFilters
+
+      // 👇 delay needed to wait for state update
+      setTimeout(() => {
+        onApply?.(); // This should trigger fetch with updated filters
+      }, 0);
+
     } catch (err) {
       console.error("❌ Failed to fetch saved search filters", err);
     }
   };
+
 
 
 
@@ -369,7 +392,7 @@ function Dashboard() {
   const postSaveSearch = async (data) => {
     console.log("🟩 postSaveSearch → name:", data.name);
     console.log("🟩 postSaveSearch → filters:", data.filters);
-    console.log("🟩 postSaveSearch → query string:", queryString);
+    // console.log("🟩 postSaveSearch → query string:", queryString);
 
     const token = localStorage.getItem("access_token");
     const filtersToUse = data.filters;
@@ -491,6 +514,46 @@ function Dashboard() {
     }
   };
 
+
+
+
+
+  const handleSaveOrUpdate = async (data) => {
+    console.log("🟨 handleSaveOrUpdate → data:", data);
+    console.log("🟨 handleSaveOrUpdate → saveSearchFilters:", saveSearchFilters);
+
+    const filtersToUse = saveSearchFilters;
+
+    console.log("✅ Filters at save time →", filtersToUse); // 👈 Yeh line add karo yahan
+
+    if (data.action === "replace") {
+      const matchedSearch = savedSearches.find((s) => s.name === data.name);
+
+      if (matchedSearch) {
+        const id = matchedSearch.id || matchedSearch._id;
+        const queryString = buildQueryString(filtersToUse);
+
+        await updateSavedSearch({
+          filters: filtersToUse,
+          isDefault: data.isDefault,
+        });
+
+
+        // toast.success("Saved search replaced");
+        setSaveSearchToggle(false);
+        fetchBidsWithParams(filtersToUse);
+      } else {
+        toast.error("Matching search not found");
+      }
+    } else {
+      postSaveSearch({
+        filters: filtersToUse,
+        name: data.name,
+        isDefault: data.isDefault,
+      });
+    }
+  };
+
   const updateSavedSearch = async (data) => {
     // console.log("🟧 updateSavedSearch → filtersToUse:", filtersToUse);
     console.log("🟧 updateSavedSearch → selectedSavedSearch:", selectedSavedSearch);
@@ -557,7 +620,7 @@ function Dashboard() {
 
     try {
       const body = {
-        name: selectedSavedSearch.name,
+        name: selectedSavedSearch?.name || "Unnamed",
         query_string: queryString,
         is_default: data.isDefault,
       };
@@ -585,45 +648,6 @@ function Dashboard() {
       console.error("❌ Failed to update saved search:", err?.response || err.message || err);
     }
   };
-
-
-
-  const handleSaveOrUpdate = async (data) => {
-    console.log("🟨 handleSaveOrUpdate → data:", data);
-    console.log("🟨 handleSaveOrUpdate → saveSearchFilters:", saveSearchFilters);
-
-    const filtersToUse = saveSearchFilters;
-
-    console.log("✅ Filters at save time →", filtersToUse); // 👈 Yeh line add karo yahan
-
-    if (data.action === "replace") {
-      const matchedSearch = savedSearches.find((s) => s.name === data.name);
-
-      if (matchedSearch) {
-        const id = matchedSearch.id || matchedSearch._id;
-        const queryString = buildQueryString(filtersToUse);
-
-        await updateSavedSearch(id, {
-          name: matchedSearch.name,
-          query_string: queryString,
-          is_default: data.isDefault,
-        });
-
-        // toast.success("Saved search replaced");
-        setSaveSearchToggle(false);
-        fetchBidsWithParams(filtersToUse);
-      } else {
-        toast.error("Matching search not found");
-      }
-    } else {
-      postSaveSearch({
-        filters: filtersToUse,
-        name: data.name,
-        isDefault: data.isDefault,
-      });
-    }
-  };
-
 
   const fetchBidsWithParams = async (customFilters) => {
     console.log("🟥 fetchBidsWithParams → filters received:", customFilters);
@@ -709,9 +733,9 @@ function Dashboard() {
     fetchSavedSearches();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated filters: ", filters);
-  }, [filters]);
+  // useEffect(() => {
+  //   console.log("Updated filters: ", filters);
+  // }, [filters]);
 
 
   return (
