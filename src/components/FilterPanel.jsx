@@ -12,12 +12,12 @@ import NAICSCode from "./tabs/NAICSCode";
 
 const tabs = [
   "Status",
+  "Keyword",
+  "Location",
   "NAICS Code",
   "UNSPSC Code",
-  "Keyword",
   // "Include Keywords",
   // "Exclude Keywords",
-  "Location",
   "Published Date",
   "Closing Date",
   "Solicitation Type",

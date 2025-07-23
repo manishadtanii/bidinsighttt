@@ -310,3 +310,6 @@ p {
   opacity: 1;
   visibility: visible;
 }
+#filter-panel-save-search .sticky.bottom-0{
+  /* display: none; */
+}

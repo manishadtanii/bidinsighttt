@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const BidHeader = ({
   title = "No Title",
@@ -6,6 +7,7 @@ const BidHeader = ({
   location = "Unknown Location",
   postedDate = "-",
   deadline = "2025-07-31T23:59:59Z",
+  sourceLink = "#",
 }) => {
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -73,7 +75,7 @@ const BidHeader = ({
                 { icon: "fa-map-marker-alt", label: "Location", value: location },
                 { icon: "fa-calendar-alt", label: "Posted", value: formatDate(postedDate) },
                 { icon: "fa-history", label: "Deadline", value: formatDate(deadline) },
-                { icon: "fa-external-link", label: "Open Source" },
+                // { icon: "fa-external-link", label: "Open Source" },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center flex-col text-center gap-2">
                   <i className={`fas text-xl ${item.icon}`}></i>
@@ -83,6 +85,13 @@ const BidHeader = ({
                   </div>
                 </div>
               ))}
+              <Link to={sourceLink}  className="flex items-center flex-col text-center gap-2">
+                  <i className={`fas text-xl fa-external-link`}></i>
+                  <div>
+                    <p className="font-inter text-xl text-[#DBDBDB]">Open Source</p>
+                    {/* <p className="font-inter text-p text-white">{sourceLink}</p> */}
+                  </div>
+                </Link>
             </div>
           </div>
 

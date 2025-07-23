@@ -52,23 +52,32 @@ const Navbar = () => {
           {/* <button className="bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20">
             <FontAwesomeIcon icon={faMagnifyingGlass} />
           </button> */}
-          <Link
-            to="/login"
-            className="flex items-center space-x-2 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20 font-semibold"
-          >
-            {localStorage.getItem("access_token") ? (
+          {localStorage.getItem("access_token") ? (
+            <Link
+              to="/dashboard"
+              className="flex items-center space-x-2 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20 font-semibold"
+            >
               <FontAwesomeIcon icon={faUser} />
-            ) : (
-              <span className="font-h text-base xl:text-lg">Register / Login</span>
-            )}
-          </Link>
-
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center space-x-2 bg-white/10 p-3 lg:p-4 xl:p-6 rounded-2xl lg:rounded-3xl xl:rounded-[30px] backdrop-blur-md hover:bg-white/20 font-semibold"
+            >
+              <span className="font-h text-base xl:text-lg">
+                Register / Login
+              </span>
+            </Link>
+          )}
         </div>
 
         {/* Hamburger (Mobile) */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
-            <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className="w-5 h-5" />
+            <FontAwesomeIcon
+              icon={menuOpen ? faXmark : faBars}
+              className="w-5 h-5"
+            />
           </button>
         </div>
       </div>

@@ -47,17 +47,19 @@ function Billing() {
           textAlign={"text-center"}
         />
       </div>
-      <div className="px-4 sm:px-6 lg:px-20 py-10">
-        <div className="overflow-auto">
-          <table className="min-w-full border-separate border-spacing-y-6 text-sm sm:text-base">
-            <thead>
-              <tr>
+      <div className="px-4 sm:px-6 lg:px-20 py-10 relative">
+        <div className="overflow-auto relative">
+          <table className="min-w-full  border-spacing-y-6 text-sm sm:text-base relative border-collapse  ">
+            <thead className="sticky top-0 ">
+              <tr className="">
                 <th className="text-left w-48"></th>
                 {plans.map((plan, idx) => (
                   <th key={idx} className="text-center">
-                    <div className="mb-2 font-semibold">{plan}</div>
-                    <button className="px-4 py-1 border border-blue-600 text-blue-600 rounded-full hover:bg-blue-50 text-sm transition">
-                      Get {plan} <span>↗</span>
+                    <div className="mb-2 font-medium font-inter text-p">{plan}</div>
+                    <button className="font-normal px-4 py-1 border border-primary text-primary rounded-full hover:bg-blue-50  transition font-inter text-p">
+                      Get {plan} <span>
+                        <i class="fal fa-long-arrow-right rotate-[-45deg]"></i>
+                        </span>
                     </button>
                   </th>
                 ))}
@@ -65,11 +67,11 @@ function Billing() {
             </thead>
             <tbody>
               {sections.map((section, sIdx) => (
-                <React.Fragment key={sIdx}>
-                  <tr>
+                <React.Fragment key={sIdx} className="">
+                  <tr className="">
                     <td
                       colSpan={plans.length + 1}
-                      className="text-left pt-6 pb-2 font-semibold text-lg"
+                      className="text-left pt-6 pb-2 font-medium text-xl font-inter xl:text-[30px]"
                     >
                       {section.title}
                     </td>
@@ -77,17 +79,17 @@ function Billing() {
                   {section.features.map((feature, fIdx) => (
                     <tr
                       key={fIdx}
-                      className="border-t border-gray-200 border-b last:border-b-0"
+                      className="border-b  border-primary"
                     >
-                      <td className="py-4 pr-4 font-medium text-left">
+                      <td className="py-4 pr-4 font-medium text-left text-xl font-inter">
                         {feature.name}
                       </td>
                       {feature.values.map((val, vIdx) => (
                         <td key={vIdx} className="text-center py-4">
                           {val === "✔️" ? (
-                            <span className="text-green-500 text-lg">✔️</span>
+                            <span className="text-black text-lg"><i class="far fa-check"></i></span>
                           ) : (
-                            <span>{val}</span>
+                            <span className="font-inter text-xl">{val}</span>
                           )}
                         </td>
                       ))}

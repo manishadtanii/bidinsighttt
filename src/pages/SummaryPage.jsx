@@ -43,6 +43,7 @@ function SummaryPage() {
   if (loading) return <div className="text-white p-10">Loading...</div>;
 
   const bidData = bid || fallback;
+  console.log("Bid Data:", bidData);
 
   return (
     <div className="py-[120px] bg-blue">
@@ -60,6 +61,7 @@ function SummaryPage() {
                   : "-"
               }
               deadline={bidData.closing_date}
+              sourceLink={bidData.source}
             />
           </div>
 

@@ -14,10 +14,10 @@ import { parseSavedSearch } from "../utils/parseSavedSearch";
 const tabs = [
   "Save Search Form",
   "Status",
-  "NAICSCode",
-  "UNSPSCCode",
   "Keyword",
   "Location",
+  "NAICSCode",
+  "UNSPSCCode",
   "Published Date",
   "Closing Date",
   "Solicitation Type",
@@ -171,7 +171,7 @@ function FilterPanelSaveSearch({
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-screen z-50 flex">
+    <div className="fixed top-0 left-0 w-full h-screen z-[500] flex" id="filter-panel-save-search">
       <div className="w-[30%] bg-blue text-white p-10 flex flex-col justify-between">
         <div>
           <div className="flex justify-between items-end mb-8">

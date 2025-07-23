@@ -312,8 +312,8 @@ const LocationTab = ({
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
-      {/* Search Box */}
-      <div className="flex justify-end mb-8">
+      <div className="">
+        <div className="flex justify-end mb-8">
         <div className="relative w-[340px]">
           <input
             type="text"
@@ -331,9 +331,8 @@ const LocationTab = ({
 
       {/* Selected States */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-p font-medium">
-          Selected States{" "}
-          <span className="text-primary">({selected.length})</span>
+        <h2 className="text-p font-medium font-inter">
+          Selected States <span className="text-primary">({selected.length})</span>
         </h2>
         {selected.length > 0 && (
           <button
@@ -364,18 +363,7 @@ const LocationTab = ({
 
       {/* States List */}
       <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
-        {/* Select All */}
-        <div className="font-semibold text-md ml-2 p-2 border-b flex items-center">
-          <input
-            type="checkbox"
-            className="mt-1 accent-primary mr-2"
-            checked={isAllSelected}
-            onChange={handleSelectAll}
-          />
-          <span>Select All States</span>
-        </div>
-
-        {/* State Items */}
+        <div className="text-p font-medium font-inter border-b px-4 py-3">States</div>
         {filteredStates.map((state) => (
           <label
             key={state.name}
@@ -390,6 +378,7 @@ const LocationTab = ({
             <div className="text-[16px]">{state.name}</div>
           </label>
         ))}
+      </div>
       </div>
 
       {/* Bottom Buttons */}
