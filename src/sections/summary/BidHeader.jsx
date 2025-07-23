@@ -85,7 +85,7 @@ const BidHeader = ({
                   </div>
                 </div>
               ))}
-              <Link to={sourceLink}  className="flex items-center flex-col text-center gap-2">
+              <Link to={sourceLink == "nd-bidder"?"#": sourceLink }  className="flex items-center flex-col text-center gap-2">
                   <i className={`fas text-xl fa-external-link`}></i>
                   <div>
                     <p className="font-inter text-xl text-[#DBDBDB]">Open Source</p>

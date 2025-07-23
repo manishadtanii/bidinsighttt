@@ -113,88 +113,82 @@ const LocationTab = ({
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
-      <div>
-        {/* Search Input */}
+      <div className="">
         <div className="flex justify-end mb-8">
-          <div className="relative w-[340px]">
-            <input
-              type="text"
-              placeholder="Search states"
-              className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
-              size={18}
-            />
-          </div>
-        </div>
-
-        {/* Selected States */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-p font-medium font-inter">
-            Selected States <span className="text-primary">({selected.length})</span>
-          </h2>
-          {selected.length > 0 && (
-            <button
-              onClick={() => setFilters((prev) => ({ ...prev, location: "" }))}
-              className="text-lg underline font-inter"
-            >
-              Clear All
-            </button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {selected.map((item) => (
-            <div
-              key={item.name}
-              className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center justify-between text-lg py-1 font-inter"
-            >
-              <div>{item.name}</div>
-              <button
-                onClick={() => removeSelected(item.name)}
-                className="text-primary"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* States List with Select All */}
-        <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6 max-h-[400px] overflow-y-auto">
-          <div className="flex items-center px-4 py-3 border-b font-medium font-inter text-p">
-            <input
-              type="checkbox"
-              className="accent-primary mr-3"
-              checked={isAllSelected}
-              onChange={handleSelectAll}
-            />
-            <span>Select All States</span>
-          </div>
-
-          {filteredStates.map((state) => (
-            <label
-              key={state.name}
-              className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
-            >
-              <input
-                type="checkbox"
-                className="mt-1 accent-primary"
-                checked={selectedNames.includes(state.name)}
-                onChange={() => toggleSelect(state)}
-              />
-              <div className="text-[16px]">{state.name}</div>
-            </label>
-          ))}
+        <div className="relative w-[340px]">
+          <input
+            type="text"
+            placeholder="Search states"
+            className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
+            size={18}
+          />
         </div>
       </div>
 
-      {/* Sticky Bottom Buttons */}
+      {/* Selected States */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-p font-medium font-inter">
+          Selected States <span className="text-primary">({selected.length})</span>
+        </h2>
+        {selected.length > 0 && (
+          <button
+            onClick={() => setFilters((prev) => ({ ...prev, location: "" }))}
+            className="text-lg underline font-inter"
+          >
+            Clear All
+          </button>
+        )}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {selected.map((item) => (
+          <div
+            key={item.name}
+            className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center justify-between text-lg py-1 font-inter"
+          >
+            <div>{item.name}</div>
+            <button
+              onClick={() => removeSelected(item.name)}
+              className="text-primary"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* States List */}
+      <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6">
+        <div className="text-p font-medium font-inter border-b px-4 py-3">States</div>
+        {filteredStates.map((state) => (
+          <label
+            key={state.name}
+            className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
+          >
+            <input
+              type="checkbox"
+              className="mt-1 accent-primary"
+              checked={selectedNames.includes(state.name)}
+              onChange={() => toggleSelect(state)}
+            />
+            <div className="text-[16px]">{state.name}</div>
+          </label>
+        ))}
+      </div>
+      </div>
+
+      {/* Bottom Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
           onClick={handleCancel}
@@ -214,3 +208,4 @@ const LocationTab = ({
 };
 
 export default LocationTab;
+

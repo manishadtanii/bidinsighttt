@@ -64,7 +64,7 @@ function StatusTab({
           </div>
 
           {/* Personalised Filter */}
-          <div>
+          {/* <div className=''>
             <h2 className="text-p font-inter font-medium mb-2">Personalised</h2>
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
@@ -82,7 +82,7 @@ function StatusTab({
               />
               <span className="font-inter text-xl">My Invitations Only</span>
             </label>
-          </div>
+          </div> */}
         </div>
       </div>
 

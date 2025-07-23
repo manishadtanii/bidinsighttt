@@ -19,6 +19,7 @@ import Plan from "./pages/Plan";
 import Loader from "./components/Loader";
 import SummaryPage from "./pages/SummaryPage";
 import Pricing from "./pages/Pricing";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   useEffect(() => {
@@ -31,6 +32,7 @@ const App = () => {
   return (
     // <Router>
       <LayoutWrapper>
+        <ScrollToTop/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/loader" element={<Loader />} />
