@@ -586,38 +586,42 @@ console.log("🟧 updateSavedSearch → selectedSavedSearch:", selectedSavedSear
 
 
 
-  const handleSaveOrUpdate = async (data) => {
-    console.log("🟨 handleSaveOrUpdate → data:", data);
+ const handleSaveOrUpdate = async (data) => {
+  console.log("🟨 handleSaveOrUpdate → data:", data);
   console.log("🟨 handleSaveOrUpdate → saveSearchFilters:", saveSearchFilters);
-    const filtersToUse = saveSearchFilters;
 
-    if (data.action === "replace") {
-      const matchedSearch = savedSearches.find((s) => s.name === data.name);
+  const filtersToUse = saveSearchFilters;
 
-      if (matchedSearch) {
-        const id = matchedSearch.id || matchedSearch._id;
-        const queryString = buildQueryString(filtersToUse);
+  console.log("✅ Filters at save time →", filtersToUse); // 👈 Yeh line add karo yahan
 
-        await updateSavedSearch(id, {
-          name: matchedSearch.name,
-          query_string: queryString,
-          is_default: data.isDefault,
-        });
+  if (data.action === "replace") {
+    const matchedSearch = savedSearches.find((s) => s.name === data.name);
 
-        toast.success("Saved search replaced");
-        setSaveSearchToggle(false);
-        fetchBidsWithParams(filtersToUse);
-      } else {
-        toast.error("Matching search not found");
-      }
-    } else {
-      postSaveSearch({
-        filters: filtersToUse,
-        name: data.name,
-        isDefault: data.isDefault,
+    if (matchedSearch) {
+      const id = matchedSearch.id || matchedSearch._id;
+      const queryString = buildQueryString(filtersToUse);
+
+      await updateSavedSearch(id, {
+        name: matchedSearch.name,
+        query_string: queryString,
+        is_default: data.isDefault,
       });
+
+      toast.success("Saved search replaced");
+      setSaveSearchToggle(false);
+      fetchBidsWithParams(filtersToUse);
+    } else {
+      toast.error("Matching search not found");
     }
-  };
+  } else {
+    postSaveSearch({
+      filters: filtersToUse,
+      name: data.name,
+      isDefault: data.isDefault,
+    });
+  }
+};
+  
 
   const fetchBidsWithParams = async (customFilters) => {
     console.log("🟥 fetchBidsWithParams → filters received:", customFilters);

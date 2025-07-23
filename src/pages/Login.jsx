@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import ProcessWrapper from "../components/ProcessWrapper";
 import FormImg from "../components/FormImg";
 import api from "../utils/axios";
+import { useDispatch } from "react-redux";
+import { setLoginData } from "../redux/loginSlice";
+
 
 function Login() {
   const data = {
@@ -53,6 +56,8 @@ function Login() {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
 
   // Real-time validation: only show error for invalid email format or password < 6
   const validateField = (name, value) => {
@@ -102,11 +107,14 @@ function Login() {
     if (!valid) return;
     try {
       const res = await api.post("/auth/login/", fields);
-
-      console.log(res.data.access);
+      const loginPayload = {
+        user: res.data.user,
+  access: res.data.access,
+      }
       if (res.data && res.data.access) {
         localStorage.setItem("access_token", res.data.access);
       }
+      dispatch(setLoginData(loginPayload));
       navigate("/dashboard");
     } catch (err) {
       if (err.response && err.response.status === 400) {

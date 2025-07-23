@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { format } from "date-fns";
 
 const PublishedDateTab = ({
   filters = {},
@@ -12,6 +14,26 @@ const PublishedDateTab = ({
   const { from = "", to = "" } = filters.publishedDate || {};
   const today = new Date().toISOString().slice(0, 10);
   const [manualSelected, setManualSelected] = useState("");
+
+
+  const loginDateRawRedux = useSelector((state) => state.login?.user?.last_login);
+
+// Check localStorage if Redux doesn't have login info
+let loginDateRaw = loginDateRawRedux;
+
+if (!loginDateRaw) {
+  try {
+    const authTokens = JSON.parse(localStorage.getItem("auth_tokens"));
+    loginDateRaw = authTokens?.user?.last_login || null;
+  } catch (error) {
+    console.error("Error reading auth_tokens from localStorage:", error);
+  }
+}
+
+const loginDate = loginDateRaw
+  ? format(new Date(loginDateRaw), "dd MMM yyyy")
+  : "Not Available";
+
 
    useEffect(() => {
   const isValidDate = (dateStr) => !isNaN(new Date(dateStr));
@@ -106,7 +128,7 @@ const PublishedDateTab = ({
               onChange={(e) => handleRadioChange(e.target.value)}
               className="accent-purple-600"
             />
-            <span className="font-inter text-xl">{todayFormatted}</span>
+            <span className="font-inter text-xl">{loginDate}</span>
           </div>
         </div>
 

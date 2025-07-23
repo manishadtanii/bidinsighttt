@@ -1,10 +1,35 @@
+// src/store/store.js
 import { configureStore } from "@reduxjs/toolkit";
-import onboardingReducer from "./onboardingSlice"; // 👈 import karo
+import onboardingReducer from "./onboardingSlice";
+import loginReducer from "./loginSlice";
 
-const store = configureStore({
-  reducer: {
-    onboarding: onboardingReducer, // 👈 add this line
-  },
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // uses localStorage
+import { combineReducers } from "redux";
+
+// combine reducers
+const rootReducer = combineReducers({
+  onboarding: onboardingReducer,
+  login: loginReducer,
 });
 
+// config for redux persist
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+// persisted reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// configure store with persisted reducer
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // redux-persist throws warning otherwise
+    }),
+});
+
+export const persistor = persistStore(store);
 export default store;
