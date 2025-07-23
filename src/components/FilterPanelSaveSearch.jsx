@@ -12,10 +12,10 @@ import UNSPSCCode from "./tabs/UNSPSCCode";
 const tabs = [
   "Save Search Form",
   "Status",
-  "NAICSCode",
-  "UNSPSCCode",
   "Keyword",
   "Location",
+  "NAICSCode",
+  "UNSPSCCode",
   "Published Date",
   "Closing Date",
   "Solicitation Type",

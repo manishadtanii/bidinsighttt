@@ -134,7 +134,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
   );
 
   return (
-    <div className="rounded-2xl bg-btn text-white my-[50px] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid">
+    <div className="rounded-2xl bg-btn text-white my-[50px] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid relative">
       {/* <div className="flex justify-end mb-3">
         <button
           onClick={exportToCSV}
@@ -145,7 +145,7 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
       </div> */}
 
       <table className="min-w-full table-auto text-sm text-center">
-        <thead>
+        <thead className="">
           <tr className="text-white/80 text-xs border-b border-white/20">
             <th className="px-4 py-2 font-inter text-lg">
               Entity Type {renderSelect("jurisdiction")}

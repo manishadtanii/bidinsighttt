@@ -1,9 +1,10 @@
 import React from "react";
 import Unlock from "../../components/Unlock";
+import line from "../../../public/line.png";
+
 
 export default function SummaryContent() {
-  const summaryText =
-    "The Ohio Department of Medicaid is soliciting bids for the renewal of the Omnivex software subscription, which supports digital signage by displaying video content on monitors in the lobby and operations area. Bidders must be authorized resellers, with preference given to those listed on the State Term Schedule (STS), and pricing must be compliant with or below STS contract levels.";
+  const summaryText ="";
 
   const data = {
     head: "Unlock the Bids to View Score",
@@ -21,7 +22,7 @@ export default function SummaryContent() {
             {summaryText || "No summary available at the moment."}
           </p>
           <div className="text-center">
-            <img src="/line.png" alt="divider" className="mx-auto my-10" />
+            <img src={line} alt="divider" className="mx-auto my-10" />
           </div>
           <Unlock data={data} />
         </div>
