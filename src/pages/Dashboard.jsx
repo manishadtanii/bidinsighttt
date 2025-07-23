@@ -361,7 +361,7 @@ function Dashboard() {
     setFilters(filters);
     setAppliedFilters(filters);
     setSearchOption("replace");
-    fetchBidsWithParams(filters);
+    // fetchBidsWithParams(filters);
   };
 
 
