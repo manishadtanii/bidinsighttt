@@ -127,7 +127,7 @@ const UNSPSCCode = ({ filters, setFilters, onApply }) => {
           dataLength={unspscData.length}
           next={fetchMoreData}
           hasMore={hasMore}
-          loader={<p className="p-4  text-gray-500"><img src="/loadunspsc.gif" alt="" /></p>}
+          loader={<p className="p-4 w-24 text-gray-500"><img src="/loadunspsccccc.gif" alt="" /></p>}
           endMessage={<p className="p-4 text-gray-400">No more data.</p>}
           scrollableTarget="scrollableDiv"
         >
