@@ -134,39 +134,39 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
   );
 
   return (
-    <div className="rounded-2xl bg-btn text-white my-[50px] p-4 shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto ">
+    <div className="bid-table rounded-2xl bg-btn text-white my-[50px]  shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto ">
       {/* <div className="flex justify-end mb-3">
         <button
           onClick={exportToCSV}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
         >
           Export CSV
-        </button>
+        </button> 
       </div> */}
 
       <table className="min-w-full table-auto text-sm text-center">
-        <thead className="sticky top-0 ">
-          <tr className="text-white/80 text-xs border-b border-white/20">
-            <th className="px-4 py-2 font-inter text-lg">
+        <thead className="sticky top-0 bg-white/5 backdrop-blur-sm ">
+          <tr className="text-white/80 text-xs border-b border-white/20 ">
+            <th className="px-4 py-4 font-inter text-lg">
               Entity Type {renderSelect("jurisdiction")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-4 font-inter text-lg">
               Bid Name {renderSelect("bid_name")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-4 font-inter text-lg">
               Open Date {renderSelect("open_date")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-4 font-inter text-lg">
               Closed Date {renderSelect("closing_date")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-4 font-inter text-lg">
               Countdown {renderSelect("closing_date")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg">
+            <th className="px-4 py-4 font-inter text-lg">
               Status {renderSelect("status")}
             </th>
-            <th className="px-4 py-2 font-inter text-lg text-center">Share</th>
-            <th className="px-4 py-2 font-inter text-lg text-center">Follow</th>
+            <th className="px-4 py-4 font-inter text-lg text-center">Share</th>
+            <th className="px-4 py-4 font-inter text-lg text-center">Follow</th>
           </tr>
         </thead>
         <tbody>

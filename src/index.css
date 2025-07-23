@@ -246,6 +246,9 @@ p {
   /* border: 2px solid transparent; */
   background-clip: content-box;
 }
+.bid-table::-webkit-scrollbar {
+  width: 0px !important;
+}
 .form-input:focus {
   outline: none;
   border-color: #fff;
