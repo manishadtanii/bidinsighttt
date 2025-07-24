@@ -20,6 +20,7 @@ import Loader from "./components/Loader";
 import SummaryPage from "./pages/SummaryPage";
 import Pricing from "./pages/Pricing";
 import ScrollToTop from "./components/ScrollToTop";
+import AboutUs from "./pages/AboutUs";
 
 const App = () => {
   useEffect(() => {
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="/summary" element={<SummaryPage />} />
           <Route path="/summary/:id" element={<SummaryPage />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>

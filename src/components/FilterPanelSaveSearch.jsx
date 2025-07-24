@@ -41,6 +41,8 @@ function FilterPanelSaveSearch({
   const [triggerSave, setTriggerSave] = useState(false);
 
   const handleSaveSearchSubmit = (data) => {
+
+    
     if (!data.name?.trim()) {
       setShowValidation(true);
       return;
@@ -93,28 +95,60 @@ function FilterPanelSaveSearch({
 
   // ✅ NEW FUNCTION TO HANDLE REPLACE SELECTION
   const handleSavedSearchSelect = async (selected) => {
-    const token = localStorage.getItem("access_token");
-    try {
-      const res = await api.get("/bids/saved-filters/", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+    console.log("✅ Saved search selected:", selected);
+// console.log("✅ Matched Query String:", matched.query_string);
+// console.log("✅ Parsed Filters:", parsedFilters);
 
-      const matched = res.data.find((item) => item.id === parseInt(selected.id));
-      if (!matched) return;
+  const token = localStorage.getItem("access_token");
 
-      const parsedFilters = parseSavedSearch(matched.query_string);
+  try {
+    const res = await api.get("/bids/saved-filters/", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
 
-      setFilters(parsedFilters);
-      setSelectedSavedSearch({ id: matched.id, name: matched.name }); // ✅ store full object
-      setSearchOption("replace");
+    const matched = res.data.find((item) => item.id === parseInt(selected.id));
+    if (!matched) return;
 
-      setTimeout(() => {
-        onApply?.();
-      }, 0);
-    } catch (err) {
-      console.error("❌ Failed to load saved search", err);
-    }
-  };
+    const parsedFilters = parseSavedSearch(matched.query_string); // ✅ convert query string to object
+
+    // ✅ Update filters state
+    setFilters(parsedFilters);
+    setSelectedSavedSearch({ id: matched.id, name: matched.name });
+    setSearchOption("replace");
+
+    // ✅ Update URL params
+    const urlParams = new URLSearchParams();
+
+    if (parsedFilters.status) urlParams.set("bid_type", parsedFilters.status);
+    if (parsedFilters.keyword) urlParams.set("bid_name", parsedFilters.keyword);
+    if (parsedFilters.location) urlParams.set("state", parsedFilters.location);
+    if (parsedFilters.publishedDate?.from) urlParams.set("open_date_after", parsedFilters.publishedDate.from);
+    if (parsedFilters.publishedDate?.to) urlParams.set("open_date_before", parsedFilters.publishedDate.to);
+    if (parsedFilters.closingDate?.from) urlParams.set("close_date_after", parsedFilters.closingDate.from);
+    if (parsedFilters.closingDate?.to) urlParams.set("close_date_before", parsedFilters.closingDate.to);
+    if (parsedFilters.solicitationType?.length) urlParams.set("solicitation", parsedFilters.solicitationType.join(","));
+    if (parsedFilters.naics_codes?.length) urlParams.set("naics_codes", parsedFilters.naics_codes.join(","));
+    if (parsedFilters.unspsc_codes?.length) urlParams.set("unspsc_codes", parsedFilters.unspsc_codes.join(","));
+    if (parsedFilters.includeKeywords?.length) urlParams.set("include", parsedFilters.includeKeywords.join(","));
+    if (parsedFilters.excludeKeywords?.length) urlParams.set("exclude", parsedFilters.excludeKeywords.join(","));
+
+    // ✅ Optional: Reset pagination
+    urlParams.set("page", "1");
+    urlParams.set("pageSize", "25");
+
+    // ✅ Update URL
+    setSearchParams(urlParams);
+
+    // ✅ Trigger API fetch
+    setTimeout(() => {
+      console.log("🚀 Calling onApply with filters:", parsedFilters);
+      onApply?.();
+    }, 0);
+  } catch (err) {
+    console.error("❌ Failed to load saved search", err);
+  }
+};
+
 
 
   const sharedProps = {
@@ -125,6 +159,8 @@ function FilterPanelSaveSearch({
     setShowValidation,
     setTriggerSave,
     onSaveClick: handleSaveSearchClickFromAnyTab,
+    onClose,
+    onApply,
   };
 
   const renderTabContent = () => {

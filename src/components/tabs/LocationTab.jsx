@@ -15,6 +15,13 @@ const LocationTab = ({
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    const saved = localStorage.getItem("dashboardSavedSearches");
+    if (saved) {
+      setSavedSearches(JSON.parse(saved));
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchStates = async () => {
       try {
         const res = await api.get("/auth/states/");
