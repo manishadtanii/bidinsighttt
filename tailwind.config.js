@@ -19,6 +19,7 @@ export default {
         inter: ["Inter", "sans-serif"],
       },
       fontSize: {
+        topH: ["clamp(70px, 5vw, 150px)", { lineHeight: "1.1" }],
         h1: ["clamp(40px, 5vw, 70px)", { lineHeight: "1.1" }],
         h2: ["clamp(24px, 5vw, 60px)", { lineHeight: "1.1" }],
         h3: ["clamp(16px, 5vw, 40px)", { lineHeight: "1.1" }],

@@ -33,7 +33,9 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.1",
+    "react-slick": "^0.30.3",
     "redux-persist": "^6.0.0",
+    "slick-carousel": "^1.8.1",
     "split-type": "^0.3.4",
     "three": "^0.178.0"
   },
