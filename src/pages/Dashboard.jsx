@@ -66,7 +66,7 @@ function Dashboard() {
 
   // list of save searches comes from API here
   const [savedSearches, setSavedSearches] = useState([]);
-  const [selectedSavedSearch, setSelectedSavedSearch] = useState("__default__");
+  const [selectedSavedSearch, setSelectedSavedSearch] = useState("_default_");
   const [searchOption, setSearchOption] = useState("create");
 
 
@@ -315,11 +315,13 @@ function Dashboard() {
       const res = await api.get("/bids/saved-filters/", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      const saved = res.data.map((item) => item.name);
+      // const saved = res.data.map((item) => item.name);
       // console.log(saved[0])
       setSavedSearches(res.data); // ✅ Save full list of objects
+      return res.data
     } catch (err) {
       console.error("Failed to fetch saved searches", err);
+      return []
     }
   };
   const onApply = () => {
@@ -366,9 +368,7 @@ function Dashboard() {
       applyFiltersGlobally(finalFilters); // internally this should call setFilters
 
       // 👇 delay needed to wait for state update
-      setTimeout(() => {
-        onApply?.(); // This should trigger fetch with updated filters
-      }, 0);
+    
 
     } catch (err) {
       console.error("❌ Failed to fetch saved search filters", err);
@@ -388,133 +388,137 @@ function Dashboard() {
   };
 
 
+const postSaveSearch = async (data) => {
+  console.log("🟩 postSaveSearch → name:", data.name);
+  console.log("🟩 postSaveSearch → filters:", data.filters);
 
-  const postSaveSearch = async (data) => {
-    console.log("🟩 postSaveSearch → name:", data.name);
-    console.log("🟩 postSaveSearch → filters:", data.filters);
-    // console.log("🟩 postSaveSearch → query string:", queryString);
+  const token = localStorage.getItem("access_token");
+  const filtersToUse = data.filters;
+  const params = new URLSearchParams();
 
-    const token = localStorage.getItem("access_token");
-    const filtersToUse = data.filters;
-    const params = new URLSearchParams();
-
-    const statusMap = {
-      "Open Solicitations": "Active",
-      "Closed Solicitations": "Inactive",
-      "Awarded Solicitations": "Awarded",
-    };
-
-    const effectiveStatus = filtersToUse.status || "Open Solicitations";
-    const mappedStatus = statusMap[effectiveStatus];
-    if (mappedStatus) params.append("bid_type", mappedStatus);
-
-    if (filtersToUse.keyword) params.append("bid_name", filtersToUse.keyword);
-    if (filtersToUse.location) {
-      const stateParam = filtersToUse.location.split(",").map((name) => name.trim()).join(",");
-      params.append("state", stateParam);
-    }
-
-    if (filtersToUse.publishedDate?.from && filtersToUse.publishedDate?.to) {
-      const fromDate = new Date(filtersToUse.publishedDate.from);
-      const toDate = new Date(filtersToUse.publishedDate.to);
-      if (fromDate <= toDate) {
-        params.append("open_date_after", filtersToUse.publishedDate.from);
-        params.append("open_date_before", filtersToUse.publishedDate.to);
-      }
-    }
-
-    if (filtersToUse.closingDate?.from && filtersToUse.closingDate?.to) {
-      const fromDate = new Date(filtersToUse.closingDate.from);
-      const toDate = new Date(filtersToUse.closingDate.to);
-      if (fromDate <= toDate) {
-        params.append("close_date_after", filtersToUse.closingDate.from);
-        params.append("close_date_before", filtersToUse.closingDate.to);
-      }
-    }
-
-    if (filtersToUse.solicitationType?.length > 0) {
-      params.append("solicitation", filtersToUse.solicitationType.join(","));
-    }
-
-    if (filtersToUse.naics_codes?.length > 0) {
-      const codes = filtersToUse.naics_codes.map((item) =>
-        typeof item === "string" ? item : item.code
-      );
-      params.append("naics_codes", codes.join(","));
-    }
-
-    if (filtersToUse.unspsc_codes?.length > 0) {
-      const codes = filtersToUse.unspsc_codes.map((item) =>
-        typeof item === "string" ? item : item.code
-      );
-      params.append("unspsc_codes", codes.join(","));
-    }
-
-    if (filtersToUse.includeKeywords?.length > 0) {
-      params.append("include", filtersToUse.includeKeywords.join(","));
-    }
-
-    if (filtersToUse.excludeKeywords?.length > 0) {
-      params.append("exclude", filtersToUse.excludeKeywords.join(","));
-    }
-
-    const queryString = `?${params.toString()}`;
-
-    try {
-      const body = {
-        name: data.name,
-        query_string: queryString,
-        is_default: data.isDefault,
-      };
-
-      // ✅ IF REPLACE: PUT request to update existing
-      if (searchOption === "replace" && selectedSavedSearch?.id) {
-        await api.put(`/bids/saved-filters/${selectedSavedSearch.id}/`, body, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } else {
-        // ✅ ELSE: create new saved search
-        await api.post("/bids/saved-filters/", body, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
-
-      const { searchName, ...filtersWithoutSearchName } = filtersToUse;
-
-      await fetchSavedSearches(); // refresh dropdown list
-      console.log("🟩 postSaveSearch → fetched saved searches after save");
-
-      setSelectedSavedSearch(data.name); // update dropdown
-      handleSavedSearchSelect(data.name); // auto-apply updated filters
-
-      if (searchOption === "apply") {
-        setFilters(filtersWithoutSearchName);
-      }
-
-      // Reset Save Search modal state
-      setSaveSearchFilters({
-        searchName: "",
-        status: "",
-        categories: [],
-        keyword: "",
-        location: "",
-        publishedDate: { from: "", to: "" },
-        closingDate: { from: "", to: "" },
-        solicitationType: [],
-        naics_codes: [],
-        unspsc_codes: [],
-        includeKeywords: [],
-        excludeKeywords: [],
-      });
-
-      setSearchOption("replace");
-      setSaveSearchToggle(false);
-    } catch (err) {
-      console.error("❌ Failed to save/update search", err);
-    }
+  const statusMap = {
+    "Open Solicitations": "Active",
+    "Closed Solicitations": "Inactive",
+    "Awarded Solicitations": "Awarded",
   };
 
+  const effectiveStatus = filtersToUse.status || "Open Solicitations";
+  const mappedStatus = statusMap[effectiveStatus];
+  if (mappedStatus) params.append("bid_type", mappedStatus);
 
+  if (filtersToUse.keyword) params.append("bid_name", filtersToUse.keyword);
+  if (filtersToUse.location) {
+    const stateParam = filtersToUse.location.split(",").map((name) => name.trim()).join(",");
+    params.append("state", stateParam);
+  }
+
+  if (filtersToUse.publishedDate?.from && filtersToUse.publishedDate?.to) {
+    const fromDate = new Date(filtersToUse.publishedDate.from);
+    const toDate = new Date(filtersToUse.publishedDate.to);
+    if (fromDate <= toDate) {
+      params.append("open_date_after", filtersToUse.publishedDate.from);
+      params.append("open_date_before", filtersToUse.publishedDate.to);
+    }
+  }
+
+  if (filtersToUse.closingDate?.from && filtersToUse.closingDate?.to) {
+    const fromDate = new Date(filtersToUse.closingDate.from);
+    const toDate = new Date(filtersToUse.closingDate.to);
+    if (fromDate <= toDate) {
+      params.append("close_date_after", filtersToUse.closingDate.from);
+      params.append("close_date_before", filtersToUse.closingDate.to);
+    }
+  }
+
+  if (filtersToUse.solicitationType?.length > 0) {
+    params.append("solicitation", filtersToUse.solicitationType.join(","));
+  }
+
+  if (filtersToUse.naics_codes?.length > 0) {
+    const codes = filtersToUse.naics_codes.map((item) =>
+      typeof item === "string" ? item : item.code
+    );
+    params.append("naics_codes", codes.join(","));
+  }
+
+  if (filtersToUse.unspsc_codes?.length > 0) {
+    const codes = filtersToUse.unspsc_codes.map((item) =>
+      typeof item === "string" ? item : item.code
+    );
+    params.append("unspsc_codes", codes.join(","));
+  }
+
+  if (filtersToUse.includeKeywords?.length > 0) {
+    params.append("include", filtersToUse.includeKeywords.join(","));
+  }
+
+  if (filtersToUse.excludeKeywords?.length > 0) {
+    params.append("exclude", filtersToUse.excludeKeywords.join(","));
+  }
+
+  const queryString = `?${params.toString()}`;
+
+  try {
+    const body = {
+      name: data.name,
+      query_string: queryString,
+      is_default: data.isDefault,
+    };
+
+    // ✅ IF REPLACE
+    if (searchOption === "replace" && selectedSavedSearch?.id) {
+      await api.put(`/bids/saved-filters/${selectedSavedSearch.id}/`, body, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } else {
+      // ✅ ELSE: create new
+      await api.post("/bids/saved-filters/", body, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+
+    const { searchName, ...filtersWithoutSearchName } = filtersToUse;
+
+    await fetchSavedSearches(); // ✅ Refresh dropdown list
+    console.log("🟩 postSaveSearch → fetched saved searches after save");
+
+    // ✅ Get the newly saved search by name
+    const latestListRes = await api.get("/bids/saved-filters/", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const newSaved = latestListRes.data.find((item) => item.name === data.name);
+
+    if (newSaved) {
+      setSelectedSavedSearch({ id: newSaved.id, name: newSaved.name }); // ✅ set dropdown value
+      await handleSavedSearchSelect(newSaved.id); // ✅ apply it
+    }
+
+    if (searchOption === "apply") {
+      setFilters(filtersWithoutSearchName);
+    }
+
+    // Reset modal
+    setSaveSearchFilters({
+      searchName: "",
+      status: "",
+      categories: [],
+      keyword: "",
+      location: "",
+      publishedDate: { from: "", to: "" },
+      closingDate: { from: "", to: "" },
+      solicitationType: [],
+      naics_codes: [],
+      unspsc_codes: [],
+      includeKeywords: [],
+      excludeKeywords: [],
+    });
+
+    setSearchOption("replace");
+    setSaveSearchToggle(false); // close modal
+  } catch (err) {
+    console.error("❌ Failed to save/update search", err);
+  }
+};
 
 
 
@@ -713,7 +717,7 @@ function Dashboard() {
       }
 
       const res = await api.get(`/bids/?${params.toString()}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: token ? { Authorization: `Bearer ${token}`} : {},
       });
 
       setCount(res.data.count);
@@ -842,7 +846,7 @@ function Dashboard() {
                       value={selectedSavedSearch?.id || ""}
                       onChange={(e) => handleSavedSearchSelect(Number(e.target.value))} // ✅ Convert to number
                     >
-                      <option value="__default__">My Saved Searches</option> {/* Optional default */}
+                      <option value="_default_">My Saved Searches</option> {/* Optional default */}
                       {savedSearches.map((search, index) => (
                         <option key={search.id || index} className="text-black" value={search.id}>
                           {search.name}
@@ -851,7 +855,7 @@ function Dashboard() {
                     </select>
 
 
-
+ {/* className="bg-transparent text-white focus:outline-none focus:ring-0" */}
                   </div>
                   <BgCover>
                     <div

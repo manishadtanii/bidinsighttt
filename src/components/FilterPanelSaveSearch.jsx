@@ -96,8 +96,8 @@ function FilterPanelSaveSearch({
   // ✅ NEW FUNCTION TO HANDLE REPLACE SELECTION
   const handleSavedSearchSelect = async (selected) => {
     console.log("✅ Saved search selected:", selected);
-console.log("✅ Matched Query String:", matched.query_string);
-console.log("✅ Parsed Filters:", parsedFilters);
+// console.log("✅ Matched Query String:", matched.query_string);
+// console.log("✅ Parsed Filters:", parsedFilters);
 
   const token = localStorage.getItem("access_token");
 
@@ -159,6 +159,8 @@ console.log("✅ Parsed Filters:", parsedFilters);
     setShowValidation,
     setTriggerSave,
     onSaveClick: handleSaveSearchClickFromAnyTab,
+    onClose,
+    onApply,
   };
 
   const renderTabContent = () => {

@@ -8,23 +8,32 @@ function StatusTab({
   searchOption,
   setShowValidation,
   setTriggerSave,
+  onClose,
+  
 }) {
   const handleSearchClick = () => {
-    const isCreating = searchOption === "create";
-    const nameMissing = !filters.searchName?.trim();
+  console.log("🔵 Search button clicked!");
 
-    if (isCreating && nameMissing) {
-      setShowValidation?.(true);
-      setActiveTab?.("Save Search Form");
-      return;
-    }
+  const isCreating = searchOption === "create";
+  const nameMissing = !filters.searchName?.trim();
 
-    if (isCreating) {
-      setTriggerSave?.(true); // Will be handled in SavedSearchForm
-    } else {
-      onApply?.(); // Just apply filters, no Save
-    }
-  };
+  if (isCreating && nameMissing) {
+    setShowValidation?.(true);
+    setActiveTab?.("Save Search Form");
+    return;
+  }
+
+  if (isCreating) {
+    console.log("🟢 Trigger Save: searchOption is 'create'");
+    setTriggerSave?.(true);
+    onClose?.();
+  } else {
+    console.log("🟢 Applying filters");
+    onApply?.();
+    onClose?.();
+  }
+};
+
 
   const handleCancel = () => {
     setFilters((prev) => ({
