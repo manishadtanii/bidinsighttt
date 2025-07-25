@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import StatusTab from './tabs/StatusTab';
 import CategoriesTab from './tabs/CategoriesTab';
@@ -23,74 +23,31 @@ const tabs = [
   "Solicitation Type",
 ];
 
-function FilterPanel({ filters, setFilters, onClose }) {
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem("lastActiveFilterTab") || "Status";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("lastActiveFilterTab", activeTab);
-  }, [activeTab]);
-
-  const handleApplyFilters = () => {
-  // ✅ Save filters to localStorage
-  localStorage.setItem("dashboardFilters", JSON.stringify(filters));
-  localStorage.setItem("dashboardAppliedFilters", JSON.stringify(filters));
-
-  // ✅ Close the filter panel
-  onClose();
-};
-
-  const commonProps = {
-    filters,
-    setFilters,
-    onApply: handleApplyFilters,
-    searchOption: "filter",
-    setShowValidation: () => {},
-    setTriggerSave: () => {},
-    setActiveTab,
-  };
-
-  const clearAllFilters = () => {
-    setFilters({
-      status: "",
-      categories: [],
-      keyword: "",
-      location: "",
-      publishedDate: { from: "", to: "" },
-      closingDate: { from: "", to: "" },
-      solicitationType: [],
-      naics_codes: [],
-      unspsc_codes: [],
-      includeKeywords: [],
-      excludeKeywords: [],
-    });
-    setActiveTab("Status");
-    localStorage.setItem("lastActiveFilterTab", "Status");
-  };
+const FilterPanel = ({ onClose }) => {
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "Status":
-        return <StatusTab {...commonProps} />;
+        return <StatusTab />;
       case "NAICS Code":
-        return <NAICSCode {...commonProps} />;
+        return <NAICSCode />;
       case "UNSPSC Code":
-        return <UNSPSCCode {...commonProps} />;
+        return <UNSPSCCode />;
       case "Keyword":
-        return <KeywordTab {...commonProps} mode="keyword" />;
+        return <KeywordTab mode="keyword" />;
       case "Include Keywords":
-        return <KeywordTab {...commonProps} mode="include" />;
+        return <KeywordTab mode="include" />;
       case "Exclude Keywords":
-        return <KeywordTab {...commonProps} mode="exclude" />;
+        return <KeywordTab mode="exclude" />;
       case "Location":
-        return <LocationTab {...commonProps} />;
+        return <LocationTab />;
       case "Published Date":
-        return <PublishedDateTab {...commonProps} />;
+        return <PublishedDateTab />;
       case "Closing Date":
-        return <ClosingDateTab {...commonProps} />;
+        return <ClosingDateTab />;
       case "Solicitation Type":
-        return <SolicitationTypeTab {...commonProps} />;
+        return <SolicitationTypeTab />;
       default:
         return null;
     }
@@ -103,17 +60,15 @@ function FilterPanel({ filters, setFilters, onClose }) {
         <div>
           <div className="flex justify-between items-end mb-8">
             <h1 className="font-archivo font-bold text-h3">Filter</h1>
-            <button onClick={onClose} className="text-p font-inter">
-              Close ✕
-            </button>
+            <button className="text-p font-inter" onClick={onClose}>Close ✕</button>
           </div>
 
           <ul className="space-y-4">
             {tabs.map((tab) => (
               <li
                 key={tab}
-                className={`cursor-pointer pt-2 ${activeTab === tab ? "font-bold" : ""}`}
                 onClick={() => setActiveTab(tab)}
+                className={`cursor-pointer pt-2 ${activeTab === tab ? "font-bold" : ""}`}
               >
                 <div className="flex justify-between items-center font-inter text-p font-medium">
                   <span>{tab}</span>
@@ -125,12 +80,7 @@ function FilterPanel({ filters, setFilters, onClose }) {
           </ul>
         </div>
 
-        <button
-          onClick={clearAllFilters}
-          className="text-p underline font-inter text-right"
-        >
-          Clear All
-        </button>
+        <button className="text-p underline font-inter text-right">Clear All</button>
       </div>
 
       {/* Content Area */}
@@ -139,6 +89,6 @@ function FilterPanel({ filters, setFilters, onClose }) {
       </div>
     </div>
   );
-}
+};
 
 export default FilterPanel;

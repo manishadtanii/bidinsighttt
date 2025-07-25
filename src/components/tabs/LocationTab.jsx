@@ -1,123 +1,96 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Trash2, Search } from "lucide-react";
-import api from "../../utils/axios";
 
-const LocationTab = ({
-  filters = {},
-  setFilters = () => {},
-  onApply = () => {},
-  setActiveTab = () => {},
-  searchOption = "create",
-  setShowValidation = () => {},
-  setTriggerSave = () => {},
-}) => {
-  const [statesData, setStatesData] = useState([]);
+const US_STATES = [
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+];
+
+const LocationTab = () => {
+  const [selectedStates, setSelectedStates] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    const saved = localStorage.getItem("dashboardSavedSearches");
-    if (saved) {
-      setSavedSearches(JSON.parse(saved));
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const res = await api.get("/auth/states/");
-        const sorted = res.data.sort((a, b) => a.name.localeCompare(b.name));
-        setStatesData(sorted);
-      } catch (err) {
-        console.error("Error fetching states:", err);
-      }
-    };
-    fetchStates();
-  }, []);
-
-  const selectedNames = filters.location
-    ? filters.location.split(",").map((name) => name.trim())
-    : [];
-
-  const selected = statesData.filter((state) =>
-    selectedNames.includes(state.name)
+  // Filter states based on search input
+  const filteredStates = US_STATES.filter((state) =>
+    state.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const toggleSelect = (state) => {
-    const isAlreadySelected = selectedNames.includes(state.name);
-    const updatedNames = isAlreadySelected
-      ? selectedNames.filter((name) => name !== state.name)
-      : [...selectedNames, state.name];
-
-    setFilters((prev) => ({
-      ...prev,
-      location: updatedNames.join(","),
-    }));
-  };
-
-  const removeSelected = (name) => {
-    const updated = selectedNames.filter((n) => n !== name);
-    setFilters((prev) => ({
-      ...prev,
-      location: updated.join(","),
-    }));
-  };
-
-  const handleCancel = () => {
-    setFilters((prev) => ({ ...prev, location: "" }));
-
-    if (searchOption === "create") {
-      setActiveTab("Save Search Form");
-      setTimeout(() => setTriggerSave(true), 0);
-    } else {
-      onApply?.();
-    }
-  };
-
-  const handleApply = () => {
-    const isEmpty = searchOption === "create" && !filters.searchName?.trim();
-
-    if (isEmpty) {
-      setShowValidation(true);
-      setActiveTab("Save Search Form");
-      return;
-    }
-
-    if (searchOption === "create") {
-      setTriggerSave(true);
-    } else {
-      onApply?.();
-    }
-  };
-
-  const filteredStates = searchTerm
-    ? statesData.filter((state) =>
-        state.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : statesData;
-
-  const allVisibleStateNames = filteredStates.map((state) => state.name);
   const isAllSelected =
-    allVisibleStateNames.length > 0 &&
-    allVisibleStateNames.every((name) => selectedNames.includes(name));
+    filteredStates.length > 0 &&
+    filteredStates.every((state) => selectedStates.includes(state));
 
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      const allNames = Array.from(
-        new Set([...selectedNames, ...allVisibleStateNames])
+  const toggleState = (state) => {
+    setSelectedStates((prev) =>
+      prev.includes(state)
+        ? prev.filter((s) => s !== state)
+        : [...prev, state]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      // Remove all visible states from selected
+      setSelectedStates((prev) =>
+        prev.filter((state) => !filteredStates.includes(state))
       );
-      setFilters((prev) => ({
-        ...prev,
-        location: allNames.join(","),
-      }));
     } else {
-      const remaining = selectedNames.filter(
-        (name) => !allVisibleStateNames.includes(name)
+      // Add all visible states
+      setSelectedStates((prev) =>
+        Array.from(new Set([...prev, ...filteredStates]))
       );
-      setFilters((prev) => ({
-        ...prev,
-        location: remaining.join(","),
-      }));
     }
+  };
+
+  const clearAll = () => {
+    setSelectedStates([]);
   };
 
   return (
@@ -143,28 +116,31 @@ const LocationTab = ({
         {/* Selected States */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-p font-medium font-inter">
-            Selected States <span className="text-primary">({selected.length})</span>
+            Selected States{" "}
+            <span className="text-primary">({selectedStates.length})</span>
           </h2>
-          {selected.length > 0 && (
+          {selectedStates.length > 0 && (
             <button
-              onClick={() => setFilters((prev) => ({ ...prev, location: "" }))}
+              onClick={clearAll}
               className="text-lg underline font-inter"
+              aria-label="Clear all selected states"
             >
               Clear All
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {selected.map((item) => (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {selectedStates.map((state) => (
             <div
-              key={item.name}
+              key={state}
               className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center justify-between text-lg py-1 font-inter"
             >
-              <div>{item.name}</div>
+              <div>{state}</div>
               <button
-                onClick={() => removeSelected(item.name)}
+                onClick={() => toggleState(state)}
                 className="text-primary"
+                aria-label={`Remove ${state}`}
               >
                 <Trash2 size={16} />
               </button>
@@ -173,44 +149,50 @@ const LocationTab = ({
         </div>
 
         {/* States List with Select All */}
-        <div className="border-[#273BE280] border-[2px] rounded-[10px] mt-6 max-h-[400px] overflow-y-auto">
+        <div className="border-[#273BE280] border-[2px] rounded-[10px] max-h-[400px] overflow-y-auto">
           <div className="flex items-center px-4 py-3 border-b font-medium font-inter text-p">
             <input
               type="checkbox"
               className="accent-primary mr-3"
               checked={isAllSelected}
-              onChange={handleSelectAll}
+              onChange={toggleSelectAll}
+              aria-label="Select all visible states"
             />
             <span>Select All States</span>
           </div>
 
-          {filteredStates.map((state) => (
-            <label
-              key={state.name}
-              className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
-            >
-              <input
-                type="checkbox"
-                className="mt-1 accent-primary"
-                checked={selectedNames.includes(state.name)}
-                onChange={() => toggleSelect(state)}
-              />
-              <div className="text-[16px]">{state.name}</div>
-            </label>
-          ))}
+          {filteredStates.length === 0 ? (
+            <div className="p-4 text-center text-gray-500">No states found</div>
+          ) : (
+            filteredStates.map((state) => (
+              <label
+                key={state}
+                className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
+              >
+                <input
+                  type="checkbox"
+                  className="mt-1 accent-primary"
+                  checked={selectedStates.includes(state)}
+                  onChange={() => toggleState(state)}
+                  aria-label={`Select state ${state}`}
+                />
+                <div className="text-[16px]">{state}</div>
+              </label>
+            ))
+          )}
         </div>
       </div>
 
       {/* Sticky Bottom Buttons */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
-          onClick={handleCancel}
+          onClick={() => setSelectedStates([])}
           className="border-[2px] px-10 py-3 rounded-[20px] font-archivo text-xl transition-all"
         >
           Cancel
         </button>
         <button
-          onClick={handleApply}
+          onClick={() => alert("Search clicked with selected states: " + selectedStates.join(", "))}
           className="bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl hover:bg-blue-700 transition-all"
         >
           Search

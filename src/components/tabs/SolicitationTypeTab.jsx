@@ -1,92 +1,100 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Trash2 } from "lucide-react";
-import api from "../../utils/axios";
 
 const SolicitationTypeTab = ({
   filters = {},
   setFilters = () => {},
   onApply = () => {},
 }) => {
-  const [options, setOptions] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  // Mock static options list (replace with your real data if needed)
+  const options = [
+  { name: "Type A" },
+  { name: "Type B" },
+  { name: "Type C" },
+  { name: "Type D" },
+  { name: "Type E" },
+  { name: "Type F" },
+  { name: "Type G" },
+  { name: "Type H" },
+  { name: "Type I" },
+  { name: "Type J" },
+  { name: "Type K" },
+  { name: "Type L" },
+  { name: "Type M" },
+  { name: "Type N" },
+  { name: "Type O" },
+  { name: "Type P" },
+  { name: "Type Q" },
+  { name: "Type R" },
+  { name: "Type S" },
+  { name: "Type T" },
+  { name: "Type U" },
+  { name: "Type V" },
+];
 
-  useEffect(() => {
-    const fetchTypes = async () => {
-      try {
-        const res = await api.get("/bids/solicitation/");
-        const sorted = res.data.sort((a, b) => a.name.localeCompare(b.name));
-        setOptions(sorted);
-      } catch (err) {
-        console.error("Error fetching bid types:", err);
-      }
-    };
-    fetchTypes();
-  }, []);
 
-  const selectedNames = Array.isArray(filters.solicitationType)
+  // Initialize selected names from props or empty array
+  const initialSelected = Array.isArray(filters.solicitationType)
     ? filters.solicitationType
     : [];
 
+  // Local state to handle selected solicitation types
+  const [selectedNames, setSelectedNames] = useState(initialSelected);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Sync from filters prop if external changes come in
+  useEffect(() => {
+    setSelectedNames(initialSelected);
+  }, [filters.solicitationType]);
+
+  // Filter options by search term (simple client side filtering)
   const filteredOptions = options.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const toggleSelect = (item) => {
-    const isAlreadySelected = selectedNames.includes(item.name);
-    const updated = isAlreadySelected
-      ? selectedNames.filter((name) => name !== item.name)
-      : [...selectedNames, item.name];
-
-    setFilters((prev) => ({
-      ...prev,
-      solicitationType: updated,
-    }));
+  // Toggle selection for one item
+  const toggleSelect = (name) => {
+    setSelectedNames((prevSelected) => {
+      if (prevSelected.includes(name)) {
+        return prevSelected.filter((n) => n !== name);
+      }
+      return [...prevSelected, name];
+    });
   };
 
-  const removeSelected = (name) => {
-    const updated = selectedNames.filter((n) => n !== name);
-    setFilters((prev) => ({
-      ...prev,
-      solicitationType: updated,
-    }));
+  // Clear all selected
+  const clearAll = () => {
+    setSelectedNames([]);
   };
 
-  const handleCancel = () => {
-    setFilters((prev) => ({
-      ...prev,
-      solicitationType: [],
-    }));
-    onApply?.();
-  };
-
-  const handleApply = () => {
-    onApply?.();
-  };
-
+  // "Select All" checkbox state
   const allVisibleNames = filteredOptions.map((item) => item.name);
   const isAllSelected =
     allVisibleNames.length > 0 &&
     allVisibleNames.every((name) => selectedNames.includes(name));
 
+  // Toggle all visible options
   const toggleAllVisible = () => {
     if (isAllSelected) {
-      const remaining = selectedNames.filter(
-        (name) => !allVisibleNames.includes(name)
+      // Remove all visible from selected
+      setSelectedNames((prevSelected) =>
+        prevSelected.filter((name) => !allVisibleNames.includes(name))
       );
-      setFilters((prev) => ({
-        ...prev,
-        solicitationType: remaining,
-      }));
     } else {
-      const combined = Array.from(
-        new Set([...selectedNames, ...allVisibleNames])
+      // Add all visible options to selected (avoid duplicates)
+      setSelectedNames((prevSelected) =>
+        Array.from(new Set([...prevSelected, ...allVisibleNames]))
       );
-      setFilters((prev) => ({
-        ...prev,
-        solicitationType: combined,
-      }));
     }
   };
+
+  // Sync selected to external filters (optional - call setFilters when selected changes)
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      solicitationType: selectedNames,
+    }));
+  }, [selectedNames, setFilters]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
@@ -101,7 +109,10 @@ const SolicitationTypeTab = ({
               placeholder="Search bid types"
               className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
+              size={18}
+            />
           </div>
         </div>
 
@@ -111,10 +122,7 @@ const SolicitationTypeTab = ({
             Selected Types <span className="text-primary">({selectedNames.length})</span>
           </h2>
           {selectedNames.length > 0 && (
-            <button
-              onClick={() => setFilters((prev) => ({ ...prev, solicitationType: [] }))}
-              className="text-lg underline font-inter"
-            >
+            <button onClick={clearAll} className="text-lg underline font-inter">
               Clear All
             </button>
           )}
@@ -127,7 +135,11 @@ const SolicitationTypeTab = ({
               className="flex items-center border-[2px] border-primary rounded-full px-4 py-1 text-sm gap-2"
             >
               <span>{name}</span>
-              <button onClick={() => removeSelected(name)} className="text-primary">
+              <button
+                onClick={() => toggleSelect(name)}
+                className="text-primary"
+                aria-label={`Remove ${name}`}
+              >
                 <Trash2 size={16} />
               </button>
             </div>
@@ -148,7 +160,7 @@ const SolicitationTypeTab = ({
             </div>
           </div>
 
-          {/* Filtered Bid Types */}
+          {/* Filtered Bid Types List */}
           <div className="divide-y divide-[#273BE280] max-h-[400px] overflow-y-auto">
             {filteredOptions.map((item) => (
               <label
@@ -159,7 +171,7 @@ const SolicitationTypeTab = ({
                   type="checkbox"
                   className="accent-primary mr-3"
                   checked={selectedNames.includes(item.name)}
-                  onChange={() => toggleSelect(item)}
+                  onChange={() => toggleSelect(item.name)}
                 />
                 <span className="text-gray-800">{item.name}</span>
               </label>
@@ -171,13 +183,19 @@ const SolicitationTypeTab = ({
       {/* Sticky Footer */}
       <div className="flex gap-4 p-5 ps-0 bg-white sticky bottom-0">
         <button
-          onClick={handleCancel}
+          onClick={() => {
+            // Optionally reset all selections on Cancel
+            clearAll();
+            onApply();
+          }}
           className="border-[2px] px-10 py-3 rounded-[20px] font-archivo text-xl transition-all"
         >
           Cancel
         </button>
         <button
-          onClick={handleApply}
+          onClick={() => {
+            onApply();
+          }}
           className="bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl hover:bg-blue-700 transition-all"
         >
           Search

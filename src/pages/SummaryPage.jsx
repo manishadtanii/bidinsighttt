@@ -52,37 +52,37 @@ function SummaryPage() {
           {/* Header Card */}
           <div className="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl">
             <BidHeader
-              title={bidData.bid_name || "No Title"}
-              org={bidData.jurisdiction || "Unknown Organization"}
-              location={bidData.state?.name || "Unknown Location"}
+              title={fallback.bid_name || "No Title"}
+              org={fallback.jurisdiction || "Unknown Organization"}
+              location={fallback.state?.name || "Unknown Location"}
               postedDate={
-                bidData.open_date
-                  ? new Date(bidData.open_date).toLocaleDateString()
+                fallback.open_date
+                  ? new Date(fallback.open_date).toLocaleDateString()
                   : "-"
               }
-              deadline={bidData.closing_date}
-              sourceLink={bidData.source}
+              deadline={fallback.closing_date}
+              sourceLink={fallback.source}
             />
           </div>
 
           {/* Summary Section */}
           <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-            <SummaryContent bid={bidData} />
+            <SummaryContent  />
           </div>
 
           {/* Bid Tracking + AI Features + Similar Bids */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="col-span-2 space-y-4">
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-                <BidTracking bid={bidData} />
+                <BidTracking  />
               </div>
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-                <SimilarBids bid={bidData} />
+                <SimilarBids  />
               </div>
             </div>
 
             <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-              <AiFeature bid={bidData} />
+              <AiFeature  />
             </div>
           </div>
         </div>
