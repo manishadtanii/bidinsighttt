@@ -29,7 +29,80 @@ const data = [
     time: "10:56:45",
     override: "Manual",
   },
+  {
+    id: "ID-39",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/789",
+    bidName: "ADDRESSING, COPYING, MIMEOGRAPH, AND SPIRIT...",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Automated",
+  },
+  {
+    id: "ID-40",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/101",
+    bidName: "DOCUMENT COPYING & DISTRIBUTION SERVICES",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Manual",
+  },
+  {
+    id: "ID-41",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/102",
+    bidName: "ADDRESSING, COPYING, MIMEOGRAPH, AND SPIRIT...",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Automated",
+  },
+  {
+    id: "ID-42",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/103",
+    bidName: "DOCUMENT COPYING & DISTRIBUTION SERVICES",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Manual",
+  },
+  {
+    id: "ID-43",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/104",
+    bidName: "ADDRESSING, COPYING, MIMEOGRAPH, AND SPIRIT...",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Automated",
+  },
+  {
+    id: "ID-44",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/105",
+    bidName: "DOCUMENT COPYING & DISTRIBUTION SERVICES",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Manual",
+  },
+  {
+    id: "ID-45",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/106",
+    bidName: "ADDRESSING, COPYING, MIMEOGRAPH, AND SPIRIT...",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Automated",
+  },
+  {
+    id: "ID-46",
+    url: "https://www.bidnetdirect.com/private/sup...",
+    fullUrl: "https://www.bidnetdirect.com/private/support/bid/107",
+    bidName: "DOCUMENT COPYING & DISTRIBUTION SERVICES",
+    type: "Federal",
+    time: "10:56:45",
+    override: "Manual",
+  },
 ];
+
 
 const URLBar = () => {
   const [actionOpenRow, setActionOpenRow] = useState(null);
@@ -52,10 +125,11 @@ const URLBar = () => {
   };
 
   return (
-    <div className="overflow-x-auto rounded-t-xl shadow border border-purple-500 w-full">
+    <div className="flex gap-6 px-8 pb-8">
+    <div className="overflow-x-auto bg-primary rounded-xl shadow border border-primary w-full">
       <table className="min-w-full text-sm">
         <thead>
-          <tr className="bg-purple-600 text-white text-left">
+          <tr className="bg-bl text-white text-center">
             {["ID", "URL", "Bid Name", "Type", "Last 24H", "Override", "Action"].map((head) => (
               <th key={head} className="px-4 py-3">{head}</th>
             ))}
@@ -98,7 +172,7 @@ const URLBar = () => {
                   <FontAwesomeIcon icon="ellipsis-v" />
                 </button>
 
-                {actionOpenRow === i && (
+                {/* {actionOpenRow === i && (
                   <div className="absolute right-0 top-8 bg-white shadow-md border rounded w-28 z-10 animate-fade-in">
                     <ul className="text-sm">
                       <li className="px-4 py-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer">
@@ -111,12 +185,13 @@ const URLBar = () => {
                       </li>
                     </ul>
                   </div>
-                )}
+                )} */}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };

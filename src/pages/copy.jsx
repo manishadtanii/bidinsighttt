@@ -14,7 +14,6 @@ import {
   buildStyles,
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import URLBar from "../sections/super-admin/URLBar";
 
 export default function SuperAdmin() {
   // Values
@@ -71,7 +70,7 @@ export default function SuperAdmin() {
       {/* Main Content */}
       <main className="flex-1 space-y-8 overflow-x-hidden bg-gray-50">
         {/* Top Nav */}
-        <div className="flex flex-wrap justify-between py-4 px-8 border-b-4 border-primary items-center gap-4 bg-white shadow-sm sticky top-0 z-10">
+        <div className="flex flex-wrap justify-between py-4 px-8 border-b-2 border-blue-600 items-center gap-4 bg-white shadow-sm sticky top-0 z-10">
           <h2 className="text-2xl font-semibold text-gray-800">
             URL Scrapping
           </h2>
@@ -88,10 +87,13 @@ export default function SuperAdmin() {
               />
             </div>
             <div className="relative w-12 h-12 rounded-full border border-blue-600 flex items-center justify-center">
-              <FontAwesomeIcon icon={faBell} className="text-primary text-lg" />
+              <FontAwesomeIcon
+                icon={faBell}
+                className="text-blue-600 text-lg"
+              />
               <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-600 rounded-full border border-white"></span>
             </div>
-            <button className="bg-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
               Hi, Angela
             </button>
           </div>
@@ -135,25 +137,21 @@ export default function SuperAdmin() {
           ].map((card, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 border border-1 border-primary shadow-md"
+              className="bg-white rounded-2xl p-6 border border-blue-600 shadow-md"
             >
               <h4 className="text-gray-700 font-medium mb-1">{card.label}</h4>
               <div className="text-2xl font-bold">
-                <div className="text-2xl font-bold">{card.value}</div>
-                <div
-                  className={`${card.color} text-base ${card.bg} py-1 px-3 rounded-[50px] inline-block mt-1`}
-                >
-                  {card.change}
-                </div>
+                {card.value}{" "}
+                <div className={`${card.color} text-base ${card.bg} py-1 px-2`} style={{}} >{card.change}</div>
               </div>
-              <p className="text-[#999999] mt-1 text-sm">{card.note}</p>
+              <p className="text-gray-500 mt-1 text-sm">{card.note}</p>
             </div>
           ))}
         </div>
 
         {/* Donut Charts */}
-        <div className="flex gap-6 px-8">
-          <div className="w-[50%] bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 px-8">
+          <div className="col-span-1 xl:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
               {[...Array(2)].map((_, i) => (
                 <div
@@ -170,13 +168,13 @@ export default function SuperAdmin() {
                     styles={buildStyles({
                       rotation: 0.75,
                       strokeLinecap: "round",
-                      trailColor: "#8794FF",
-                      pathColor: "#273BE2",
+                      trailColor: "#c7d5fa",
+                      pathColor: "#2151f5",
                     })}
-                    className="w-60 h-60"
+                    className="w-36 h-36"
                   >
                     <div className="text-2xl font-semibold">
-                      <span className="text-primary">
+                      <span className="text-[#2151f5]">
                         {activeUrlValue / 1000}K
                       </span>
                       <span className="text-[#578af9]">
@@ -186,11 +184,11 @@ export default function SuperAdmin() {
                   </CircularProgressbarWithChildren>
                   <ul className="text-sm mt-4 text-center space-y-1">
                     <li>
-                      <span className="inline-block font-inter w-3 h-3 bg-primary rounded-full mr-2 align-middle"></span>
+                      <span className="inline-block w-3 h-3 bg-[#2151f5] rounded-full mr-2 align-middle"></span>
                       Target URL 15K
                     </li>
                     <li>
-                      <span className="inline-block font-inter w-3 h-3 bg-[#8794FF] rounded-full mr-2 align-middle"></span>
+                      <span className="inline-block w-3 h-3 bg-[#578af9] rounded-full mr-2 align-middle"></span>
                       Active URL 10K
                     </li>
                   </ul>
@@ -200,30 +198,30 @@ export default function SuperAdmin() {
           </div>
 
           {/* Error Table */}
-          <div className="w-[50%] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="bg-primary text-white font-semibold text-sm p-3 flex justify-between text-center select-none">
-              <span className="w-[10%]">ID</span>
-              <span className="w-[30%]">Bid Name</span>
-              <span className="w-[30%]">Error</span>
-              <span className="w-[15%]">Time Stamp</span>
-              <span className="w-[10%]">Action</span>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-blue-700 text-white font-semibold text-sm p-3 grid grid-cols-5 select-none">
+              <span>ID</span>
+              <span>Bid Name</span>
+              <span>Error</span>
+              <span>Time Stamp</span>
+              <span>Action</span>
             </div>
             {Array(6)
               .fill(0)
               .map((_, i) => (
                 <div
                   key={i}
-                  className={`flex justify-between items-center text-sm px-3 py-2 ${
+                  className={`grid grid-cols-5 items-center text-sm px-3 py-2 ${
                     i % 2 === 0 ? "bg-gray-100" : "bg-white"
                   }`}
                 >
-                  <span className="w-[10%] text-center">ID-37</span>
-                  <span className="truncate w-[30%] text-center">ACOUSTICAL TILE...</span>
-                  <span className="w-[30%] text-center text-red-600 whitespace-nowrap">
+                  <span>ID-37</span>
+                  <span className="truncate">ACOUSTICAL TILE...</span>
+                  <span className="text-red-600 whitespace-nowrap">
                     504 Gateway Timeout
                   </span>
-                  <span className="w-[15%] text-center">10:56:45</span>
-                  <span className="w-[10%] text-xl text-center cursor-pointer select-none">
+                  <span>10:56:45</span>
+                  <span className="text-xl text-center cursor-pointer select-none">
                     ⋮
                   </span>
                 </div>
@@ -231,8 +229,8 @@ export default function SuperAdmin() {
           </div>
         </div>
 
-        {/* Scrapped Bids Table */}
-        {/* <div className="bg-white border border-gray-200 rounded-2xl overflow-x-auto shadow-sm mx-8">
+        {/* Scrapped Bids Table
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-x-auto shadow-sm mx-8">
           <div className="min-w-[900px]">
             <div className="bg-blue-700 text-white font-semibold text-sm p-3 grid grid-cols-6 select-none">
               <span>ID</span>
@@ -271,7 +269,6 @@ export default function SuperAdmin() {
               ))}
           </div>
         </div> */}
-        <URLBar />
       </main>
     </div>
   );
