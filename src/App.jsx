@@ -21,6 +21,7 @@ import SummaryPage from "./pages/SummaryPage";
 import Pricing from "./pages/Pricing";
 import ScrollToTop from "./components/ScrollToTop";
 import AboutUs from "./pages/AboutUs";
+import SuperAdmin from "./pages/SuperAdmin";
 
 const App = () => {
   useEffect(() => {
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/summary/:id" element={<SummaryPage />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/super-admin" element={<SuperAdmin />} />
           <Route path="/*" element={<Error404 />} />
         </Routes>
       </LayoutWrapper>
