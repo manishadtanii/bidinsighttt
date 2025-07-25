@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink, faDatabase, faCog, faSignOutAlt, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
-import URLBar from "../sections/super-admin/URLBar";
+import URLBar from "../sections/super-admin/URLBar";    
 // import TargetChart from "../sections/super-admin/Target";
 
 export default function SuperAdmin() {
