@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-
 import AlertToggle from "../components/AlertToggle";
 import HeroHeading from "../components/HeroHeading";
 import BgCover from "../components/BgCover";
@@ -9,6 +8,7 @@ import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
+import { getBids } from "../services/bid.service";
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -67,14 +67,17 @@ function Dashboard() {
 
       // Here you could add params from appliedFilters or filters as needed
 
-      const res = await api.get(`/bids/?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // const res = await api.get(`/bids/?${params.toString()}`, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
 
-      setCount(res.data.count);
-      const bidList = res.data.results || res.data;
+      const res = await getBids(`?${params.toString()}`);
+      
+      
+      setCount(res.count);
+      const bidList = res.results || res;
       setBids(bidList);
-      setTotalResults(res.data.count || bidList.length);
+      setTotalResults(res.count || bidList.length);
     } catch (err) {
       console.error("Failed to fetch bids:", err);
       setError("Failed to fetch bids");
