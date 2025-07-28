@@ -313,6 +313,20 @@ p {
   opacity: 1;
   visibility: visible;
 }
-#filter-panel-save-search .sticky.bottom-0{
-  /* display: none; */
+/* #filter-panel-save-search .sticky.bottom-0{
+  display: none;
+} */
+/* .slick-slide.slick-center {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+} */
+.our-story .slick-slide.slick-active.slick-current p{
+ color: white;
+ transition: .5s;
+}
+.our-story .slick-slide p{
+ color: #FFFFFFB2;
+}
+.our-story .slick-prev:before, .our-story .slick-next:before{
+  display: none;
 }

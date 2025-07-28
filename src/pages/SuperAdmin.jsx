@@ -48,15 +48,15 @@ export default function SuperAdmin() {
         <div>
           <h1 className="text-2xl font-bold mb-10">BidInsight</h1>
           <nav className="flex flex-col gap-6">
-            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition">
+            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition font-inter">
               <FontAwesomeIcon icon={faLink} />
               <span>URL Scrapping</span>
             </div>
-            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition">
+            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition font-inter">
               <FontAwesomeIcon icon={faDatabase} />
               <span>CMS</span>
             </div>
-            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition">
+            <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition font-inter">
               <FontAwesomeIcon icon={faCog} />
               <span>Settings</span>
             </div>
