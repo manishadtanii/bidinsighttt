@@ -1,7 +1,7 @@
 // src/store/store.js
 import { configureStore } from "@reduxjs/toolkit";
-import onboardingReducer from "./onboardingSlice";
-import loginReducer from "./loginSlice";
+import onboardingReducer from "./reducer/onboardingSlice";
+import loginReducer from "./reducer/loginSlice";
 
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage
