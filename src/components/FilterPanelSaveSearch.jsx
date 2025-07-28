@@ -209,13 +209,15 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
         const queryString = newlyCreatedSearch.query_string.startsWith('?')
           ? newlyCreatedSearch.query_string
           : `?${newlyCreatedSearch.query_string}`;
-        navigate(`/dashboard${queryString}`);
+        navigate(`/dashboard${queryString}&id=${newlyCreatedSearch.id}`);
       } else {
         // ✅ IMPROVED: Fallback with current filters
         console.warn("Could not find updated search, using current filters");
         const queryString = buildQueryString(filters);
-        navigate(`/dashboard?${queryString}`);
+        navigate(`/dashboard?${queryString}&id=${newlyCreatedSearch.id}`);
       }
+
+      console.log(newlyCreatedSearch);
 
       onClose();
     } catch (error) {
