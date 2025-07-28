@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 const BidHeader = ({
   title = "No Title",
-  org = "Unknown Organization",
   location = "Unknown Location",
   postedDate = "-",
   deadline = "2025-07-31T23:59:59Z",
@@ -16,7 +14,6 @@ const BidHeader = ({
     seconds: 0,
   });
 
-  // ✅ Format date to "Month Day, Year"
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     if (isNaN(date)) return "-";
@@ -67,7 +64,6 @@ const BidHeader = ({
           {/* Left Section */}
           <div className="w-[70%]">
             <h2 className="text-h3 font-bold font-archivo">{title}</h2>
-            <p className="text-[28px] font-normal font-archivo">{org}</p>
             <img src="/summary-line.png" className="w-full my-4" alt="divider" />
 
             <div className="flex flex-wrap md:flex-nowrap justify-between gap-6 text-sm md:text-base">
@@ -75,7 +71,6 @@ const BidHeader = ({
                 { icon: "fa-map-marker-alt", label: "Location", value: location },
                 { icon: "fa-calendar-alt", label: "Posted", value: formatDate(postedDate) },
                 { icon: "fa-history", label: "Deadline", value: formatDate(deadline) },
-                // { icon: "fa-external-link", label: "Open Source" },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center flex-col text-center gap-2">
                   <i className={`fas text-xl ${item.icon}`}></i>
@@ -85,17 +80,32 @@ const BidHeader = ({
                   </div>
                 </div>
               ))}
-              <Link to={sourceLink == "nd-bidder"?"#": sourceLink }  className="flex items-center flex-col text-center gap-2">
-                  <i className={`fas text-xl fa-external-link`}></i>
+
+              {/* External Link or Disabled */}
+              {sourceLink && sourceLink !== "nd-bidder" ? (
+                <a
+                  href={sourceLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center flex-col text-center gap-2"
+                >
+                  <i className="fas text-xl fa-external-link"></i>
                   <div>
                     <p className="font-inter text-xl text-[#DBDBDB]">Open Source</p>
-                    {/* <p className="font-inter text-p text-white">{sourceLink}</p> */}
                   </div>
-                </Link>
+                </a>
+              ) : (
+                <div className="flex items-center flex-col text-center gap-2 opacity-50 cursor-not-allowed">
+                  <i className="fas text-xl fa-external-link"></i>
+                  <div>
+                    <p className="font-inter text-xl text-[#DBDBDB]">Open Source</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Right Section: Countdown */}
+          {/* Countdown Section */}
           <div className="flex flex-col items-center text-center">
             <p className="font-archivo text-white text-p font-bold mb-2">Countdown</p>
             <div className="relative w-40 h-40 mb-3">
@@ -143,7 +153,6 @@ const BidHeader = ({
               </svg>
             </div>
 
-            {/* Hours/Minutes/Seconds */}
             <div className="flex gap-6 text-sm mt-2">
               {[
                 { label: "Hours", value: countdown.hours },
