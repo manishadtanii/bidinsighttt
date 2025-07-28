@@ -566,6 +566,14 @@ function Dashboard() {
     setSearchTimeout(newTimeout);
   };
 
+  useEffect(()=>{
+    const search = new  URLSearchParams(location.search).get("include");
+    if( search && search.trim !== ""){
+      setTopSearchTerm(search);
+    }
+    // console.log(search);
+  },[location.search])
+
   return (
     <>
       <div className="py-[120px] bg-blue">
