@@ -279,6 +279,7 @@ const SavedSearchForm = ({
   savedSearch,
   setSavedSearch,
   selectedSearch,
+  setSelectedSearch, // ✅ ADD: Function to clear selectedSearch in parent
   filters,
   setFilters,
   showValidation,
@@ -318,7 +319,8 @@ const SavedSearchForm = ({
   };
 
   useEffect(() => {
-    if (selectedSearch) {
+    // ✅ Only apply selectedSearch data if we're in replace mode or haven't explicitly switched to create
+    if (selectedSearch && searchOption === "replace") {
       setSearchName(selectedSearch.name);
       setSavedSearch((prev) => ({
         ...prev,
@@ -331,7 +333,7 @@ const SavedSearchForm = ({
         setFilters(decodeQueryStringToFilters(savedSearchObj.query_string));
       }
     }
-  }, [selectedSearch, savedSearches, setFilters, setSavedSearch]);
+  }, [selectedSearch, savedSearches, setFilters, setSavedSearch, searchOption]);
 
   const handleCreateOption = () => {
     setSearchOption("create");
@@ -355,6 +357,12 @@ const SavedSearchForm = ({
       publishedDate: {},
       closingDate: {},
     });
+
+    // ✅ Clear the selectedSearch in parent component
+    if (setSelectedSearch) {
+      setSelectedSearch(null);
+      console.log("🧹 Cleared selectedSearch in parent component");
+    }
   };
 
   const handleReplaceOption = () => {
@@ -375,6 +383,11 @@ const SavedSearchForm = ({
     const { value } = e.target;
     const trimmed = value.trim();
     setSearchName(value);
+    setSelectedSavedSearch(value);
+    setSavedSearch((prev) => ({
+      ...prev,
+      name: value,
+    }));
 
     if (!trimmed) {
       setErrors({ name: "This field is required" });

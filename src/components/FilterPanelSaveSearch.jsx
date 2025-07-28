@@ -266,6 +266,8 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
     setActiveTab(tab);
   };
 
+  console.log(searchName);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "Saved Searches":
@@ -282,6 +284,7 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
             setSearchName={setSearchName}
             // Existing props
             selectedSearch={selectedSearch}
+            setSelectedSearch={setSelectedSearch} // ✅ ADD: Pass setSelectedSearch function
             savedSearch={savedSearch}
             setSavedSearch={setSavedSearch}
             setFilters={setFilters}

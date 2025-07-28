@@ -2,6 +2,8 @@ import React from 'react';
 
 function StatusTab({filters = {}, setFilters = () => {}}) {
 
+  console.log("❤️ StatusTab rendered with filters:", filters);
+
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div>
