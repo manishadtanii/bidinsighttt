@@ -40,21 +40,6 @@ export const getSavedSearches = async () => {
   }
 };
 
-export const getSelectedSavedSearches = async () => {
-  const token = localStorage.getItem("access_token");
-  if (!token) return [];
-
-  try {
-    const res = await API.get("/bids/saved-filters/", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error fetching saved searches:", err);
-    throw err;
-  }
-};
-
 export const createSavedSearch = async (body) => {
   const token = localStorage.getItem("access_token");
   if (!token) {

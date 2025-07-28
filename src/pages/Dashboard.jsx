@@ -8,9 +8,10 @@ import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 import api from "../utils/axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getBids } from "../services/bid.service";
+import { getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
+import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -22,10 +23,12 @@ function Dashboard() {
 
   const dispatch = useDispatch();
   const { bidsInfo } = useSelector((state) => state.bids);
-  const [savedSearches, setSavedSearches] = useState([]);
+  // const [savedSearches, setSavedSearches] = useState([]);
+  const { savedSearches} = useSelector((state) => state.savedSearches);
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  console.log(savedSearches)
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
     status: "Active",
@@ -299,18 +302,19 @@ function Dashboard() {
     navigate(`/dashboard?${queryString}`);
   };
 
-  // Fetch saved searches on mount
-  const fetchSavedSearches = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-      const res = await api.get("/bids/saved-filters/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSavedSearches(res.data);
-    } catch (err) {
-      console.error("Failed to fetch saved searches", err);
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const savedSearches = await getSavedSearches();
+        // console.log(savedSearches);
+        // console.log("🔥 Fetched saved searches:", savedSearches);
+        dispatch(addSavedSearch(savedSearches));
+      } catch (error) {
+        console.error("Error fetching saved searches:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Cleanup timeout on unmount
@@ -321,10 +325,6 @@ function Dashboard() {
       }
     };
   }, [searchTimeout]);
-
-  useEffect(() => {
-    fetchSavedSearches();
-  }, [fetchSavedSearches, location.pathname, location.search]);
 
   // Handle selecting a saved search and applying filters
   const handleSavedSearchSelect = async (searchId) => {
@@ -360,11 +360,7 @@ function Dashboard() {
       const token = localStorage.getItem("access_token");
       if (!token) return;
 
-      const res = await api.get("/bids/saved-filters/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const matched = res.data.find((item) => item.id === searchId);
+      const matched = savedSearches.find((item) => item.id === searchId);
       if (!matched) return;
 
       const urlParams = new URLSearchParams(matched.query_string);
