@@ -72,16 +72,40 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
   console.log(bids)
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: null, order: "az" });
+  const [originalData, setOriginalData] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, order: null });
 
   useEffect(() => {
     setData(bids);
+    setOriginalData(bids);
   }, [bids]);
 
-  const handleSort = (key, order) => {
-    const sorted = [...data].sort((a, b) => sortFunctions[order](a, b, key));
-    setData(sorted);
-    setSortConfig({ key, order });
+  const handleHeaderClick = (key) => {
+    let newOrder;
+    let newData;
+
+    if (sortConfig.key === key) {
+      if (sortConfig.order === "az") {
+        // Second click - sort Z to A
+        newOrder = "za";
+        newData = [...data].sort((a, b) => sortFunctions.za(a, b, key));
+      } else if (sortConfig.order === "za") {
+        // Third click - reset to original
+        newOrder = null;
+        newData = [...originalData];
+      } else {
+        // First click - sort A to Z
+        newOrder = "az";
+        newData = [...data].sort((a, b) => sortFunctions.az(a, b, key));
+      }
+    } else {
+      // First click on new column - sort A to Z
+      newOrder = "az";
+      newData = [...data].sort((a, b) => sortFunctions.az(a, b, key));
+    }
+
+    setData(newData);
+    setSortConfig({ key: newOrder ? key : null, order: newOrder });
   };
 
   const handleRowClick = (id) => navigate(`/summary/${id}`);
@@ -122,49 +146,53 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
     return text.length > 30 ? text.slice(0, 30) + "..." : text;
   };
 
-  const renderSelect = (key) => (
-    <select
-      onChange={(e) => handleSort(key, e.target.value)}
-      className="bg-transparent  text-white text-xs outline-none w-4"
-      value={sortConfig.key === key ? sortConfig.order : ""}
-    >
-      <option value=""></option>
-      <option value="az" className="text-blue-900 font-bold">A → Z</option>
-      <option value="za" className="text-blue-900 font-bold">Z → A</option>
-    </select>
-  );
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) {
+      return <i className="fas fa-sort ml-2 text-white/50"></i>;
+    }
+    if (sortConfig.order === "az") {
+      return <i className="fas fa-sort-up ml-2 text-white"></i>;
+    }
+    if (sortConfig.order === "za") {
+      return <i className="fas fa-sort-down ml-2 text-white"></i>;
+    }
+    return <i className="fas fa-sort ml-2 text-white/50"></i>;
+  };
 
   return (
-    <div className="bid-table rounded-2xl bg-btn text-white my-[50px]  shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto ">
-      {/* <div className="flex justify-end mb-3">
-        <button
-          onClick={exportToCSV}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
-        >
-          Export CSV
-        </button> 
-      </div> */}
-
+    <div className="bid-table rounded-2xl bg-btn text-white my-[50px] shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto ">
       <table className="min-w-full table-auto text-sm text-center">
         <thead className="sticky top-0 bg-white/5 backdrop-blur-sm ">
           <tr className="text-white/80 text-xs border-b border-white/20 ">
             <th className="px-4 py-4 font-inter text-lg">
-              Entity Type {renderSelect("jurisdiction")}
+              Entity Type 
+            </th>
+            <th 
+              className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
+              onClick={() => handleHeaderClick("bid_name")}
+            >
+              Bid Name {getSortIcon("bid_name")}
+            </th>
+            <th 
+              className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
+              onClick={() => handleHeaderClick("open_date")}
+            >
+              Open Date {getSortIcon("open_date")}
+            </th>
+            <th 
+              className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
+              onClick={() => handleHeaderClick("closing_date")}
+            >
+              Closed Date {getSortIcon("closing_date")}
+            </th>
+            <th 
+              className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
+              onClick={() => handleHeaderClick("closing_date")}
+            >
+              Countdown {getSortIcon("closing_date")}
             </th>
             <th className="px-4 py-4 font-inter text-lg">
-              Bid Name {renderSelect("bid_name")}
-            </th>
-            <th className="px-4 py-4 font-inter text-lg">
-              Open Date {renderSelect("open_date")}
-            </th>
-            <th className="px-4 py-4 font-inter text-lg">
-              Closed Date {renderSelect("closing_date")}
-            </th>
-            <th className="px-4 py-4 font-inter text-lg">
-              Countdown {renderSelect("closing_date")}
-            </th>
-            <th className="px-4 py-4 font-inter text-lg">
-              Status {renderSelect("status")}
+              Status
             </th>
             <th className="px-4 py-4 font-inter text-lg text-center">Share</th>
             <th className="px-4 py-4 font-inter text-lg text-center">Follow</th>
@@ -200,7 +228,6 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
 
               countdownDisplay = countdownParts.join(" ");
             }
-
 
             // ✅ If bid is inactive, force "Closed"
             if (bid.status === false) {
@@ -272,3 +299,16 @@ const BidTable = forwardRef(({ bids = [] }, ref) => {
 });
 
 export default BidTable;
+
+
+
+
+
+
+
+
+
+
+
+
+

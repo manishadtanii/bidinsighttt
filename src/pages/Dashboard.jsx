@@ -12,6 +12,7 @@ import { getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
+import { fetchProfileBids } from "../redux/reducer/profileBidsSlice";
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -25,6 +26,31 @@ function Dashboard() {
   const { bidsInfo } = useSelector((state) => state.bids);
   // const [savedSearches, setSavedSearches] = useState([]);
   const { savedSearches } = useSelector((state) => state.savedSearches);
+  const profile = useSelector((state) => state.profile?.data); // from Redux
+  const getProfileIdFromPersistedStore = () => {
+    try {
+      const persisted = JSON.parse(localStorage.getItem("persist:root"));
+      const loginData = JSON.parse(persisted?.login || "{}");
+      return loginData?.user?.id || null;
+    } catch (err) {
+      console.error("Error parsing persisted login:", err);
+      return null;
+    }
+  };
+
+  const profileId = getProfileIdFromPersistedStore();
+
+
+  console.log("🔥 Fetching profile bids for ID:", profileId);
+  useEffect(() => {
+    if (profileId) {
+      dispatch(fetchProfileBids(profileId));
+    }
+  }, [profileId, dispatch]);
+
+  console.log(profileId, "🔥 Profile ID from Redux or localStorage");
+  console.log(profile, "🔥 Profile data from Redux");
+
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -566,13 +592,21 @@ function Dashboard() {
     setSearchTimeout(newTimeout);
   };
 
-  useEffect(()=>{
-    const search = new  URLSearchParams(location.search).get("include");
-    if( search && search.trim !== ""){
+  useEffect(() => {
+    const search = new URLSearchParams(location.search).get("include");
+    if (search && search.trim !== "") {
       setTopSearchTerm(search);
     }
     // console.log(search);
-  },[location.search])
+  }, [location.search])
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id"); // or from login state if stored
+    if (userId) {
+      dispatch(fetchProfileBids(userId));
+    }
+  }, [dispatch]);
+
 
   return (
     <>
@@ -621,7 +655,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="dashboard-middle">
+          {/* <div className="dashboard-middle">
             <div className="max-w-[1200px] py-[80px] flex justify-center mx-auto gap-8">
               {middle.map((item) => (
                 <BgCover key={item.id}>
@@ -636,10 +670,10 @@ function Dashboard() {
                 </BgCover>
               ))}
             </div>
-          </div>
+          </div> */}
 
-          <div className="dashboard-feature">
-            <div className="flex justify-between">
+          <div className="dashboard-feature pt-44">
+            <div className="flex justify-between items-center">
               <div className="feature-left">
                 <div
                   className="bg-btn p-4 w-[56px] h-[56px] rounded-[16px] flex justify-center items-center cursor-pointer"
@@ -653,6 +687,23 @@ function Dashboard() {
                   />
                 </div>
               </div>
+
+              <div className="dashboard-middle">
+            <div className="flex gap-8">
+              {middle.map((item) => (
+                <BgCover key={item.id}>
+                  <div className="flex gap-4">
+                    <div className="text font-inter text-[#DBDBDB]">
+                      {item.title}
+                    </div>
+                    <p className="num font-inter font-bold text-white">
+                      {item.num}
+                    </p>
+                  </div>
+                </BgCover>
+              ))}
+            </div>
+          </div>
 
               <div className="feature-right">
                 <div className="flex gap-4">
@@ -725,3 +776,32 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,7 +4,6 @@ import LayoutWrapper from "./LayoutWrapper";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ScrollToTop from "./components/ScrollToTop";
-import Loader from "./components/Loader";
 import BidTableSkeleton from "./components/BidTableSkeleton";
 
 
@@ -40,10 +39,10 @@ const App = () => {
   return (
       <LayoutWrapper>
         <ScrollToTop />
-        <Suspense fallback={<Loader />}>
+        <Suspense>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/loader" element={<Loader />} />
+            {/* <Route path="/loader" element={<Loader />} /> */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/company-build" element={<CompanyBuild />} />

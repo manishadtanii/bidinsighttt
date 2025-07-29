@@ -17,38 +17,34 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
   const [fromDate, setFromDate] = useState(from || "");
   const [toDate, setToDate] = useState(to || "");
 
-  // Sync local state with incoming filters
   useEffect(() => {
-  // Smart fallback logic from 'after' and 'before' if type is missing
-  let inferredType = publishedDate.type || "";
-  let inferredWithin = publishedDate.within || "7";
-  let inferredFrom = publishedDate.from || "";
-  let inferredTo = publishedDate.to || "";
+    let inferredType = publishedDate.type || "";
+    let inferredWithin = publishedDate.within || "7";
+    let inferredFrom = publishedDate.from || "";
+    let inferredTo = publishedDate.to || "";
 
-  if (!inferredType && publishedDate.after && publishedDate.before) {
-    const after = publishedDate.after;
-    const before = publishedDate.before;
+    if (!inferredType && publishedDate.after && publishedDate.before) {
+      const after = publishedDate.after;
+      const before = publishedDate.before;
 
-    // Try to infer "within"
-    const diffInMs = new Date(before) - new Date(after);
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+      const diffInMs = new Date(before) - new Date(after);
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
-    if (diffInDays === 7 || diffInDays === 30 || diffInDays === 90) {
-      inferredType = "within";
-      inferredWithin = diffInDays.toString();
-    } else {
-      inferredType = "timeline";
-      inferredFrom = after;
-      inferredTo = before;
+      if (diffInDays === 7 || diffInDays === 30 || diffInDays === 90) {
+        inferredType = "within";
+        inferredWithin = diffInDays.toString();
+      } else {
+        inferredType = "timeline";
+        inferredFrom = after;
+        inferredTo = before;
+      }
     }
-  }
 
-  setSelectedType(inferredType);
-  setWithinDays(inferredWithin);
-  setFromDate(inferredFrom);
-  setToDate(inferredTo);
-}, [publishedDate]);
-
+    setSelectedType(inferredType);
+    setWithinDays(inferredWithin);
+    setFromDate(inferredFrom);
+    setToDate(inferredTo);
+  }, [publishedDate]);
 
   const calculateDateRange = (days) => {
     const today = new Date();
@@ -88,16 +84,16 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
         before: toDateVal,
       };
     } else if (type === "lastLogin") {
-      const loginDate = lastLogin
-        ? lastLogin.split("T")[0]
-        : "";
+      const loginDate = lastLogin ? lastLogin.split("T")[0] : "";
+      const today = new Date().toISOString().split("T")[0];
+
       updated.publishedDate = {
         type,
         within: "",
         from: "",
         to: "",
         after: loginDate,
-        before: loginDate,
+        before: today,
       };
     } else {
       updated.publishedDate = {
@@ -148,7 +144,6 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
-
         {/* Last Login */}
         <div>
           <label className="font-semibold block font-inter text-p mb-2">
@@ -166,7 +161,6 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
             <span className="font-inter text-xl">{formattedLastLogin}</span>
           </label>
         </div>
-
 
         {/* Within */}
         <div>
@@ -194,7 +188,6 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
             </select>
           </div>
         </div>
-
 
         {/* Timeline */}
         <div>
@@ -238,6 +231,5 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
     </div>
   );
 };
-
 
 export default PublishedDateTab;

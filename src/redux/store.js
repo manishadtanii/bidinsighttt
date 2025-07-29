@@ -1,37 +1,40 @@
 // src/store/store.js
 import { configureStore } from "@reduxjs/toolkit";
-import onboardingReducer from "./reducer/onboardingSlice";
-import loginReducer from "./reducer/loginSlice";
-import savedSearchesReducer from "./reducer/savedSearchesSlice";
-import bidReducer from "./reducer/bidSlice";
-
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage
 import { combineReducers } from "redux";
 
-// combine reducers
+// Slices
+import onboardingReducer from "./reducer/onboardingSlice";
+import loginReducer from "./reducer/loginSlice";
+import savedSearchesReducer from "./reducer/savedSearchesSlice";
+import bidReducer from "./reducer/bidSlice";
+import profileReducer from "./reducer/profileBidsSlice"; // ✅ NEW
+
+// Combine all reducers
 const rootReducer = combineReducers({
   onboarding: onboardingReducer,
   login: loginReducer,
   savedSearches: savedSearchesReducer,
   bids: bidReducer,
+  profile: profileReducer, // ✅ Added profile reducer
 });
 
-// config for redux persist
+// Redux Persist config
 const persistConfig = {
   key: "root",
   storage,
 };
 
-// persisted reducer
+// Wrap rootReducer with persistReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// configure store with persisted reducer
+// Configure and export store
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // redux-persist throws warning otherwise
+      serializableCheck: false, // suppress persist warnings
     }),
 });
 
