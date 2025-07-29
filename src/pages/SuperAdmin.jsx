@@ -46,7 +46,9 @@ export default function SuperAdmin() {
       {/* Sidebar */}
       <aside className="sticky top-0 text-white w-64 p-6 flex flex-col justify-between h-screen bg-blue">
         <div>
-          <h1 className="text-2xl font-bold mb-10">BidInsight</h1>
+          <h1 className="text-2xl font-bold mb-10">
+            <img src="logo.png" alt="" />
+          </h1>
           <nav className="flex flex-col gap-6">
             <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition font-inter">
               <FontAwesomeIcon icon={faLink} />
@@ -62,7 +64,7 @@ export default function SuperAdmin() {
             </div>
           </nav>
         </div>
-        <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition">
+        <div className="flex items-center gap-3 text-lg cursor-pointer hover:text-blue-300 transition font-inter ">
           <FontAwesomeIcon icon={faSignOutAlt} />
           <span>Logout</span>
         </div>
@@ -71,8 +73,8 @@ export default function SuperAdmin() {
       {/* Main Content */}
       <main className="flex-1 space-y-8 overflow-x-hidden bg-gray-50">
         {/* Top Nav */}
-        <div className="flex flex-wrap justify-between py-4 px-8 border-b-4 border-primary items-center gap-4 bg-white shadow-sm sticky top-0 z-10">
-          <h2 className="text-2xl font-semibold text-gray-800">
+        <div className=" flex flex-wrap justify-between py-4 px-8 border-b-4 border-primary items-center gap-4 bg-white shadow-sm sticky top-0 z-10">
+          <h2 className="text-2xl font-semibold font-archivo text-gray-800">
             URL Scrapping
           </h2>
           <div className="flex items-center gap-4">
@@ -91,14 +93,14 @@ export default function SuperAdmin() {
               <FontAwesomeIcon icon={faBell} className="text-primary text-lg" />
               <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-600 rounded-full border border-white"></span>
             </div>
-            <button className="bg-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
+            <button className="bg-primary text-white px-4 font-archivo py-2 rounded-full  hover:bg-blue-700 transition">
               Hi, Angela
             </button>
           </div>
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-4 px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-4 px-8 sticky top-0">
           {[
             {
               label: "Total Bids",
@@ -137,16 +139,16 @@ export default function SuperAdmin() {
               key={i}
               className="bg-white rounded-2xl p-6 border border-1 border-primary shadow-md"
             >
-              <h4 className="text-gray-700 font-medium mb-1">{card.label}</h4>
-              <div className="text-2xl font-bold">
-                <div className="text-2xl font-bold">{card.value}</div>
+              <h4 className="text-gray-700 font-medium mb-1 font-inter text-[22px]">{card.label}</h4>
+              <div className="flex gap-2 items-center">
+                <div className="text-lg font-inter">{card.value}</div>
                 <div
-                  className={`${card.color} text-base ${card.bg} py-1 px-3 rounded-[50px] inline-block mt-1`}
+                  className={`${card.color} ${card.bg} py-1 px-3 rounded-[50px] inline-block mt-1 font-inter text-sm`}
                 >
                   {card.change}
                 </div>
               </div>
-              <p className="text-[#999999] mt-1 text-sm">{card.note}</p>
+              <p className="text-[#999999] mt-1 text-sm font-inter">{card.note}</p>
             </div>
           ))}
         </div>
@@ -160,7 +162,7 @@ export default function SuperAdmin() {
                   key={i}
                   className="flex flex-col items-center justify-center"
                 >
-                  <h3 className="font-semibold text-lg mb-2 text-black">
+                  <h3 className="font-semibold font-inter text-lg mb-2 text-black">
                     Target
                   </h3>
                   <CircularProgressbarWithChildren
@@ -202,11 +204,11 @@ export default function SuperAdmin() {
           {/* Error Table */}
           <div className="w-[50%] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="bg-primary text-white font-semibold text-sm p-3 flex justify-between text-center select-none">
-              <span className="w-[10%]">ID</span>
-              <span className="w-[30%]">Bid Name</span>
-              <span className="w-[30%]">Error</span>
-              <span className="w-[15%]">Time Stamp</span>
-              <span className="w-[10%]">Action</span>
+              <span className="w-[10%] font-inter">ID</span>
+              <span className="w-[30%] font-inter">Bid Name</span>
+              <span className="w-[30%] font-inter">Error</span>
+              <span className="w-[15%] font-inter">Time Stamp</span>
+              <span className="w-[10%] font-inter">Action</span>
             </div>
             {Array(6)
               .fill(0)
@@ -217,13 +219,13 @@ export default function SuperAdmin() {
                     i % 2 === 0 ? "bg-gray-100" : "bg-white"
                   }`}
                 >
-                  <span className="w-[10%] text-center">ID-37</span>
-                  <span className="truncate w-[30%] text-center">ACOUSTICAL TILE...</span>
-                  <span className="w-[30%] text-center text-red-600 whitespace-nowrap">
+                  <span className="w-[10%] text-center font-inter">ID-37</span>
+                  <span className="truncate w-[30%] text-center font-inter">ACOUSTICAL TILE...</span>
+                  <span className="w-[30%] text-center text-red-600 whitespace-nowrap font-inter">
                     504 Gateway Timeout
                   </span>
-                  <span className="w-[15%] text-center">10:56:45</span>
-                  <span className="w-[10%] text-xl text-center cursor-pointer select-none">
+                  <span className="w-[15%] text-center font-inter">10:56:45</span>
+                  <span className="w-[10%] text-xl text-center cursor-pointer select-none font-inter">
                     ⋮
                   </span>
                 </div>

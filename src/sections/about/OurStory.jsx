@@ -16,7 +16,7 @@ function OurStory() {
     speed: 500,
     autoplay: true, // Enable auto scroll
     autoplaySpeed: 3000, // Slide delay in milliseconds
-    arrows: true,
+    arrows: false,
     responsive: [
       {
         breakpoint: 768,
@@ -36,7 +36,7 @@ function OurStory() {
   return (
     <div className='our-story bg-[url("./our-story.jpg")] bg-image'>
       <div className="container-section ps-[50px]">
-        <h1 className="text-topH font-archivo font-bold text-g mb-4">
+        <h1 className="text-topH font-archivo font-bold text-g mb-4" data-aos="fade-up" data-aos-delay="300">
           Our Story
         </h1>
 
@@ -46,8 +46,7 @@ function OurStory() {
           style={{
             left: cursorPos.x,
             top: cursorPos.y,
-            backgroundImage: `url(${'./cursor-pop.png'})`,
-            backgroundSize: "cover",
+            backgroundImage: `url(${'cursor-pop.png'})`,
           }}
         ></div>
 
