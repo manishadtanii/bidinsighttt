@@ -2,11 +2,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import onboardingReducer from "./reducer/onboardingSlice";
 import loginReducer from "./reducer/loginSlice";
-<<<<<<< HEAD
-=======
 import savedSearchesReducer from "./reducer/savedSearchesSlice";
 import bidReducer from "./reducer/bidSlice";
->>>>>>> test
 
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage
