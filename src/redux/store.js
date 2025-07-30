@@ -9,10 +9,8 @@ import onboardingReducer from "./reducer/onboardingSlice";
 import loginReducer from "./reducer/loginSlice";
 import savedSearchesReducer from "./reducer/savedSearchesSlice";
 import bidReducer from "./reducer/bidSlice";
+import profileReducer from "./reducer/profileBidsSlice"; // ✅ Import profile reducer
 
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // uses localStorage
-import { combineReducers } from "redux";
 
 // Combine all reducers
 const rootReducer = combineReducers({
