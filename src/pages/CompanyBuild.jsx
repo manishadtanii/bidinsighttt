@@ -11,26 +11,43 @@ import FormSelect from "../components/FormSelect";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import api from "../utils/axios"; // <-- Import your custom axios instance
-import { getAllStates } from "../services/bid.service"; 
+import { getAllStates } from "../services/bid.service";
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function CompanyBuild() {
-  
   const location = useLocation();
   const fullName = location.state?.fullName || "";
   const email = location.state?.email || "";
   const password = location.state?.password || "";
 
   // Company fields
-  const [fields, setFields] = useState({
-    companyName: "",
-    companyFienOrSsn: "",
-    companyWebsite: "",
-    yearInBusiness: "",
-    numberOfEmployees: "",
-    state: "",
-    targetContractSize: "",
-    upload: null,
-  });
+  const [fields, setFields] = useState(() => {
+  const saved = sessionStorage.getItem("companyBuildFields");
+  const parsed = saved ? JSON.parse(saved) : null;
+
+  return parsed
+    ? {
+        companyName: parsed.companyName || "",
+        companyFienOrSsn: parsed.companyFienOrSsn || "",
+        companyWebsite: parsed.companyWebsite || "",
+        yearInBusiness: parsed.yearInBusiness || "",
+        numberOfEmployees: parsed.numberOfEmployees || "",
+        state: parsed.state || "",
+        targetContractSize: parsed.targetContractSize || "",
+        upload: parsed.upload || null,
+      }
+    : {
+        companyName: "",
+        companyFienOrSsn: "",
+        companyWebsite: "",
+        yearInBusiness: "",
+        numberOfEmployees: "",
+        state: "",
+        targetContractSize: "",
+        upload: null,
+      };
+});
+
 
   const [touched, setTouched] = useState({
     companyName: false,
@@ -59,21 +76,30 @@ function CompanyBuild() {
   // State for API states
   const [stateOptions, setStateOptions] = useState([]);
 
+   useEffect(() => {
+    checkTTLAndClear(navigate);
+  }, []);
+
+  useEffect(() => {
+  sessionStorage.setItem("companyBuildFields", JSON.stringify(fields));
+}, [fields]);
+
+
   // Fetch states from API on mount
- useEffect(() => {
-  const loadStates = async () => {
-    try {
-      const states = await getAllStates();
-      console.log(states);
-      if (Array.isArray(states)) {
-        setStateOptions(states.map(({ id, name }) => ({ value: id, label: name })));
+  useEffect(() => {
+    const loadStates = async () => {
+      try {
+        const states = await getAllStates();
+        console.log(states);
+        if (Array.isArray(states)) {
+          setStateOptions(states.map(({ id, name }) => ({ value: id, label: name })));
+        }
+      } catch {
+        setStateOptions([{ value: "", label: "Error loading states" }]);
       }
-    } catch {
-      setStateOptions([{ value: "", label: "Error loading states" }]);
-    }
-  };
-  loadStates();
-}, []);
+    };
+    loadStates();
+  }, []);
 
 
   // Validation rules
@@ -234,12 +260,21 @@ function CompanyBuild() {
       });
       if (fields.upload) {
         formData.append("capability_statement", fields.upload); // <-- backend expects this
-      }
+      } 
+
+
       try {
         const res = await api.post("/auth/signup/", formData);
         console.log("Signup API Response:", res);
-        // Pass OTP to verification page if present in response
+
+        // ✅ Remove saved fields after successful signup
+        sessionStorage.removeItem("registerFields");
+        sessionStorage.removeItem("companyBuildFields");  
+
+
+        // ✅ Pass OTP to verification page if present in response
         let otp = res.data && res.data.otp ? res.data.otp : null;
+
         if ((res.status === 200 || res.status === 201) && otp) {
           navigate("/verification", { state: { email, otp } });
         } else if (res.status === 200 || res.status === 201) {
@@ -261,6 +296,7 @@ function CompanyBuild() {
           alert("Network error");
         }
       }
+
     }
   };
 

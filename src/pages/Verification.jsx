@@ -6,6 +6,7 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../utils/axios"
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function Verification() {
   const data = {
@@ -50,6 +51,10 @@ function Verification() {
   const location = useLocation();
   const email = location.state?.email || "";
   const otpFromSignup = location.state?.otp || null;
+
+   useEffect(() => {
+      checkTTLAndClear(navigate);
+    }, []);
 
   useEffect(() => {
     if (otpFromSignup) {

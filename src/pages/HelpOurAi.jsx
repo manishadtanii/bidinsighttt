@@ -8,6 +8,7 @@ import FormFooter from "../components/FormFooter";
 import FormSelect from "../components/FormSelect";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function HelpOurAi() {
   const navigate = useNavigate();
@@ -72,6 +73,10 @@ function HelpOurAi() {
       name: "medicalProfessional",
     },
   ];
+
+   useEffect(() => {
+      checkTTLAndClear(navigate);
+    }, []);
 
   const insuranceData = useSelector((state) => state.onboarding.insuranceData);
   const [formValues, setFormValues] = useState({});

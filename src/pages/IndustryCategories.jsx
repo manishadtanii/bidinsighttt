@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveIndustryCategory } from "../redux/reducer/onboardingSlice";
@@ -9,6 +9,7 @@ import FormFooter from "../components/FormFooter";
 import FormRadio2 from "../components/FormRadio2";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function IndustryCategories() {
   const dispatch = useDispatch();
@@ -70,6 +71,41 @@ function IndustryCategories() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [showValidation, setShowValidation] = useState(false);
+  const [skipClicked, setSkipClicked] = useState(false);
+
+   useEffect(() => {
+      checkTTLAndClear(navigate);
+    }, []);
+
+  // 🔹 Load industry selection from sessionStorage on mount
+useEffect(() => {
+  const saved = sessionStorage.getItem("onboardingForm");
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    if (parsed.industry && parsed.industry.selectedIndustry) {
+      setSelectedIndustry(parsed.industry.selectedIndustry);
+    }
+  }
+}, []);
+  
+
+
+useEffect(() => {
+  if (skipClicked) return; // don't save if skipped
+
+  const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+  const updated = {
+    ...prev,
+    industry: {
+      selectedIndustry,
+    },
+  };
+
+  sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
+}, [selectedIndustry, skipClicked]);
+
+
+
 
   const filteredIndustries = useMemo(() => {
     if (!searchTerm) return allIndustries.slice(0, 6);
@@ -88,6 +124,17 @@ function IndustryCategories() {
       navigate("/help-our-ai");
     }
   };
+
+  const handleSkip = () => {
+  setSkipClicked(true);
+
+  const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+  delete prev.industry; // remove just this step's data
+  sessionStorage.setItem("onboardingForm", JSON.stringify(prev));
+
+  navigate("/help-our-ai");
+};
+
 
   return (
     <ProcessWrapper>
@@ -161,7 +208,7 @@ function IndustryCategories() {
             {/* Footer with button type="submit" */}
             <FormFooter
               data={formFooter}
-              onNextClick={() => {}} // no need anymore, submit is handled above
+              onSkipClick={handleSkip} // no need anymore, submit is handled above
             />
           </form>
         </div>

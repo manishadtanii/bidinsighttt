@@ -10,7 +10,8 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import SubmissionModal from "../components/SubmissionModal";
 import api from "../utils/axios";
-import { setSkippedInsurance } from "../redux/reducer/onboardingSlice";
+import { clearOnboardingData, setSkippedInsurance } from "../redux/reducer/onboardingSlice";
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function ExtraData() {
   const navigate = useNavigate();
@@ -25,6 +26,10 @@ function ExtraData() {
   const [fields, setFields] = useState({});
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+
+   useEffect(() => {
+      checkTTLAndClear(navigate);
+    }, []);
 
   // Field mapping
   const insuranceFields = {
@@ -148,6 +153,12 @@ function ExtraData() {
     try {
       const res = await api.post("/auth/profile/", payload);
       console.log("✅ Profile submitted:", res.data);
+
+      sessionStorage.removeItem("onboardingForm");
+      sessionStorage.removeItem("ttlStartTime");
+      dispatch(setSkippedInsurance(false)); // Reset skip state
+      dispatch(clearOnboardingData());
+
       navigate("/dashboard");
     } catch (err) {
       const message = err.response ? JSON.stringify(err.response.data) : err.message;
@@ -192,9 +203,11 @@ function ExtraData() {
     submitProfile();
   };
 
+  // ✅ Fixed: Navigate to help-our-ai when back is clicked from modal
   const handleSkipCancel = () => {
     setShowSkipModal(false);
     setIsSkipMode(false);
+    navigate("/help-our-ai"); // Navigate back to previous page
   };
 
   const handleBack = () => navigate("/help-our-ai");

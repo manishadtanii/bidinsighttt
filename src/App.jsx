@@ -5,6 +5,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import ScrollToTop from "./components/ScrollToTop";
 import BidTableSkeleton from "./components/BidTableSkeleton";
+import ProtectedRoute from "./protectedRoute/ProtectedRoute";
+// import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";
 
 
 // Lazy-loaded Pages
@@ -45,21 +47,23 @@ const App = () => {
             {/* <Route path="/loader" element={<Loader />} /> */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/company-build" element={<CompanyBuild />} />
+            {/* <Route path="/company-build" element={<CompanyBuildProtectedRoute><CompanyBuild /></CompanyBuildProtectedRoute>} /> */}
+                        <Route path="/company-build" element={<CompanyBuild />} />
+
             <Route path="/plan" element={<Plan />} />
-            <Route path="/bidskeleton" element={<BidTableSkeleton />} />
-            <Route path="/geographic-coverage" element={<GeographicCoverage />} />
-            <Route path="/help-our-ai" element={<HelpOurAi />} />
-            <Route path="/industry-categories" element={<IndustryCategories />} />
-            <Route path="/extra-data" element={<ExtraData />} />
+            <Route path="/geographic-coverage" element={<ProtectedRoute> <GeographicCoverage /> </ProtectedRoute> } />
+            <Route path="/industry-categories" element={<ProtectedRoute> <IndustryCategories /> </ProtectedRoute> } />
+            <Route path="/help-our-ai" element={<ProtectedRoute> <HelpOurAi /> </ProtectedRoute>} />
+            <Route path="/extra-data" element={<ProtectedRoute><ExtraData /></ProtectedRoute> } />
             <Route path="/email-verification" element={<EmailVerification />} />
             <Route path="/verification" element={<Verification />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/summary" element={<SummaryPage />} />
             <Route path="/summary/:id" element={<SummaryPage />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/super-admin" element={<SuperAdmin />} />
+            <Route path="/bidskeleton" element={<BidTableSkeleton />} />
             <Route path="/*" element={<Error404 />} />
           </Routes>
         </Suspense>

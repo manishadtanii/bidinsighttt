@@ -12,13 +12,13 @@ import FormImg from "../components/FormImg";
 import FormMultiSelect from "../components/FormMultiSelect";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/axios"; // Make sure your axios instance is imported
+import api from "../utils/axios";
+import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function GeographicCoverage() {
   const data = {
     title: "Where Should We Look?",
-    para:
-      "Select states, regions or industries so we only surface relevant bids.",
+    para: "Select states, regions or industries so we only surface relevant bids.",
     btnText: false,
     btnLink: false,
     container: "max-w-4xl mx-auto text-left",
@@ -33,21 +33,6 @@ function GeographicCoverage() {
     activeStep: 2,
   };
 
-  const formFooter = {
-    back: {
-      text: "Back",
-      link: "/plan",
-    },
-    next: {
-      text: "Next",
-      link: "/industry-categories",
-    },
-    skip: {
-      text: "Skip",
-      link: "/industry-categories",
-    },
-  };
-
   const regions = [
     "Northeast",
     "Northwest",
@@ -57,22 +42,56 @@ function GeographicCoverage() {
     "West",
   ];
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [selectedRegions, setSelectedRegions] = useState([]);
   const [nationwideSelected, setNationwideSelected] = useState(false);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectionError, setSelectionError] = useState("");
   const [selectionSuccess, setSelectionSuccess] = useState("");
   const [touched, setTouched] = useState(false);
-  const [stateOptions, setStateOptions] = useState([]); // State for API states
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [stateOptions, setStateOptions] = useState([]);
 
-  // Fetch states from API on mount
+  const [skipClicked, setSkipClicked] = useState(false); // 🆕 Skip flag
+
+   useEffect(() => {
+      checkTTLAndClear(navigate);
+    }, []);
+
+  // 🔁 Load sessionStorage on first mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem("onboardingForm");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const geo = parsed.geographic || {};
+      setSelectedRegions(geo.selectedRegions || []);
+      setNationwideSelected(geo.nationwideSelected || false);
+      setSelectedIndustries(geo.selectedIndustries || []);
+    }
+  }, []);
+
+  // 💾 Save to sessionStorage (only if not skipped)
+  useEffect(() => {
+    if (skipClicked) return;
+
+    const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+    const updated = {
+      ...prev,
+      geographic: {
+        selectedRegions,
+        nationwideSelected,
+        selectedIndustries,
+      },
+    };
+    sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
+  }, [selectedRegions, nationwideSelected, selectedIndustries, skipClicked]);
+
+  // 🌐 Fetch states
   useEffect(() => {
     async function fetchStates() {
       try {
         const res = await api.get("/auth/states/");
-        // Assuming API returns: [{ id: 1, name: "California" }, ...]
         if (Array.isArray(res.data)) {
           setStateOptions(
             res.data.map((item) => ({
@@ -110,8 +129,7 @@ function GeographicCoverage() {
     setSelectedRegions([]);
   };
 
-  // Real-time validation on change, but only after first interaction
-  React.useEffect(() => {
+  useEffect(() => {
     if (!touched) return;
     if (
       !nationwideSelected &&
@@ -129,6 +147,7 @@ function GeographicCoverage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setTouched(true);
+
     if (
       !nationwideSelected &&
       selectedRegions.length === 0 &&
@@ -143,24 +162,41 @@ function GeographicCoverage() {
       ? { region: "Nationwide", states: [] }
       : selectedRegions.length > 0
       ? { region: "Region", states: selectedRegions }
-      : { region: "", states: [] }; // If only industry selected
+      : { region: "", states: [] };
 
     const industryData = selectedIndustries;
 
-    // Logging
-    if (nationwideSelected) {
-      console.log("Selected: Nationwide");
-    } else if (selectedRegions.length > 0) {
-      console.log("Selected regions:", selectedRegions);
-    } else if (selectedIndustries.length > 0) {
-      console.log("Selected industries only:", selectedIndustries);
-    }
-
-    // Save to Redux
     dispatch(saveGeographicCoverage(geoData));
     dispatch(saveIndustryCategory(industryData));
 
     navigate("/industry-categories");
+  };
+
+  // 🆕 Handle Skip
+  const handleSkip = () => {
+  setSkipClicked(true);
+
+  // Remove geographic from sessionStorage
+  const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+  delete prev.geographic;
+  sessionStorage.setItem("onboardingForm", JSON.stringify(prev));
+
+  navigate("/industry-categories");
+};
+
+
+  const formFooter = {
+    back: {
+      text: "Back",
+      link: "/plan",
+    },
+    next: {
+      text: "Next",
+    },
+    skip: {
+      text: "Skip",
+      link: "/industry-categories"
+    },
   };
 
   return (
@@ -177,7 +213,6 @@ function GeographicCoverage() {
             onSubmit={handleSubmit}
           >
             <div className="w-[100%] md:w-[90%]">
-              {/* Nationwide */}
               <FormRadio
                 label="Nationwide"
                 type="radio"
@@ -188,7 +223,6 @@ function GeographicCoverage() {
                 onChange={handleNationwide}
               />
 
-              {/* Regions */}
               <div className="form-label font-t my-5">Select region wise</div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {regions.map((reg, i) => (
@@ -206,7 +240,6 @@ function GeographicCoverage() {
                 ))}
               </div>
 
-              {/* Industries (now States from API) */}
               <FormMultiSelect
                 label="Or Select State"
                 name="industries"
@@ -214,13 +247,13 @@ function GeographicCoverage() {
                 options={stateOptions}
                 value={selectedIndustries}
                 onChange={handleIndustryChange}
-                menuPlacement="auto" // <-- Add this line
+                menuPlacement="auto"
               />
+
               <div style={{ marginTop: 14 }}>
                 {selectionError && touched && (
                   <span className="flex items-center gap-1 text-red-400 text-sm">
                     <i className="far fa-times text-red-400"></i>
-                    {/* <i class=""></i> */}
                     {selectionError}
                   </span>
                 )}
@@ -233,7 +266,10 @@ function GeographicCoverage() {
               </div>
             </div>
 
-            <FormFooter data={formFooter} />
+            <FormFooter
+              data={formFooter}
+              onSkipClick={handleSkip} // 🆕 passed skip handler
+            />
           </form>
         </div>
       </div>

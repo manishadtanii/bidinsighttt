@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import FormHeader from "../components/FormHeader";
@@ -11,13 +11,24 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 
 function Register() {
-  const [fields, setFields] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [fields, setFields] = useState(() => {
+    const saved = sessionStorage.getItem("registerFields");
+    const parsed = saved ? JSON.parse(saved) : null;
 
+    return parsed
+      ? {
+        fullName: parsed.fullName || "",
+        email: parsed.email || "",
+        password: "",
+        confirmPassword: "",
+      }
+      : {
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      };
+  });
 
   const [touched, setTouched] = useState({
     fullName: false,
@@ -26,18 +37,12 @@ function Register() {
     confirmPassword: false,
   });
 
-
   const [errors, setErrors] = useState({
     fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
-  });
-
-  
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
-  const [checkboxMessage, setCheckboxMessage] = useState("");
-  const [checkboxMessageType, setCheckboxMessageType] = useState("");
+  }); 
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -51,13 +56,6 @@ function Register() {
     { test: (v) => /[0-9]/.test(v), message: "At least one number" },
     { test: (v) => /[^A-Za-z0-9]/.test(v), message: "At least one special character" },
   ];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFields((prev) => ({ ...prev, [name]: value }));
-    setTouched((prev) => ({ ...prev, [name]: true }));
-    validateField(name, value);
-  };
 
   const validateField = (name, value) => {
     let msg = "";
@@ -81,6 +79,32 @@ function Register() {
       }
     }
     setErrors((prev) => ({ ...prev, [name]: msg }));
+  };
+
+  useEffect(() => {
+    const ttlStart = sessionStorage.getItem("ttlStartTime");
+    if (!ttlStart) {
+      sessionStorage.setItem("ttlStartTime", Date.now());
+    }
+
+    // Validate all fields that have data from sessionStorage
+    Object.keys(fields).forEach((fieldName) => {
+      if (fields[fieldName]) {
+        validateField(fieldName, fields[fieldName]);
+        setTouched(prev => ({ ...prev, [fieldName]: true }));
+      }
+    });
+  }, []); // Empty dependency array since we only want this to run once on mount
+
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [checkboxMessage, setCheckboxMessage] = useState("");
+  const [checkboxMessageType, setCheckboxMessageType] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({ ...prev, [name]: value }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validateField(name, value);
   };
 
   const handleBlur = (e) => {
@@ -143,6 +167,15 @@ function Register() {
       setCheckboxMessageType("");
       // Log all field values after all fields are filled and valid
       console.log("Register fields:", fields);
+
+      const filteredFields = Object.fromEntries(
+        Object.entries(fields).filter(
+          ([key]) => key !== "password" && key !== "confirmPassword"
+        )
+      );
+
+      sessionStorage.setItem("registerFields", JSON.stringify(filteredFields));
+
       navigate("/company-build", { state: { fullName: fields.fullName, email: fields.email, password: fields.password } });
     } else {
       setCheckboxMessage("");
@@ -215,8 +248,8 @@ function Register() {
                   touched.fullName && errors.fullName === "Full Name is valid"
                     ? "success"
                     : touched.fullName && errors.fullName
-                    ? "error"
-                    : ""
+                      ? "error"
+                      : ""
                 }
               />
 
@@ -242,8 +275,8 @@ function Register() {
                   touched.email && errors.email === "Email is valid"
                     ? "success"
                     : touched.email && errors.email
-                    ? "error"
-                    : ""
+                      ? "error"
+                      : ""
                 }
               />
 
@@ -269,8 +302,8 @@ function Register() {
                   touched.password && errors.password === "Password is strong"
                     ? "success"
                     : touched.password && errors.password
-                    ? "error"
-                    : ""
+                      ? "error"
+                      : ""
                 }
               />
 
@@ -296,8 +329,8 @@ function Register() {
                   touched.confirmPassword && errors.confirmPassword === "Password matched"
                     ? "success"
                     : touched.confirmPassword && errors.confirmPassword
-                    ? "error"
-                    : ""
+                      ? "error"
+                      : ""
                 }
               />
             </div>
