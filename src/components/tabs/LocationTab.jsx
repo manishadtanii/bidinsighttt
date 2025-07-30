@@ -2,26 +2,34 @@ import React, { useState, useEffect } from "react";
 import { Trash2, Search } from "lucide-react";
 import { getAllStates } from "../../services/bid.service.js";
 
-
-
 const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
   const [selectedStates, setSelectedStates] = useState(filters.location || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [states, setStates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch states from API
+  // Fetch states from API and sort alphabetically
   useEffect(() => {
     const fetchStates = async () => {
       try {
         setLoading(true);
         const response = await getAllStates();
-        // console.log('States API Response:', response);
-        setStates(response); // For now, using the response directly until we see the structure
+
+        const sortedStates = response.sort((a, b) => {
+          const nameA = (a.name || a).toLowerCase();
+          const nameB = (b.name || b).toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+
+        setStates(sortedStates);
       } catch (error) {
         console.error("Error fetching states:", error);
         // Fallback to hardcoded states if API fails
-        setStates(US_STATES.map(state => ({ name: state })));
+        const fallbackStates = US_STATES.map(state => ({ name: state }));
+        const sortedFallback = fallbackStates.sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+        setStates(sortedFallback);
       } finally {
         setLoading(false);
       }
@@ -37,7 +45,7 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
     }
   }, [filters.location]);
 
-  // Filter states based on search input - will need to adjust based on API response structure
+  // Filter states based on search input
   const filteredStates = states.filter((state) =>
     (state.name || state).toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -50,9 +58,8 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
     const updated = selectedStates.includes(stateName)
       ? selectedStates.filter((s) => s !== stateName)
       : [...selectedStates, stateName];
-    
+
     setSelectedStates(updated);
-    // Update the filters with the new selection
     setFilters({
       ...filters,
       location: updated
@@ -60,9 +67,8 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
   };
 
   const toggleSelectAll = () => {
+    const visibleStateNames = filteredStates.map(state => state.name || state);
     if (isAllSelected) {
-      // Remove all visible states from selected
-      const visibleStateNames = filteredStates.map(state => state.name || state);
       const updated = selectedStates.filter((state) => !visibleStateNames.includes(state));
       setSelectedStates(updated);
       setFilters({
@@ -70,8 +76,6 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
         location: updated
       });
     } else {
-      // Add all visible states
-      const visibleStateNames = filteredStates.map(state => state.name || state);
       const updated = Array.from(new Set([...selectedStates, ...visibleStateNames]));
       setSelectedStates(updated);
       setFilters({
@@ -184,8 +188,6 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
           )}
         </div>
       </div>
-
-     
     </div>
   );
 };
