@@ -24,6 +24,27 @@ export const getBids = async (queryOrId) => {
   }
 };
 
+export const profileBids = async (queryOrId) => { 
+  try {
+    const token = localStorage.getItem("access_token");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    // Agar specific ID pass ho   
+    if (typeof queryOrId === "string" && !queryOrId.startsWith("?")) {
+      const response = await API.get(`/auth/profile/${queryOrId}/`, { headers });
+      console.log(response.data);
+      return response.data;
+    }
+
+    // You can optionally add a fallback API call if needed here
+
+  } catch (error) {
+    console.error("Error fetching profile bids:", error);
+    throw error;
+  }
+}; // ✅ <<== THIS was missing
+
+
 
 export const getSavedSearches = async () => {
   const token = localStorage.getItem("access_token");

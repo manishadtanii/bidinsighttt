@@ -33,10 +33,11 @@ function HelpOurAi() {
   function skipHandle() {
     const allNo = {};
     fields.forEach((f) => {
-      allNo[f.name] = "yes";
+      allNo[f.name] = "no";
     });
     dispatch(saveInsuranceData(allNo));
     dispatch(setSkippedInsurance(true)); // ✅ set skip flag in redux
+    setFormValues(allNo); 
     navigate("/extra-data");
   }
 

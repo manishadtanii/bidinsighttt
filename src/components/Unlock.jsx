@@ -4,6 +4,7 @@ import lock from "../../public/lock.png";
 
 
 function Unlock({data}) {
+  console.log(data)
   const { head, p, container, imgSize = "w-10", link } = data;
   return (
     <div className={`unlock-box flex  items-center gap-4 ${container}`}>
