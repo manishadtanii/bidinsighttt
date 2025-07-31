@@ -100,22 +100,22 @@ function Dashboard() {
   ];
 
 
-const handleSort = (field) => {
-  setFilters((prev) => {
-    const current = prev.ordering;
-    const newOrder =
-      current === `-${field}` ? field : `-${field}`;
+  const handleSort = (field) => {
+    setFilters((prev) => {
+      const current = prev.ordering;
+      const newOrder =
+        current === `-${field}` ? field : `-${field}`;
 
-    const updatedFilters = {
-      ...prev,
-      ordering: newOrder,
-    };
+      const updatedFilters = {
+        ...prev,
+        ordering: newOrder,
+      };
 
-    setAppliedFilters(updatedFilters);
+      setAppliedFilters(updatedFilters);
 
-    return updatedFilters;
-  });
-};
+      return updatedFilters;
+    });
+  };
 
 
 
@@ -247,118 +247,118 @@ const handleSort = (field) => {
 
   // Function to build query string from filters
   const buildQueryString = (filters) => {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  params.append("page", currentPage.toString());
-  params.append("pageSize", perPage.toString());
+    params.append("page", currentPage.toString());
+    params.append("pageSize", perPage.toString());
 
-  if (filters.status) {
-    params.append("bid_type", filters.status);
-  }
-
-  if (filters.location && filters.location.length > 0) {
-    params.append("state", filters.location.join(","));
-  }
-
-  if (filters.solicitationType && filters.solicitationType.length > 0) {
-    params.append("solicitation", filters.solicitationType.join(","));
-  }
-
-  if (filters.keyword?.include && filters.keyword.include.length > 0) {
-    params.append("include", filters.keyword.include.join(","));
-  }
-
-  if (filters.keyword?.exclude && filters.keyword.exclude.length > 0) {
-    params.append("exclude", filters.keyword.exclude.join(","));
-  }
-
-  if (filters.UNSPSCCode && filters.UNSPSCCode.length > 0) {
-    const codes = filters.UNSPSCCode.map((item) => item.code);
-    params.append("unspsc_codes", codes.join(","));
-  }
-
-  if (filters.NAICSCode && filters.NAICSCode.length > 0) {
-    const codes = filters.NAICSCode.map((item) => item.code);
-    params.append("naics_codes", codes.join(","));
-  }
-
-  if (filters.publishedDate?.after) {
-    params.append("open_date_after", filters.publishedDate.after);
-  }
-
-  if (filters.publishedDate?.before) {
-    params.append("open_date_before", filters.publishedDate.before);
-  }
-
-  if (filters.closingDate?.after) {
-    params.append("closing_date_after", filters.closingDate.after);
-  }
-
-  if (filters.closingDate?.before) {
-    params.append("closing_date_before", filters.closingDate.before);
-  }
-
-  // Add ordering parameter
-  if (filters.ordering) {
-    params.append("ordering", filters.ordering);
-  }
-
-  return params.toString();
-};
-
-  // Function to fetch bids with applied filters
-const fetchBids = useCallback(async () => {
-  setLoading(true);
-  setError("");
-  const token = localStorage.getItem("access_token");
-
-  if (!token) {
-    setError("User not logged in");
-    dispatch(setBids([]));
-    setLoading(false);
-    navigate("/login");
-    return;
-  }
-
-  try {
-    const hasActiveFilters =
-      appliedFilters.status !== "Active" ||
-      (appliedFilters.location?.length > 0) ||
-      (appliedFilters.solicitationType?.length > 0) ||
-      (appliedFilters.keyword?.include?.length > 0) ||
-      (appliedFilters.keyword?.exclude?.length > 0) ||
-      (appliedFilters.UNSPSCCode?.length > 0) ||
-      (appliedFilters.NAICSCode?.length > 0) ||
-      appliedFilters.publishedDate?.after ||
-      appliedFilters.publishedDate?.before ||
-      appliedFilters.closingDate?.after ||
-      appliedFilters.closingDate?.before;
-
-    const filtersToUse = hasActiveFilters
-      ? appliedFilters
-      : { ...appliedFilters, status: "Active" };
-
-    let queryString = buildQueryString(filtersToUse);
-    
-    // Add default sorting by countdown (closing_date ascending) when no explicit sorting
-    if (appliedFilters.ordering) {
-      queryString += `&ordering=${appliedFilters.ordering}`;
-    } else {
-      // Default: Sort by closing_date ascending (soonest closing dates first)
-      queryString += `&ordering=closing_date`;
+    if (filters.status) {
+      params.append("bid_type", filters.status);
     }
 
-    console.log("🔥 Fetching bids with query:", queryString);
+    if (filters.location && filters.location.length > 0) {
+      params.append("state", filters.location.join(","));
+    }
 
-    const res = await getBids(`?${queryString}`);
-    dispatch(setBids(res));
-  } catch (err) {
-    console.error("Failed to fetch bids:", err);
-    setError("Failed to fetch bids");
-  } finally {
-    setLoading(false);
-  }
-}, [currentPage, navigate, perPage, appliedFilters, dispatch]);
+    if (filters.solicitationType && filters.solicitationType.length > 0) {
+      params.append("solicitation", filters.solicitationType.join(","));
+    }
+
+    if (filters.keyword?.include && filters.keyword.include.length > 0) {
+      params.append("include", filters.keyword.include.join(","));
+    }
+
+    if (filters.keyword?.exclude && filters.keyword.exclude.length > 0) {
+      params.append("exclude", filters.keyword.exclude.join(","));
+    }
+
+    if (filters.UNSPSCCode && filters.UNSPSCCode.length > 0) {
+      const codes = filters.UNSPSCCode.map((item) => item.code);
+      params.append("unspsc_codes", codes.join(","));
+    }
+
+    if (filters.NAICSCode && filters.NAICSCode.length > 0) {
+      const codes = filters.NAICSCode.map((item) => item.code);
+      params.append("naics_codes", codes.join(","));
+    }
+
+    if (filters.publishedDate?.after) {
+      params.append("open_date_after", filters.publishedDate.after);
+    }
+
+    if (filters.publishedDate?.before) {
+      params.append("open_date_before", filters.publishedDate.before);
+    }
+
+    if (filters.closingDate?.after) {
+      params.append("closing_date_after", filters.closingDate.after);
+    }
+
+    if (filters.closingDate?.before) {
+      params.append("closing_date_before", filters.closingDate.before);
+    }
+
+    // Add ordering parameter
+    if (filters.ordering) {
+      params.append("ordering", filters.ordering);
+    }
+
+    return params.toString();
+  };
+
+  // Function to fetch bids with applied filters
+  const fetchBids = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      setError("User not logged in");
+      dispatch(setBids([]));
+      setLoading(false);
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const hasActiveFilters =
+        appliedFilters.status !== "Active" ||
+        (appliedFilters.location?.length > 0) ||
+        (appliedFilters.solicitationType?.length > 0) ||
+        (appliedFilters.keyword?.include?.length > 0) ||
+        (appliedFilters.keyword?.exclude?.length > 0) ||
+        (appliedFilters.UNSPSCCode?.length > 0) ||
+        (appliedFilters.NAICSCode?.length > 0) ||
+        appliedFilters.publishedDate?.after ||
+        appliedFilters.publishedDate?.before ||
+        appliedFilters.closingDate?.after ||
+        appliedFilters.closingDate?.before;
+
+      const filtersToUse = hasActiveFilters
+        ? appliedFilters
+        : { ...appliedFilters, status: "Active" };
+
+      let queryString = buildQueryString(filtersToUse);
+
+      // Add default sorting by countdown (closing_date ascending) when no explicit sorting
+      if (appliedFilters.ordering) {
+        queryString += `&ordering=${appliedFilters.ordering}`;
+      } else {
+        // Default: Sort by closing_date ascending (soonest closing dates first)
+        queryString += `&ordering=closing_date`;
+      }
+
+      console.log("🔥 Fetching bids with query:", queryString);
+
+      const res = await getBids(`?${queryString}`);
+      dispatch(setBids(res));
+    } catch (err) {
+      console.error("Failed to fetch bids:", err);
+      setError("Failed to fetch bids");
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, navigate, perPage, appliedFilters, dispatch]);
 
 
   // Fetch bids on component mount and page change
@@ -796,13 +796,13 @@ const fetchBids = useCallback(async () => {
             ) : (
               // <BidTable bids={bidsInfo?.results || []} ref={tableRef} />
               <BidTable
-  bids={bidsInfo?.results || []}
-  totalCount={bidsInfo?.count || 0}
-  currentSortField={appliedFilters.ordering || "closing_date"} // Show default sort
-  currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}
-  onSort={handleSort}
-  ref={tableRef}
-/>
+                bids={bidsInfo?.results || []}
+                totalCount={bidsInfo?.count || 0}
+                currentSortField={appliedFilters.ordering || "closing_date"} // Show default sort
+                currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}
+                onSort={handleSort}
+                ref={tableRef}
+              />
 
 
             )}

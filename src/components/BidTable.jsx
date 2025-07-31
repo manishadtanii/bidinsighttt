@@ -26,6 +26,7 @@ function getCountdown(closingDateStr) {
   if (isNaN(diffInDays)) return "-";
   if (diffInDays < 0) return "Closed";
   if (diffInDays === 0) return "Closes today";
+  if(diffInDays === 1) return "1 day";
   return `${diffInDays} days`;
 }
 
@@ -214,7 +215,7 @@ const BidTable = forwardRef(
                   if (days <= 0) {
                     countdownDisplay = "Closed";
                   } else if (days === 1) {
-                    countdownDisplay = "1 day";
+                    countdownDisplay = "Today";
                   } else if (days < 30) {
                     countdownDisplay = `${days} days`;
                   } else if (days < 365) {
@@ -223,7 +224,7 @@ const BidTable = forwardRef(
                     if (remainingDays === 0) {
                       countdownDisplay = `${months}m`;
                     } else {
-                      countdownDisplay = `${months}m ${remainingDays}d`;
+                      countdownDisplay = `${months}mo ${remainingDays}d`;
                     }
                   } else {
                     const years = Math.floor(days / 365);

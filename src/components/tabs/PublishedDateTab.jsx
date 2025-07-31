@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -8,8 +10,8 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
   const lastLogin = useSelector((state) => state.login?.user?.last_login);
   const formattedLastLogin = lastLogin
     ? new Date(lastLogin).toLocaleDateString("en-US", {
-        dateStyle: "medium",
-      })
+      dateStyle: "medium",
+    })
     : "Not Available";
 
   const [selectedType, setSelectedType] = useState(type || "");
@@ -17,34 +19,60 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
   const [fromDate, setFromDate] = useState(from || "");
   const [toDate, setToDate] = useState(to || "");
 
-  useEffect(() => {
-    let inferredType = publishedDate.type || "";
-    let inferredWithin = publishedDate.within || "7";
-    let inferredFrom = publishedDate.from || "";
-    let inferredTo = publishedDate.to || "";
+useEffect(() => {
+  const { type = "", within = "7", from = "", to = "", after, before } = publishedDate;
 
-    if (!inferredType && publishedDate.after && publishedDate.before) {
-      const after = publishedDate.after;
-      const before = publishedDate.before;
+  // DEBUG: Console log to check what's coming from filters
+  console.log("PublishedDateTab - Received filters:", { publishedDate, type, within, from, to, after, before });
 
-      const diffInMs = new Date(before) - new Date(after);
-      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-      if (diffInDays === 7 || diffInDays === 30 || diffInDays === 90) {
-        inferredType = "within";
-        inferredWithin = diffInDays.toString();
-      } else {
-        inferredType = "timeline";
-        inferredFrom = after;
-        inferredTo = before;
-      }
+  // FIXED: Agar type already set hai, to use that directly without inference
+  if (type) {
+    console.log("Setting type directly:", type);
+    setSelectedType(type);
+    
+    if (type === "lastLogin") {
+      setWithinDays(""); // clear others
+      setFromDate("");
+      setToDate("");
+    } else if (type === "within") {
+      setWithinDays(within || "7");
+      setFromDate("");
+      setToDate("");
+    } else if (type === "timeline") {
+      setWithinDays("");
+      setFromDate(from || "");
+      setToDate(to || "");
     }
+    return; // IMPORTANT: Return early to avoid inference logic
+  }
 
-    setSelectedType(inferredType);
-    setWithinDays(inferredWithin);
-    setFromDate(inferredFrom);
-    setToDate(inferredTo);
-  }, [publishedDate]);
+  // Inference logic - only run if type is not explicitly set
+  let inferredType = "";
+  let inferredWithin = within;
+  let inferredFrom = from;
+  let inferredTo = to;
+
+  // Only infer type if it's actually missing
+  if (after && before && !type) {
+    const diffInMs = new Date(before) - new Date(after);
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if ([7, 30, 90].includes(diffInDays)) {
+      inferredType = "within";
+      inferredWithin = diffInDays.toString();
+    } else {
+      inferredType = "timeline";
+      inferredFrom = after;
+      inferredTo = before;
+    }
+  }
+
+  setSelectedType(inferredType);
+  setWithinDays(inferredWithin);
+  setFromDate(inferredFrom);
+  setToDate(inferredTo);
+}, [publishedDate]);
+
 
   const calculateDateRange = (days) => {
     const today = new Date();
@@ -88,7 +116,7 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
       const today = new Date().toISOString().split("T")[0];
 
       updated.publishedDate = {
-        type,
+        type, // FIXED: Explicitly set type as "lastLogin"
         within: "",
         from: "",
         to: "",

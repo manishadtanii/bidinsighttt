@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 
 const ClosingDateTab = ({
   filters = {},
-  setFilters = () => {},
-  onApply = () => {},
+  setFilters = () => { },
+  onApply = () => { },
   searchOption = "create",
-  setShowValidation = () => {},
-  setActiveTab = () => {},
-  setTriggerSave = () => {},
+  setShowValidation = () => { },
+  setActiveTab = () => { },
+  setTriggerSave = () => { },
 }) => {
   const { closingDate = {} } = filters;
-  const { type = "", within = "", date = "", from = "", to = "" } = closingDate;
+  const { type = "", within = "", date = "", from = "", to = "" } = closingDate; 
 
   // Local state for component
   const [selectedType, setSelectedType] = useState(type || "");
@@ -22,21 +22,23 @@ const ClosingDateTab = ({
   const today = new Date().toISOString().slice(0, 10);
 
   // Function to calculate date ranges for "within" option
+  // ✅ Fixed (forward from today)
   const calculateDateRange = (days) => {
     const today = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(today.getDate() - parseInt(days)); // Changed to minus for "last" days
-    
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + parseInt(days));
+
     return {
-      after: pastDate.toISOString().split('T')[0], // YYYY-MM-DD format
-      before: today.toISOString().split('T')[0]
+      after: today.toISOString().split('T')[0],
+      before: futureDate.toISOString().split('T')[0]
     };
   };
+
 
   // Update filters when selections change - Fixed version
   const updateFilters = (type, days = "", singleDateValue = "", fromDateValue = "", toDateValue = "") => {
     let updatedFilters = { ...filters };
-    
+
     if (type === "date") {
       // Single date selection - set both after and before to same date
       updatedFilters.closingDate = {
@@ -93,7 +95,7 @@ const ClosingDateTab = ({
   // Handle radio button change - Fixed version
   const handleTypeChange = (type) => {
     setSelectedType(type);
-    
+
     // Clear other fields when switching type
     if (type === "date") {
       setWithinDays("");
@@ -144,7 +146,7 @@ const ClosingDateTab = ({
         after: dateRange.after,
         before: dateRange.before
       };
-      
+
       if (setFilters) {
         setFilters(updatedFilters);
       }
@@ -168,42 +170,42 @@ const ClosingDateTab = ({
 
   // Initialize component state from filters - only on mount or when explicitly cleared
   useEffect(() => {
-  let inferredType = closingDate.type || "";
-  let inferredWithin = closingDate.within || "";
-  let inferredDate = closingDate.date || "";
-  let inferredFrom = closingDate.from || "";
-  let inferredTo = closingDate.to || "";
+    let inferredType = closingDate.type || "";
+    let inferredWithin = closingDate.within || "";
+    let inferredDate = closingDate.date || "";
+    let inferredFrom = closingDate.from || "";
+    let inferredTo = closingDate.to || "";
 
-  if (!inferredType && closingDate.after && closingDate.before) {
-    const after = closingDate.after;
-    const before = closingDate.before;
+    if (!inferredType && closingDate.after && closingDate.before) {
+      const after = closingDate.after;
+      const before = closingDate.before;
 
-    // Check for exact match (same date)
-    if (after === before) {
-      inferredType = "date";
-      inferredDate = after;
-    } else {
-      const diffInMs = new Date(before) - new Date(after);
-      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-      if ([7, 30, 90].includes(diffInDays)) {
-        inferredType = "within";
-        inferredWithin = diffInDays.toString();
+      // Check for exact match (same date)
+      if (after === before) {
+        inferredType = "date";
+        inferredDate = after;
       } else {
-        inferredType = "timeline";
-        inferredFrom = after;
-        inferredTo = before;
+        const diffInMs = new Date(before) - new Date(after);
+        const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+        if ([7, 30, 90].includes(diffInDays)) {
+          inferredType = "within";
+          inferredWithin = diffInDays.toString();
+        } else {
+          inferredType = "timeline";
+          inferredFrom = after;
+          inferredTo = before;
+        }
       }
     }
-  }
 
-  setSelectedType(inferredType);
-  setWithinDays(inferredWithin);
-  setSingleDate(inferredDate);
-  setFromDate(inferredFrom);
-  setToDate(inferredTo);
-}, [closingDate]);
- // Only depend on type, not all fields
+    setSelectedType(inferredType);
+    setWithinDays(inferredWithin);
+    setSingleDate(inferredDate);
+    setFromDate(inferredFrom);
+    setToDate(inferredTo);
+  }, [closingDate]);
+  // Only depend on type, not all fields
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
@@ -251,9 +253,9 @@ const ClosingDateTab = ({
               onChange={(e) => handleWithinChange(e.target.value)}
             >
               <option value="">-Select-</option>
-              <option value="7">Last 7 Days</option>
-              <option value="30">Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
+              <option value="7">Next 7 Days</option>
+              <option value="30">Next 30 Days</option>
+              <option value="90">Next 90 Days</option>
             </select>
           </div>
         </div>
