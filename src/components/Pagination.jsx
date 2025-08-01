@@ -29,7 +29,14 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
   };
 
   return (
-    <div className="flex items-center justify-center mt-6">
+    <div className="flex items-center justify-between mt-6 px-3 pt-8">
+
+      <div className="text-sm">
+        <span className="font-inter text-white font-medium text-sm">
+          {((currentPage - 1) * perPage) + 1} - {Math.min(currentPage * perPage, totalResults)} of {totalResults} results found
+        </span>
+      </div>
+
       <div className="flex items-center space-x-1 text-sm font-semibold">
         {/* First Page */}
         <button
@@ -82,6 +89,14 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
           »
         </button>
       </div>
+
+
+        <div className="text-sm flex items-center gap-2">
+        <span className='font-inter font-medium text-white text-sm'>Result per page:</span>
+        <span className="px-2 py-1 rounded bg-btn text-white">{perPage}</span>
+      </div>
+
+
     </div>
   );
 };
