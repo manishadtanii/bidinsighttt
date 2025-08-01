@@ -1,3 +1,259 @@
+// import React, { useState, useEffect, useRef } from "react";
+// import FormHeader from "../components/FormHeader";
+// import HeroHeading from "../components/HeroHeading";
+// import FormFooter from "../components/FormFooter";
+// import FormImg from "../components/FormImg";
+// import ProcessWrapper from "../components/ProcessWrapper";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import api from "../utils/axios"
+// import { checkTTLAndClear } from "../utils/ttlCheck";
+
+// function Verification() {
+//   const data = {
+//     title: "Verify your Email to begin your Biding",
+//     para: "All government bids. One dashboard. Zero hassles.",
+//     btnText: false,
+//     btnLink: false,
+//     container: "max-w-4xl mx-auto text-left",
+//     headingSize: "h1",
+//     pSize: "text-xl",
+//   };
+
+//   const formHeader = {
+//     title: "Log In",
+//     link: "/login",
+//     steps: "",
+//     activeStep: 0,
+//   };
+
+//   const formFooter = {
+//     back: {
+//       text: "Back",
+//       link: "/login",
+//     },
+//     next: {
+//       text: "Verify",
+//       link: "",
+//     },
+//     skip: {
+//       text: "",
+//       link: "",
+//     },
+//   };
+
+//   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+//   const [timer, setTimer] = useState(30);
+//   const [otpMessage, setOtpMessage] = useState("");
+//   const [otpMessageType, setOtpMessageType] = useState("");
+//   const [apiResponse, setApiResponse] = useState(null);
+//   const inputsRef = useRef([]);
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const email = location.state?.email || "";
+//   const otpFromSignup = location.state?.otp || null;
+
+//    useEffect(() => {
+//       checkTTLAndClear(navigate);
+//     }, []);
+
+//   useEffect(() => {
+//     if (otpFromSignup) {
+//       alert(`Your OTP is: ${otpFromSignup}`);
+//     }
+//     const countdown = setInterval(() => {
+//       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+//     }, 1000);
+//     return () => clearInterval(countdown);
+//   }, []);
+
+//   const handleChange = (value, index) => {
+//     if (/^\d?$/.test(value)) {
+//       const newOtp = [...otp];
+//       newOtp[index] = value;
+//       setOtp(newOtp);
+//       setOtpMessage("");
+//       setOtpMessageType("");
+
+
+//       if (value && index < 5) inputsRef.current[index + 1].focus();
+//     }
+//   };
+
+//   const handleKeyDown = (e, index) => {
+//     if (e.key === "Backspace" && !otp[index] && index > 0) {
+//       inputsRef.current[index - 1].focus();
+//     }
+//   };
+
+//   const handleVerify = async () => {
+//     const enteredOtp = otp.join("");
+//     if (enteredOtp.length !== 6 || otp.some((d) => d === "")) {
+//       setOtpMessage("Please fill all the 6 digits");
+//       setOtpMessageType("error");
+//       return;
+//     }
+//     setOtpMessage("");
+//     setOtpMessageType("success");
+//     console.log(otp, "OTP entered:", enteredOtp);
+//     console.log("Email for verification:", email);
+//     console.log("OTP from signup:", otpFromSignup);
+//     try {
+//   const response = await api.post(
+//     "/auth/verify-otp/",
+//     { email, otp: otpFromSignup || enteredOtp },
+//     {
+//       headers: {
+//         "Content-Type": "application/json", // ✅ Ensure JSON
+//       },
+//     }
+//   );
+
+//   setApiResponse(response.data);
+//   console.log("✅ API Response:", response.data);
+
+//   // Adjust based on how your backend sends success
+//   if ((response.data.success || response.status === 200) && response.data.access) {
+//     localStorage.setItem("access_token", response.data.access);
+//     navigate("/plan");
+//   } else {
+//     setOtpMessage("OTP is invalid or expired.");
+//     setOtpMessageType("error");
+//   }
+// } catch (error) {
+//   console.log("❌ API Error:", error);
+
+//   const fallbackMessage = "OTP verification failed. Please try again.";
+
+//   if (error.response) {
+//     console.log("❌ API Error Response Data:", error.response.data);
+
+//     // Dynamically extract message from backend response
+//     const serverMessage =
+//       error.response.data?.detail ||
+//       error.response.data?.message ||
+//       error.response.data?.error ||
+//       fallbackMessage;
+
+//     setOtpMessage(serverMessage);
+//   } else {
+//     setOtpMessage(fallbackMessage);
+//   }
+
+//   setOtpMessageType("error");
+//   setApiResponse({ error: error.message });
+// }
+
+//   };
+
+//   const handleResend = async () => {
+//     if (timer === 0) {
+//       setTimer(120);
+//       setOtp(["", "", "", "", "", ""]);
+//       inputsRef.current[0].focus();
+//       try {
+//         // Pass email in the request body as required by backend
+//         const response = await api.post("/auth/resend-otp/", { email });
+//         setApiResponse(response.data);
+//         console.log("Resend OTP API Response:", response.data.data);
+//       } catch (error) {
+//         setApiResponse({ error: error.message });
+//         setOtpMessage("Failed to resend OTP. Please try again.");
+//         setOtpMessageType("error");
+//         console.log("Resend OTP API Error:", error);
+//       }
+//     }
+//   };
+
+//   return (
+//     <ProcessWrapper>
+//       <div className="form-left"> 
+//         <div className="pe-3 flex flex-col justify-between h-full">
+//           <div>
+//             <FormHeader {...formHeader} />
+//             <HeroHeading data={data} />
+//           </div>
+
+//           <div className="h-full">
+//             <div className="mt-10">
+//               <p className="mb-2 text-white">Enter the 6 digit verification code</p>
+//               <div className="flex gap-4">
+//                 {otp.map((digit, i) => (
+//                   <input
+//                     key={i}
+//                     ref={(el) => (inputsRef.current[i] = el)}
+//                     type="text"
+//                     inputMode="numeric"
+//                     maxLength="1"
+//                     value={digit}
+//                     onChange={(e) => handleChange(e.target.value, i)}
+//                     onKeyDown={(e) => handleKeyDown(e, i)}
+//                     className="w-10 md:w-14 h-10 md:h-14 rounded-md bg-transparent border border-white text-3xl text-center focus:outline-none focus:ring-2 focus:ring-white text-white"
+//                   />
+//                 ))}
+//               </div>
+
+//               {otpMessage && (
+//                 <p
+//                   className={`text-sm flex items-center gap-1 mt-2 mb-1 ${
+//                     otpMessageType === "success"
+//                       ? "text-green-400"
+//                       : "text-red-400"
+//                   }`}
+//                 >
+//                   {otpMessageType === "success" ? (
+//                     <span className="flex items-center">
+//                       <i className="fal fa-check text-green-400"></i>
+//                     </span>
+//                   ) : (
+//                     <span className="flex items-center">
+//                       <i className="far fa-times text-red-400"></i>
+//                     </span>
+//                   )}
+//                   <span>{otpMessage}</span>
+//                 </p>
+//               )}
+
+//               <div className="mt-4 flex items-center gap-2 text-white">
+//                 {timer > 0 ? (
+//                   <p>
+//                     Resend Code in <span className="font-bold">{timer}s</span>
+//                   </p>
+//                 ) : (
+//                   <button
+//                     onClick={handleResend}
+//                     className="underline hover:text-blue-300"
+//                   >
+//                     Resend Code
+//                   </button>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+
+//           <FormFooter data={formFooter} onNextClick={handleVerify} />
+//         </div>
+//       </div>
+
+//       <div className="sticky top-0">
+//         <FormImg src={"login-img.png"} />
+//       </div>
+//     </ProcessWrapper>
+//   );
+// }
+
+// export default Verification;
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect, useRef } from "react";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
@@ -46,25 +302,35 @@ function Verification() {
   const [otpMessage, setOtpMessage] = useState("");
   const [otpMessageType, setOtpMessageType] = useState("");
   const [apiResponse, setApiResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const inputsRef = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
   const otpFromSignup = location.state?.otp || null;
 
-   useEffect(() => {
-      checkTTLAndClear(navigate);
-    }, []);
+  useEffect(() => {
+    checkTTLAndClear(navigate);
+  }, []);
 
   useEffect(() => {
+    console.log("=== COMPONENT MOUNTED ===");
+    console.log("Location state:", location.state);
+    console.log("Email from signup:", location.state?.email);
+    console.log("OTP from signup:", location.state?.otp);
+    console.log("=== END MOUNT DEBUG ===");
+    
     if (otpFromSignup) {
+      // Auto-fill the OTP inputs with the signup OTP
+      const otpDigits = otpFromSignup.toString().split('');
+      setOtp(otpDigits);
       alert(`Your OTP is: ${otpFromSignup}`);
     }
     const countdown = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(countdown);
-  }, []);
+  }, [otpFromSignup]);
 
   const handleChange = (value, index) => {
     if (/^\d?$/.test(value)) {
@@ -73,7 +339,6 @@ function Verification() {
       setOtp(newOtp);
       setOtpMessage("");
       setOtpMessageType("");
-
 
       if (value && index < 5) inputsRef.current[index + 1].focus();
     }
@@ -87,34 +352,176 @@ function Verification() {
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
+    
     if (enteredOtp.length !== 6 || otp.some((d) => d === "")) {
       setOtpMessage("Please fill all the 6 digits");
       setOtpMessageType("error");
       return;
     }
+
+    if (!email) {
+      setOtpMessage("Email not found. Please go back and try again.");
+      setOtpMessageType("error");
+      return;
+    }
+
+    setIsLoading(true);
     setOtpMessage("");
-    setOtpMessageType("success");
+    setOtpMessageType("");
+    
+    console.log("Email for verification:", email);
+    console.log("OTP entered:", enteredOtp);
+    console.log("OTP from signup:", otpFromSignup);
 
     try {
-      const response = await api.post("/auth/verify-otp/", { email, otp: enteredOtp });
+      // Use the OTP from signup if available, otherwise use entered OTP
+      const otpToVerify = otpFromSignup || enteredOtp;
+      
+      // Clean the email thoroughly
+      const cleanEmail = email.toLowerCase().trim().replace(/\s+/g, '');
+      
+      const payload = {
+        email: cleanEmail,
+        otp: otpToVerify.toString()
+      };
+      
+      console.log("Final payload being sent:", payload);
+      
+      console.log("Sending payload:", payload);
+
+      // Try different endpoints
+      const endpoints = [
+        "/auth/verify-otp/",
+        "/auth/verify/",
+        "/auth/email-verify/",
+        "/auth/activate/",
+        "/users/verify-email/"
+      ];
+      
+      let response = null;
+      let lastError = null;
+      
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying endpoint: ${endpoint}`);
+          
+          response = await api.post(endpoint, payload, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          
+          console.log(`✅ Success with endpoint: ${endpoint}`);
+          break;
+          
+        } catch (error) {
+          console.log(`❌ Failed with endpoint ${endpoint}:`, error.response?.data);
+          lastError = error;
+          
+          // If 404, try next endpoint
+          if (error.response?.status === 404) continue;
+          
+          // If "user not found" with 400, try next endpoint
+          if (error.response?.status === 400 && 
+              error.response?.data?.detail?.toLowerCase().includes('user')) {
+            continue;
+          }
+          
+          // Other errors, stop trying
+          break;
+        }
+      }
+      
+      if (!response) {
+        throw lastError;
+      }
+
       setApiResponse(response.data);
-      console.log("API Response:", response.data);
-      // Check for success in response (adjust as per your backend)
-      if ((response.data.success || response.status === 200) && response.data.access) {
-        localStorage.setItem("access_token", response.data.access);
-        navigate("/plan");
+      console.log("✅ API Response:", response.data);
+
+      // Check for success - be more flexible with response structure
+      if (response.status === 200 || response.status === 201) {
+        // Look for access token in various possible fields
+        const accessToken = response.data.access || 
+                           response.data.access_token || 
+                           response.data.token ||
+                           response.data.data?.access ||
+                           response.data.data?.access_token;
+
+        if (accessToken) {
+          localStorage.setItem("access_token", accessToken);
+          setOtpMessage("Verification successful!");
+          setOtpMessageType("success");
+          
+          // Navigate after a brief delay to show success message
+          setTimeout(() => {
+            navigate("/plan");
+          }, 1000);
+        } else {
+          // Success but no token - might be a different flow
+          console.log("Success response but no access token:", response.data);
+          
+          // Check if it's just a success message without token
+          if (response.data.success || response.data.message?.includes("success")) {
+            setOtpMessage("Verification successful!");
+            setOtpMessageType("success");
+            setTimeout(() => {
+              navigate("/plan");
+            }, 1000);
+          } else {
+            setOtpMessage("Verification successful but no access token received.");
+            setOtpMessageType("error");
+          }
+        }
       } else {
-        setOtpMessage("OTP is invalid");
+        setOtpMessage("OTP is invalid or expired.");
         setOtpMessageType("error");
       }
+      
     } catch (error) {
-      setApiResponse({ error: error.message });
-      setOtpMessage("OTP is invalid");
-      setOtpMessageType("error");
-      console.log("API Error:", error);
+      console.log("❌ API Error:", error);
+      
+      let errorMessage = "OTP verification failed. Please try again.";
+      
       if (error.response) {
-        console.log("API Error Response Data:", error.response.data);
+        console.log("❌ Full Error Response:", {
+          status: error.response.status,
+          data: error.response.data,
+          headers: error.response.headers
+        });
+        
+        // Extract error message from various possible locations
+        if (error.response.data) {
+          errorMessage = 
+            error.response.data.detail ||
+            error.response.data.message ||
+            error.response.data.error ||
+            error.response.data.msg ||
+            error.response.data.non_field_errors?.[0] ||
+            (typeof error.response.data === 'string' ? error.response.data : errorMessage);
+        }
+        
+        // Handle specific error codes
+        if (error.response.status === 400) {
+          if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('expired')) {
+            errorMessage = "Invalid or expired OTP. Please try again.";
+          } else if (errorMessage.toLowerCase().includes('email')) {
+            errorMessage = "Email not found. Please check your email address.";
+          }
+        } else if (error.response.status === 429) {
+          errorMessage = "Too many attempts. Please try again later.";
+        } else if (error.response.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+      } else if (error.request) {
+        errorMessage = "Network error. Please check your connection.";
       }
+      
+      setOtpMessage(errorMessage);
+      setOtpMessageType("error");
+      setApiResponse({ error: error.message });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -122,17 +529,44 @@ function Verification() {
     if (timer === 0) {
       setTimer(120);
       setOtp(["", "", "", "", "", ""]);
-      inputsRef.current[0].focus();
+      if (inputsRef.current[0]) {
+        inputsRef.current[0].focus();
+      }
+      
       try {
-        // Pass email in the request body as required by backend
-        const response = await api.post("/auth/resend-otp/", { email });
+        const payload = { email: email.toLowerCase().trim() };
+        console.log("Resending OTP for:", payload);
+        
+        const response = await api.post("/auth/resend-otp/", payload);
         setApiResponse(response.data);
-        console.log("Resend OTP API Response:", response.data.data);
+        console.log("Resend OTP API Response:", response.data);
+        
+        setOtpMessage("OTP sent successfully!");
+        setOtpMessageType("success");
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          if (otpMessageType === "success") {
+            setOtpMessage("");
+            setOtpMessageType("");
+          }
+        }, 3000);
+        
       } catch (error) {
-        setApiResponse({ error: error.message });
-        setOtpMessage("Failed to resend OTP. Please try again.");
-        setOtpMessageType("error");
         console.log("Resend OTP API Error:", error);
+        setApiResponse({ error: error.message });
+        
+        let errorMessage = "Failed to resend OTP. Please try again.";
+        if (error.response?.data) {
+          errorMessage = error.response.data.detail || 
+                        error.response.data.message || 
+                        error.response.data.error || 
+                        errorMessage;
+        }
+        
+        setOtpMessage(errorMessage);
+        setOtpMessageType("error");
+        setTimer(0); // Reset timer on error
       }
     }
   };
@@ -160,7 +594,10 @@ function Verification() {
                     value={digit}
                     onChange={(e) => handleChange(e.target.value, i)}
                     onKeyDown={(e) => handleKeyDown(e, i)}
-                    className="w-10 md:w-14 h-10 md:h-14 rounded-md bg-transparent border border-white text-3xl text-center focus:outline-none focus:ring-2 focus:ring-white text-white"
+                    disabled={isLoading}
+                    className={`w-10 md:w-14 h-10 md:h-14 rounded-md bg-transparent border border-white text-3xl text-center focus:outline-none focus:ring-2 focus:ring-white text-white ${
+                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   />
                 ))}
               </div>
@@ -194,16 +631,36 @@ function Verification() {
                 ) : (
                   <button
                     onClick={handleResend}
-                    className="underline hover:text-blue-300"
+                    disabled={isLoading}
+                    className={`underline hover:text-blue-300 ${
+                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
                     Resend Code
                   </button>
                 )}
               </div>
+
+              {/* Debug info - remove in production */}
+              {/* {process.env.NODE_ENV === 'development' && (
+                <div className="mt-4 p-2 bg-gray-800 rounded text-xs text-gray-300">
+                  <p>Debug Info:</p>
+                  <p>Email: "{email}" (Length: {email.length})</p>
+                  <p>Email trimmed: "{email.trim()}"</p>
+                  <p>OTP from signup: {otpFromSignup}</p>
+                  <p>Has spaces: {email.includes(' ') ? 'Yes' : 'No'}</p>
+                  <p>Has special chars: {/[^\w@.-]/.test(email) ? 'Yes' : 'No'}</p>
+                  <p>API Response: {JSON.stringify(apiResponse, null, 2)}</p>
+                </div>
+              )} */}
             </div>
           </div>
 
-          <FormFooter data={formFooter} onNextClick={handleVerify} />
+          <FormFooter 
+            data={formFooter} 
+            onNextClick={handleVerify} 
+            isLoading={isLoading}
+          />
         </div>
       </div>
 

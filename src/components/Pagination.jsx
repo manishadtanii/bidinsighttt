@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageChange }) => {
-    // console.log(currentPage, totalResults, perPage);
+  console.log(currentPage, totalResults, perPage);
 
   const totalPages = Math.ceil(totalResults / perPage);
 
@@ -33,7 +33,8 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
 
       <div className="text-sm">
         <span className="font-inter text-white font-medium text-sm">
-          {((currentPage - 1) * perPage) + 1} - {Math.min(currentPage * perPage, totalResults)} of {totalResults} results found
+          {totalResults === 0 ? 0 : ((currentPage - 1) * perPage + 1)}
+          - {Math.min(currentPage * perPage, totalResults)} of {totalResults} results found
         </span>
       </div>
 
@@ -61,11 +62,10 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
           <button
             key={page}
             onClick={() => goToPage(page)}
-            className={`px-2 py-1 text-lg rounded ${
-              page === currentPage
+            className={`px-2 py-1 text-lg rounded ${page === currentPage
                 ? 'text-white font-bold underline'
                 : 'text-gray-300 hover:text-white'
-            }`}
+              }`}
           >
             {page}
           </button>
@@ -91,7 +91,7 @@ const Pagination = ({ totalResults = 24797, perPage = 25, currentPage, onPageCha
       </div>
 
 
-        <div className="text-sm flex items-center gap-2">
+      <div className="text-sm flex items-center gap-2">
         <span className='font-inter font-medium text-white text-sm'>Result per page:</span>
         <span className="px-2 py-1 rounded bg-btn text-white">{perPage}</span>
       </div>

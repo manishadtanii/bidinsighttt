@@ -200,45 +200,49 @@ const BidTable = forwardRef(
               </tr>
             ) : (
               data.map((bid) => {
-                const statusLabel = bid.bid_type || "Unknown";
-                const countdownRaw = getCountdown(bid.closing_date);
-                let countdownDisplay = countdownRaw;
+  const statusLabel = bid.bid_type || "Unknown";
+  const countdownRaw = getCountdown(bid.closing_date);
+  let countdownDisplay = countdownRaw;
 
-                // Enhanced logic to handle closed bids and prioritize soon-to-close bids
-                if (bid.status === false || statusLabel.toLowerCase() === 'closed') {
-                  countdownDisplay = "Closed";
-                } else if (countdownRaw === "Closed") {
-                  countdownDisplay = "Closed";
-                } else if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
-                  const days = parseInt(countdownRaw.match(/\d+/)?.[0] || "0", 10);
-                  
-                  if (days <= 0) {
-                    countdownDisplay = "Closed";
-                  } else if (days === 1) {
-                    countdownDisplay = "Today";
-                  } else if (days < 30) {
-                    countdownDisplay = `${days} days`;
-                  } else if (days < 365) {
-                    const months = Math.floor(days / 30);
-                    const remainingDays = days % 30;
-                    if (remainingDays === 0) {
-                      countdownDisplay = `${months}m`;
-                    } else {
-                      countdownDisplay = `${months}mo ${remainingDays}d`;
-                    }
-                  } else {
-                    const years = Math.floor(days / 365);
-                    const months = Math.floor((days % 365) / 30);
-                    const remainingDays = (days % 365) % 30;
-                    
-                    const parts = [];
-                    if (years > 0) parts.push(`${years}y`);
-                    if (months > 0) parts.push(`${months}m`);
-                    if (years === 0 && remainingDays > 0) parts.push(`${remainingDays}d`);
-                    
-                    countdownDisplay = parts.join(" ");
-                  }
-                }
+  // 🔥 NEW LOGIC: If bid_type is 'Inactive', always show 'Closed'
+  if (statusLabel.toLowerCase() === 'inactive') {
+    countdownDisplay = "Closed";
+  }
+  // Enhanced logic to handle closed bids and prioritize soon-to-close bids
+  else if (bid.status === false || statusLabel.toLowerCase() === 'closed') {
+    countdownDisplay = "Closed";
+  } else if (countdownRaw === "Closed") {
+    countdownDisplay = "Closed";
+  } else if (!["-", "Closed", "Closes today"].includes(countdownRaw)) {
+    const days = parseInt(countdownRaw.match(/\d+/)?.[0] || "0", 10);
+    
+    if (days <= 0) {
+      countdownDisplay = "Closed";
+    } else if (days === 1) {
+      countdownDisplay = "Today";
+    } else if (days < 30) {
+      countdownDisplay = `${days} days`;
+    } else if (days < 365) {
+      const months = Math.floor(days / 30);
+      const remainingDays = days % 30;
+      if (remainingDays === 0) {
+        countdownDisplay = `${months}m`;
+      } else {
+        countdownDisplay = `${months}mo ${remainingDays}d`;
+      }
+    } else {
+      const years = Math.floor(days / 365);
+      const months = Math.floor((days % 365) / 30);
+      const remainingDays = (days % 365) % 30;
+      
+      const parts = [];
+      if (years > 0) parts.push(`${years}y`);
+      if (months > 0) parts.push(`${months}m`);
+      if (years === 0 && remainingDays > 0) parts.push(`${remainingDays}d`);
+      
+      countdownDisplay = parts.join(" ");
+    }
+  }
 
                 return (
                   <tr

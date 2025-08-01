@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const devBaseURL = "http://82.112.234.104:8001/api";
+const devBaseURL = "http://82.112.234.104:8001/api/";
 const prodBaseURL = "https://apibid.collegedwarka.com/api";
 
 const baseURL = process.env.NODE_ENV === "production" ? prodBaseURL : devBaseURL;

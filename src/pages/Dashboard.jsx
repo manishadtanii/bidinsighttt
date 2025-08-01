@@ -829,7 +829,7 @@ function Dashboard() {
             )}
 
             <Pagination
-              totalResults={bidsInfo?.count || 0}
+              totalResults={bidCount?.count || 0}
               perPage={bidsInfo?.page_size || perPage}
               currentPage={bidsInfo?.page || currentPage}
               onPageChange={handlePageChange}
