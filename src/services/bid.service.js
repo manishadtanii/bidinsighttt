@@ -24,6 +24,20 @@ export const getBids = async (queryOrId) => {
   }
 };
 
+export const getBidCount = async () => {
+  try {
+    const token = localStorage.getItem("access_token");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const response = await API.get(`/bids/count/`, { headers });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching bid count:", error);
+    throw error;
+  }
+};
+
 export const profileBids = async (queryOrId) => { 
   try {
     const token = localStorage.getItem("access_token");
@@ -43,6 +57,13 @@ export const profileBids = async (queryOrId) => {
     throw error;
   }
 }; // ✅ <<== THIS was missing
+
+
+
+
+
+
+
 
 
 
@@ -101,7 +122,16 @@ export const updateSavedSearch = async (id, body) => {
   }
 };
 
+
+
+
+
+
+
+
+
 //for filters
+
 
 export const getUNSPSCCodes = async ({
   page = 1,
@@ -122,8 +152,6 @@ export const getUNSPSCCodes = async ({
     throw err;
   }
 };
-
-
 
 export const getAllStates = async () => {
   try {

@@ -1,136 +1,91 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Search, Trash2 } from "lucide-react";
 import { getSolicitationTypes } from "../../services/bid.service.js";
 
-const SolicitationTypeTab = ({
-  filters = {},
-  setFilters = () => {},
-}) => {
-  // Mock static options list as fallback
-  const mockOptions = [
-    { name: "Type A" },
-    { name: "Type B" },
-    { name: "Type C" },
-    { name: "Type D" },
-    { name: "Type E" },
-    { name: "Type F" },
-    { name: "Type G" },
-    { name: "Type H" },
-    { name: "Type I" },
-    { name: "Type J" },
-    { name: "Type K" },
-    { name: "Type L" },
-    { name: "Type M" },
-    { name: "Type N" },
-    { name: "Type O" },
-    { name: "Type P" },
-    { name: "Type Q" },
-    { name: "Type R" },
-    { name: "Type S" },
-    { name: "Type T" },
-    { name: "Type U" },
-    { name: "Type V" },
-  ];
+const mockOptions = [
+  { name: "Type A" }, { name: "Type B" }, { name: "Type C" }, { name: "Type D" },
+  { name: "Type E" }, { name: "Type F" }, { name: "Type G" }, { name: "Type H" },
+  { name: "Type I" }, { name: "Type J" }, { name: "Type K" }, { name: "Type L" },
+  { name: "Type M" }, { name: "Type N" }, { name: "Type O" }, { name: "Type P" },
+  { name: "Type Q" }, { name: "Type R" }, { name: "Type S" }, { name: "Type T" },
+  { name: "Type U" }, { name: "Type V" },
+];
 
-  // State management
+const SolicitationTypeTab = ({ filters = {}, setFilters = () => {} }) => {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNames, setSelectedNames] = useState(filters.solicitationType || []);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // console.log(filters);
-
-  // Fetch solicitation types from API
+  // Fetch types
   useEffect(() => {
-    const fetchSolicitationTypes = async () => {
+    const fetchTypes = async () => {
       try {
         setLoading(true);
         const response = await getSolicitationTypes();
-        console.log('Solicitation Types API Response:', response);
-        setOptions(response); // For now, using the response directly until we see the structure
+        const sorted = response.sort((a, b) =>
+          (a.name || a).toLowerCase().localeCompare((b.name || b).toLowerCase())
+        );
+        setOptions(sorted);
       } catch (error) {
-        console.error("Error fetching solicitation types:", error);
-        // Fallback to mock data if API fails
-        setOptions(mockOptions);
+        console.error("Error fetching types:", error);
+        const fallbackSorted = mockOptions.sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+        setOptions(fallbackSorted);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchSolicitationTypes();
+    fetchTypes();
   }, []);
 
-  // Sync local state with filters prop when filters change from outside
-  useEffect(() => {
-    if (filters.solicitationType && Array.isArray(filters.solicitationType)) {
-      setSelectedNames(filters.solicitationType);
-    }
-  }, [filters.solicitationType]);
+  // Memoized filtered options
+  const filteredOptions = useMemo(() => {
+    return options.filter((item) =>
+      (item.name || item).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, options]);
 
-  // Filter options by search term (supports both object and string formats)
-  const filteredOptions = options.filter((item) => {
-    const name = item.name || item;
-    return name.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+  const allVisibleNames = useMemo(() => {
+    return filteredOptions.map((item) => item.name || item);
+  }, [filteredOptions]);
 
-  // Toggle selection for one item
-  const toggleSelect = (name) => {
+  const isAllSelected = useMemo(() => {
+    return (
+      allVisibleNames.length > 0 &&
+      allVisibleNames.every((name) => selectedNames.includes(name))
+    );
+  }, [allVisibleNames, selectedNames]);
+
+  // Update filter helper
+  const updateFilter = useCallback((updated) => {
+    setSelectedNames(updated);
+    setFilters((prev) => ({ ...prev, solicitationType: updated }));
+  }, [setFilters]);
+
+  const toggleSelect = useCallback((name) => {
     const updated = selectedNames.includes(name)
       ? selectedNames.filter((n) => n !== name)
       : [...selectedNames, name];
-    
-    setSelectedNames(updated);
-    // Update the filters with the new selection
-    setFilters({
-      ...filters,
-      solicitationType: updated
-    });
-  };
+    updateFilter(updated);
+  }, [selectedNames, updateFilter]);
 
-  // Clear all selected
-  const clearAll = () => {
-    setSelectedNames([]);
-    // Clear the filters as well
-    setFilters({
-      ...filters,
-      solicitationType: []
-    });
-  };
+  const toggleAllVisible = useCallback(() => {
+    const updated = isAllSelected
+      ? selectedNames.filter((name) => !allVisibleNames.includes(name))
+      : Array.from(new Set([...selectedNames, ...allVisibleNames]));
+    updateFilter(updated);
+  }, [isAllSelected, allVisibleNames, selectedNames, updateFilter]);
 
-  // "Select All" checkbox state
-  const allVisibleNames = filteredOptions.map((item) => item.name || item);
-  const isAllSelected =
-    allVisibleNames.length > 0 &&
-    allVisibleNames.every((name) => selectedNames.includes(name));
-
-  // Toggle all visible options
-  const toggleAllVisible = () => {
-    if (isAllSelected) {
-      // Remove all visible from selected
-      const updated = selectedNames.filter((name) => !allVisibleNames.includes(name));
-      setSelectedNames(updated);
-      setFilters({
-        ...filters,
-        solicitationType: updated
-      });
-    } else {
-      // Add all visible options to selected (avoid duplicates)
-      const updated = Array.from(new Set([...selectedNames, ...allVisibleNames]));
-      setSelectedNames(updated);
-      setFilters({
-        ...filters,
-        solicitationType: updated
-      });
-    }
-  };
-
-  // Remove the useEffect that was automatically syncing to filters
-  // We now handle this manually in the toggle functions
+  const clearAll = useCallback(() => {
+    updateFilter([]);
+  }, [updateFilter]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
       <div>
-        {/* Search Bar */}
+        {/* Search */}
         <div className="flex justify-end mb-8">
           <div className="relative w-[340px]">
             <input
@@ -147,7 +102,7 @@ const SolicitationTypeTab = ({
           </div>
         </div>
 
-        {/* Selected Chips */}
+        {/* Selected */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-p font-medium font-inter">
             Selected Types <span className="text-primary">({selectedNames.length})</span>
@@ -191,7 +146,7 @@ const SolicitationTypeTab = ({
             </div>
           </div>
 
-          {/* Filtered Bid Types List */}
+          {/* Filtered List */}
           <div className="divide-y divide-[#273BE280] max-h-[400px] overflow-y-auto">
             {loading ? (
               <div className="p-4 text-center text-gray-500">Loading solicitation types...</div>
@@ -219,8 +174,6 @@ const SolicitationTypeTab = ({
           </div>
         </div>
       </div>
-
-     
     </div>
   );
 };

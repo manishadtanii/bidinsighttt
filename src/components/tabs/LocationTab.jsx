@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Trash2, Search } from "lucide-react";
 import { getAllStates } from "../../services/bid.service.js";
+
+const US_STATES = [/* fallback states if needed */];
 
 const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
   const [selectedStates, setSelectedStates] = useState(filters.location || []);
@@ -8,90 +10,74 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
   const [states, setStates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch states from API and sort alphabetically
+  // Fetch & sort states
   useEffect(() => {
     const fetchStates = async () => {
       try {
         setLoading(true);
         const response = await getAllStates();
-
-        const sortedStates = response.sort((a, b) => {
-          const nameA = (a.name || a).toLowerCase();
-          const nameB = (b.name || b).toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
-
-        setStates(sortedStates);
-      } catch (error) {
-        console.error("Error fetching states:", error);
-        // Fallback to hardcoded states if API fails
-        const fallbackStates = US_STATES.map(state => ({ name: state }));
-        const sortedFallback = fallbackStates.sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        const sorted = response.sort((a, b) =>
+          (a.name || a).toLowerCase().localeCompare((b.name || b).toLowerCase())
         );
-        setStates(sortedFallback);
+        setStates(sorted);
+      } catch {
+        const fallbackSorted = US_STATES
+          .map((name) => ({ name }))
+          .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+        setStates(fallbackSorted);
       } finally {
         setLoading(false);
       }
     };
-
     fetchStates();
   }, []);
 
-  // Sync local state with filters prop when filters change from outside
+  // Sync with external filters
   useEffect(() => {
-    if (filters.location && Array.isArray(filters.location)) {
+    if (Array.isArray(filters.location)) {
       setSelectedStates(filters.location);
     }
   }, [filters.location]);
 
-  // Filter states based on search input
-  const filteredStates = states.filter((state) =>
-    (state.name || state).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStates = useMemo(() => {
+    return states.filter((state) =>
+      (state.name || state).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, states]);
 
-  const isAllSelected =
-    filteredStates.length > 0 &&
-    filteredStates.every((state) => selectedStates.includes(state.name || state));
+  const visibleStateNames = useMemo(() => {
+    return filteredStates.map((state) => state.name || state);
+  }, [filteredStates]);
 
-  const toggleState = (stateName) => {
-    const updated = selectedStates.includes(stateName)
-      ? selectedStates.filter((s) => s !== stateName)
-      : [...selectedStates, stateName];
+  const isAllSelected = useMemo(() => {
+    return (
+      visibleStateNames.length > 0 &&
+      visibleStateNames.every((name) => selectedStates.includes(name))
+    );
+  }, [visibleStateNames, selectedStates]);
 
+  const updateFilter = useCallback((updated) => {
     setSelectedStates(updated);
-    setFilters({
-      ...filters,
-      location: updated
-    });
-  };
+    setFilters((prev) => ({ ...prev, location: updated }));
+  }, [setFilters]);
 
-  const toggleSelectAll = () => {
-    const visibleStateNames = filteredStates.map(state => state.name || state);
-    if (isAllSelected) {
-      const updated = selectedStates.filter((state) => !visibleStateNames.includes(state));
-      setSelectedStates(updated);
-      setFilters({
-        ...filters,
-        location: updated
-      });
-    } else {
-      const updated = Array.from(new Set([...selectedStates, ...visibleStateNames]));
-      setSelectedStates(updated);
-      setFilters({
-        ...filters,
-        location: updated
-      });
-    }
-  };
+  const toggleState = useCallback((name) => {
+    const updated = selectedStates.includes(name)
+      ? selectedStates.filter((s) => s !== name)
+      : [...selectedStates, name];
+    updateFilter(updated);
+  }, [selectedStates, updateFilter]);
 
-  const clearAll = () => {
-    setSelectedStates([]);
-    setFilters({
-      ...filters,
-      location: []
-    });
-  };
+  const toggleSelectAll = useCallback(() => {
+    const updated = isAllSelected
+      ? selectedStates.filter((s) => !visibleStateNames.includes(s))
+      : Array.from(new Set([...selectedStates, ...visibleStateNames]));
+    updateFilter(updated);
+  }, [isAllSelected, selectedStates, visibleStateNames, updateFilter]);
+
+  const clearAll = useCallback(() => {
+    updateFilter([]);
+  }, [updateFilter]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14">
@@ -131,16 +117,16 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          {selectedStates.map((stateName) => (
+          {selectedStates.map((name) => (
             <div
-              key={stateName}
-              className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center justify-between text-lg py-1 font-inter"
+              key={name}
+              className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center text-lg py-1 font-inter"
             >
-              <div>{stateName}</div>
+              <div>{name}</div>
               <button
-                onClick={() => toggleState(stateName)}
+                onClick={() => toggleState(name)}
                 className="text-primary"
-                aria-label={`Remove ${stateName}`}
+                aria-label={`Remove ${name}`}
               >
                 <Trash2 size={16} />
               </button>
@@ -148,7 +134,7 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
           ))}
         </div>
 
-        {/* States List with Select All */}
+        {/* State List */}
         <div className="border-[#273BE280] border-[2px] rounded-[10px] max-h-[400px] overflow-y-auto">
           <div className="flex items-center px-4 py-3 border-b font-medium font-inter text-p">
             <input
@@ -167,21 +153,21 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
             <div className="p-4 text-center text-gray-500">No states found</div>
           ) : (
             filteredStates.map((state) => {
-              const stateName = state.name || state;
-              const isSelected = selectedStates.includes(stateName);
+              const name = state.name || state;
+              const checked = selectedStates.includes(name);
               return (
                 <label
-                  key={stateName}
+                  key={name}
                   className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
                 >
                   <input
                     type="checkbox"
                     className="mt-1 accent-primary"
-                    checked={isSelected}
-                    onChange={() => toggleState(stateName)}
-                    aria-label={`Select state ${stateName}`}
+                    checked={checked}
+                    onChange={() => toggleState(name)}
+                    aria-label={`Select state ${name}`}
                   />
-                  <div className="text-[16px]">{stateName}</div>
+                  <div className="text-[16px]">{name}</div>
                 </label>
               );
             })

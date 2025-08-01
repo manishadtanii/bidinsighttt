@@ -17,17 +17,17 @@ function Register() {
 
     return parsed
       ? {
-        fullName: parsed.fullName || "",
-        email: parsed.email || "",
-        password: "",
-        confirmPassword: "",
-      }
+          fullName: parsed.fullName || "",
+          email: parsed.email || "",
+          password: "",
+          confirmPassword: "",
+        }
       : {
-        fullName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      };
+          fullName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        };
   });
 
   const [touched, setTouched] = useState({
@@ -42,7 +42,11 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-  }); 
+  });
+
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [checkboxMessage, setCheckboxMessage] = useState("");
+  const [checkboxMessageType, setCheckboxMessageType] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -58,47 +62,41 @@ function Register() {
   ];
 
   const validateField = (name, value) => {
-    let msg = "";
-    if (!value) {
-      msg = "This field is required";
-    } else {
-      if (name === "email") {
+    let msg = "This field is required";
+    if (!value) return setErrors((prev) => ({ ...prev, [name]: msg }));
+
+    switch (name) {
+      case "email":
         msg = emailRegex.test(value) ? "Email is valid" : "Enter a valid email";
-      } else if (name === "password") {
-        for (let i = 0; i < passwordChecks.length; i++) {
-          if (!passwordChecks[i].test(value)) {
-            msg = passwordChecks[i].message;
-            break;
-          }
-        }
-        if (!msg) msg = "Password is strong";
-      } else if (name === "confirmPassword") {
+        break;
+      case "password":
+        const failed = passwordChecks.find((check) => !check.test(value));
+        msg = failed ? failed.message : "Password is strong";
+        break;
+      case "confirmPassword":
         msg = value === fields.password ? "Password matched" : "Passwords do not match";
-      } else if (name === "fullName") {
-        msg = value.length > 1 ? "Full Name is valid" : "This field is required";
-      }
+        break;
+      case "fullName":
+        msg = value.trim().length > 1 ? "Full Name is valid" : "This field is required";
+        break;
+      default:
+        break;
     }
+
     setErrors((prev) => ({ ...prev, [name]: msg }));
   };
 
   useEffect(() => {
     const ttlStart = sessionStorage.getItem("ttlStartTime");
-    if (!ttlStart) {
-      sessionStorage.setItem("ttlStartTime", Date.now());
-    }
+    if (!ttlStart) sessionStorage.setItem("ttlStartTime", Date.now());
 
-    // Validate all fields that have data from sessionStorage
-    Object.keys(fields).forEach((fieldName) => {
-      if (fields[fieldName]) {
-        validateField(fieldName, fields[fieldName]);
-        setTouched(prev => ({ ...prev, [fieldName]: true }));
+    Object.entries(fields).forEach(([name, value]) => {
+      if (value) {
+        setTouched((prev) => ({ ...prev, [name]: true }));
+        validateField(name, value);
       }
     });
-  }, []); // Empty dependency array since we only want this to run once on mount
-
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
-  const [checkboxMessage, setCheckboxMessage] = useState("");
-  const [checkboxMessageType, setCheckboxMessageType] = useState("");
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,73 +111,72 @@ function Register() {
     validateField(name, value);
   };
 
+  const isValid = {
+    fullName: errors.fullName === "Full Name is valid",
+    email: errors.email === "Email is valid",
+    password: errors.password === "Password is strong",
+    confirmPassword: errors.confirmPassword === "Password matched",
+  };
+
   const allFieldsValid =
-    errors.fullName === "Full Name is valid" &&
-    errors.email === "Email is valid" &&
-    errors.password === "Password is strong" &&
-    errors.confirmPassword === "Password matched" &&
-    fields.fullName && fields.email && fields.password && fields.confirmPassword;
+    Object.values(isValid).every(Boolean) &&
+    Object.values(fields).every((val) => val.trim().length > 0);
 
   const checkboxDisabled = !allFieldsValid;
 
   const handleCheckboxChange = (e) => {
-    setCheckboxChecked(e.target.checked);
-    // Remove all messages when checked, only show error if not checked and required
-    if (!e.target.checked) {
-      setCheckboxMessage("Please accept all terms");
-      setCheckboxMessageType("error");
-    } else {
-      setCheckboxMessage("");
-      setCheckboxMessageType("");
-    }
+    const checked = e.target.checked;
+    setCheckboxChecked(checked);
+    setCheckboxMessage(checked ? "" : "Please accept all terms");
+    setCheckboxMessageType(checked ? "" : "error");
   };
 
   const handleNext = (e) => {
     e.preventDefault();
-    let newTouched = { ...touched };
-    let newErrors = { ...errors };
+
+    const newTouched = { ...touched };
+    const newErrors = { ...errors };
     let valid = true;
-    Object.keys(fields).forEach((key) => {
+
+    Object.entries(fields).forEach(([key, value]) => {
       newTouched[key] = true;
-      if (!fields[key]) {
+      if (!value) {
         newErrors[key] = "This field is required";
         valid = false;
       } else {
-        validateField(key, fields[key]);
+        validateField(key, value);
         if (
-          (key === "email" && !emailRegex.test(fields[key])) ||
-          (key === "password" && passwordChecks.some((c) => !c.test(fields[key]))) ||
-          (key === "confirmPassword" && fields[key] !== fields.password)
+          (key === "email" && !emailRegex.test(value)) ||
+          (key === "password" && passwordChecks.some((c) => !c.test(value))) ||
+          (key === "confirmPassword" && value !== fields.password)
         ) {
           valid = false;
         }
       }
     });
+
     setTouched(newTouched);
     setErrors(newErrors);
-    if (valid && !checkboxChecked) {
+
+    if (!checkboxChecked) {
       setCheckboxMessage("Please accept all terms");
       setCheckboxMessageType("error");
       return;
     }
-    if (valid && checkboxChecked) {
-      setCheckboxMessage("");
-      setCheckboxMessageType("");
-      // Log all field values after all fields are filled and valid
-      console.log("Register fields:", fields);
 
+    if (valid && checkboxChecked) {
       const filteredFields = Object.fromEntries(
-        Object.entries(fields).filter(
-          ([key]) => key !== "password" && key !== "confirmPassword"
-        )
+        Object.entries(fields).filter(([key]) => key !== "password" && key !== "confirmPassword")
       );
 
       sessionStorage.setItem("registerFields", JSON.stringify(filteredFields));
-
-      navigate("/company-build", { state: { fullName: fields.fullName, email: fields.email, password: fields.password } });
-    } else {
-      setCheckboxMessage("");
-      setCheckboxMessageType("");
+      navigate("/company-build", {
+        state: {
+          fullName: fields.fullName,
+          email: fields.email,
+          password: fields.password,
+        },
+      });
     }
   };
 
@@ -201,18 +198,9 @@ function Register() {
   };
 
   const formFooter = {
-    back: {
-      text: "Back",
-      link: "/login",
-    },
-    next: {
-      text: "Next",
-      link: "/company-build",
-    },
-    skip: {
-      text: "",
-      link: "",
-    },
+    back: { text: "Back", link: "/login" },
+    next: { text: "Next", link: "/company-build" },
+    skip: { text: "", link: "" },
   };
 
   return (
@@ -223,7 +211,6 @@ function Register() {
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
-
           <form className="form-container flex flex-col h-full justify-between">
             <div>
               {/* Full Name */}
@@ -238,19 +225,13 @@ function Register() {
                 onBlur={handleBlur}
                 message={
                   touched.fullName && errors.fullName ? (
-                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.fullName === 'Full Name is valid' ? 'text-green-400' : 'text-red-400'}`}>
-                      <i className={`fa-solid ${errors.fullName === 'Full Name is valid' ? 'fa-circle-check text-green-400' : 'fa-xmark text-red-400'}`}></i>
+                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${isValid.fullName ? "text-green-400" : "text-red-400"}`}>
+                      <i className={`fa-solid ${isValid.fullName ? "fa-circle-check text-green-400" : "fa-xmark text-red-400"}`}></i>
                       <span>{errors.fullName}</span>
                     </span>
                   ) : ""
                 }
-                messageType={
-                  touched.fullName && errors.fullName === "Full Name is valid"
-                    ? "success"
-                    : touched.fullName && errors.fullName
-                      ? "error"
-                      : ""
-                }
+                messageType={touched.fullName && (isValid.fullName ? "success" : errors.fullName ? "error" : "")}
               />
 
               {/* Email */}
@@ -265,19 +246,13 @@ function Register() {
                 onBlur={handleBlur}
                 message={
                   touched.email && errors.email ? (
-                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.email === 'Email is valid' ? 'text-green-400' : 'text-red-400'}`}>
-                      <i className={`fa-solid ${errors.email === 'Email is valid' ? 'fa-circle-check text-green-400' : 'fa-xmark text-red-400'}`}></i>
+                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${isValid.email ? "text-green-400" : "text-red-400"}`}>
+                      <i className={`fa-solid ${isValid.email ? "fa-circle-check text-green-400" : "fa-xmark text-red-400"}`}></i>
                       <span>{errors.email}</span>
                     </span>
                   ) : ""
                 }
-                messageType={
-                  touched.email && errors.email === "Email is valid"
-                    ? "success"
-                    : touched.email && errors.email
-                      ? "error"
-                      : ""
-                }
+                messageType={touched.email && (isValid.email ? "success" : errors.email ? "error" : "")}
               />
 
               {/* Password */}
@@ -292,19 +267,13 @@ function Register() {
                 onBlur={handleBlur}
                 message={
                   touched.password && errors.password ? (
-                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.password === 'Password is strong' ? 'text-green-400' : 'text-red-400'}`}>
-                      <i className={`fa-solid ${errors.password === 'Password is strong' ? 'fa-circle-check text-green-400' : 'fa-xmark text-red-400'}`}></i>
+                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${isValid.password ? "text-green-400" : "text-red-400"}`}>
+                      <i className={`fa-solid ${isValid.password ? "fa-circle-check text-green-400" : "fa-xmark text-red-400"}`}></i>
                       <span>{errors.password}</span>
                     </span>
                   ) : ""
                 }
-                messageType={
-                  touched.password && errors.password === "Password is strong"
-                    ? "success"
-                    : touched.password && errors.password
-                      ? "error"
-                      : ""
-                }
+                messageType={touched.password && (isValid.password ? "success" : errors.password ? "error" : "")}
               />
 
               {/* Confirm Password */}
@@ -319,19 +288,13 @@ function Register() {
                 onBlur={handleBlur}
                 message={
                   touched.confirmPassword && errors.confirmPassword ? (
-                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${errors.confirmPassword === 'Password matched' ? 'text-green-400' : 'text-red-400'}`}>
-                      <i className={`fa-solid ${errors.confirmPassword === 'Password matched' ? 'fa-circle-check text-green-400' : 'fa-xmark text-red-400'}`}></i>
+                    <span className={`flex items-center gap-1 mt-0.5 mb-1 ${isValid.confirmPassword ? "text-green-400" : "text-red-400"}`}>
+                      <i className={`fa-solid ${isValid.confirmPassword ? "fa-circle-check text-green-400" : "fa-xmark text-red-400"}`}></i>
                       <span>{errors.confirmPassword}</span>
                     </span>
                   ) : ""
                 }
-                messageType={
-                  touched.confirmPassword && errors.confirmPassword === "Password matched"
-                    ? "success"
-                    : touched.confirmPassword && errors.confirmPassword
-                      ? "error"
-                      : ""
-                }
+                messageType={touched.confirmPassword && (isValid.confirmPassword ? "success" : errors.confirmPassword ? "error" : "")}
               />
             </div>
 
@@ -353,12 +316,13 @@ function Register() {
                 </label>
 
                 {checkboxMessage && (
-                  <p className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${checkboxMessageType === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-                    <i className={`fa-solid ${checkboxMessageType === 'success' ? 'fa-circle-check text-green-400' : 'fa-xmark text-red-400'}`}></i>
+                  <p className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${checkboxMessageType === "success" ? "text-green-400" : "text-red-400"}`}>
+                    <i className={`fa-solid ${checkboxMessageType === "success" ? "fa-circle-check text-green-400" : "fa-xmark text-red-400"}`}></i>
                     <span>{checkboxMessage}</span>
                   </p>
                 )}
               </div>
+
               <FormFooter data={formFooter} onNextClick={handleNext} />
             </div>
           </form>

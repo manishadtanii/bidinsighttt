@@ -7,7 +7,7 @@ import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getBids, getSavedSearches } from "../services/bid.service";
+import { getBidCount, getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
@@ -52,8 +52,9 @@ function Dashboard() {
 
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
 
-  console.log(savedSearches);
+  // console.log(savedSearches);
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
     status: "Active",
@@ -91,10 +92,28 @@ function Dashboard() {
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
 
+
+  
+  useEffect(() => {
+  const fetchBidCount = async () => {
+    try {
+      const countData = await getBidCount();
+      setBidCount(countData);
+      console.log("🔥 Fetched bid count:", countData);
+      console.log(bidCount, "🔥 Bid count state updated") ;
+    } catch (error) {
+      console.error("❌ Error fetching bid count:", error);
+    }
+  };
+
+  fetchBidCount();
+}, []);
+  
   // Summary data for dashboard middle section
   const middle = [
+    { id: 1, title: "Total Bids", num: bidCount?.count || 0 },
     { id: 2, title: "Active Bids", num: bidsInfo?.count || 0 },
-    { id: 3, title: "New Bids", num: bidsInfo?.count || 0 },
+    { id: 3, title: "New Bids", num: bidCount?.new_bids || 0 },
     { id: 4, title: "Saved", num: "0" },
     { id: 5, title: "Followed", num: "0/25" },
   ];
@@ -211,7 +230,7 @@ function Dashboard() {
       if (hasFilterParams) {
         // URL has filters - restore them
         const decodedFilters = decodeUrlToFilters(searchParams);
-        console.log("🔥 Restoring filters from URL:", decodedFilters);
+        // console.log("🔥 Restoring filters from URL:", decodedFilters);
         setFilters(decodedFilters);
         setAppliedFilters(decodedFilters);
       } else {
@@ -236,10 +255,10 @@ function Dashboard() {
     } else if (hasFilterParams) {
       // Subsequent navigation with filters - restore them
       const decodedFilters = decodeUrlToFilters(searchParams);
-      console.log(
-        "🔥 Navigation detected - restoring filters:",
-        decodedFilters
-      );
+      // console.log(
+      //   "🔥 Navigation detected - restoring filters:",
+      //   decodedFilters
+      // );
       setFilters(decodedFilters);
       setAppliedFilters(decodedFilters);
     }
@@ -370,7 +389,7 @@ function Dashboard() {
 
   // 🔥 FILTER APPLY HANDLER - When filters are applied from FilterPanel
   const handleFiltersApply = (newFilters) => {
-    console.log("🔥 Filters applied from FilterPanel:", newFilters);
+    // console.log("🔥 Filters applied from FilterPanel:", newFilters);
     setFilters(newFilters);
     setAppliedFilters(newFilters);
     setCurrentPage(1); // Reset to first page
@@ -380,6 +399,8 @@ function Dashboard() {
     navigate(`/dashboard?${queryString}`);
   };
 
+
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -724,14 +745,14 @@ function Dashboard() {
               </div>
 
               <div className="dashboard-middle">
-                <div className="flex gap-8">
+                <div className="flex gap-3 text-[1em]">
                   {middle.map((item) => (
                     <BgCover key={item.id}>
-                      <div className="flex gap-4">
+                      <div className="flex gap-2">
                         <div className="text font-inter text-[#DBDBDB]">
                           {item.title}
                         </div>
-                        <p className="num font-inter font-bold text-white">
+                        <p className="num font-inter font-semibold text-white">
                           {item.num}
                         </p>
                       </div>

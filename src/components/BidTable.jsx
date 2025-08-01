@@ -75,7 +75,7 @@ const BidTable = forwardRef(
         const countdownA = getCountdown(a.closing_date);
         const countdownB = getCountdown(b.closing_date);
         
-        console.log('🔥 Sorting - A:', countdownA, 'B:', countdownB);
+        // console.log('🔥 Sorting - A:', countdownA, 'B:', countdownB);
         
         // Helper function to get sort priority
         const getSortPriority = (countdown, closingDate) => {
@@ -88,7 +88,7 @@ const BidTable = forwardRef(
           const match = countdown.match(/(\d+)/);
           if (match) {
             const days = parseInt(match[0], 10);
-            console.log('🔥 Days extracted:', days, 'from:', countdown);
+            // console.log('🔥 Days extracted:', days, 'from:', countdown);
             return days; // Return actual days for sorting
           }
           return 999997; // Unknown format
@@ -97,12 +97,12 @@ const BidTable = forwardRef(
         const priorityA = getSortPriority(countdownA, a.closing_date);
         const priorityB = getSortPriority(countdownB, b.closing_date);
         
-        console.log('🔥 Priority A:', priorityA, 'Priority B:', priorityB);
+        // console.log('🔥 Priority A:', priorityA, 'Priority B:', priorityB);
         
         return priorityA - priorityB; // Ascending order (soon to late)
       });
       
-      console.log('🔥 Final sorted data length:', sortedData.length);
+      // console.log('🔥 Final sorted data length:', sortedData.length);
       setData(sortedData);
     }, [bids]);
 
@@ -140,13 +140,13 @@ const BidTable = forwardRef(
 
     const handleHeaderClick = (field, e) => {
       e.stopPropagation(); // prevent row click
-      console.log(`🔥 Sorting by field: ${field}`);
+      // console.log(`🔥 Sorting by field: ${field}`);
       onSort(field);
     };
 
     // Debug logging
-    console.log('🔥 BidTable currentSortField:', currentSortField);
-    console.log('🔥 BidTable data count:', data.length);
+    // console.log('🔥 BidTable currentSortField:', currentSortField);
+    // console.log('🔥 BidTable data count:', data.length);
 
     return (
       <div className="bid-table rounded-2xl bg-btn text-white my-[50px] shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto">

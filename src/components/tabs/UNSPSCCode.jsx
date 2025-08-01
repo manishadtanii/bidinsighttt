@@ -16,16 +16,17 @@ const MOCK_DATA = [
   { code: "12000000", description: "Chemical including Bio Chemicals" },
 ];
 
-const UNSPSCCode = ({filters = {}, setFilters = () => {}}) => {
+const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
   const [selected, setSelected] = useState(filters.UNSPSCCode || []);
   const [unspscData, setUnspscData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
     count: 0,
     page: 1,
     page_size: 10,
     total_pages: 0,
-    hasMore: true
+    hasMore: true,
   });
 
   const toggleSelect = (item) => {
@@ -33,82 +34,61 @@ const UNSPSCCode = ({filters = {}, setFilters = () => {}}) => {
     const updated = exists
       ? selected.filter((s) => s.code !== item.code)
       : [...selected, item];
-    
+
     setSelected(updated);
-    // Update the filters with the new selection
-    setFilters({
-      ...filters,
-      UNSPSCCode: updated
-    });
+    setFilters({ ...filters, UNSPSCCode: updated });
   };
 
   const removeSelected = (code) => {
     const updated = selected.filter((item) => item.code !== code);
     setSelected(updated);
-    // Update the filters when removing an item
-    setFilters({
-      ...filters,
-      UNSPSCCode: updated
-    });
+    setFilters({ ...filters, UNSPSCCode: updated });
   };
 
   const clearAllSelected = () => {
     setSelected([]);
-    // Clear the filters as well
-    setFilters({
-      ...filters,
-      UNSPSCCode: []
-    });
+    setFilters({ ...filters, UNSPSCCode: [] });
   };
 
-  // Sync local state with filters prop when filters change from outside
-  React.useEffect(() => {
+  useEffect(() => {
     if (filters.UNSPSCCode && Array.isArray(filters.UNSPSCCode)) {
       setSelected(filters.UNSPSCCode);
     }
   }, [filters.UNSPSCCode]);
 
-
-  // console.log(filters)
-
-  const fetchData = async (page = 1, append = false) => {
+  const fetchData = async (page = 1, append = false, currentSearch = "") => {
     try {
       if (page === 1) setLoading(true);
-      
+
       const response = await getUNSPSCCodes({
-        page: page,
+        page,
         pageSize: 10,
-        search: ""
+        code: currentSearch,
       });
+
       const { count, page: currentPage, page_size, total_pages, results } = response;
-      
-      if (append) {
-        // Append new data for infinite scroll
-        setUnspscData(prevData => [...prevData, ...results]);
-      } else {
-        // Replace data for initial load
-        setUnspscData(results);
-      }
-      
+
+      setUnspscData((prevData) =>
+        append ? [...prevData, ...results] : results
+      );
+
       setPagination({
         count,
         page: currentPage,
         page_size,
         total_pages,
-        hasMore: currentPage < total_pages
+        hasMore: currentPage < total_pages,
       });
-      
     } catch (error) {
       console.error("Error fetching UNSPSC codes:", error);
       if (page === 1) {
-        // Fallback to mock data if initial API call fails
         setUnspscData(MOCK_DATA);
         setPagination({
           count: MOCK_DATA.length,
           page: 1,
           page_size: MOCK_DATA.length,
           total_pages: 1,
-          hasMore: false
+          hasMore: false,
         });
       }
     } finally {
@@ -118,24 +98,29 @@ const UNSPSCCode = ({filters = {}, setFilters = () => {}}) => {
 
   const fetchMoreData = () => {
     if (pagination.hasMore) {
-      fetchData(pagination.page + 1, true);
+      fetchData(pagination.page + 1, true, searchTerm);
     }
   };
 
   useEffect(() => {
-    fetchData(1, false);
-  }, []);
+    fetchData(1, false, searchTerm);
+  }, [searchTerm]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14 overflow-y-auto">
       <div>
-        {/* Search Bar (non-functional) */}
+        {/* Search Bar */}
         <div className="flex justify-end mb-8">
           <div className="relative w-[340px]">
             <input
               type="text"
               placeholder="Search by code or description"
               className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
+              value={searchTerm}
+              onChange={(e) => {
+                setPagination((prev) => ({ ...prev, page: 1 }));
+                setSearchTerm(e.target.value);
+              }}
             />
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
@@ -244,8 +229,6 @@ const UNSPSCCode = ({filters = {}, setFilters = () => {}}) => {
           )}
         </div>
       </div>
-
-      
     </div>
   );
 };
