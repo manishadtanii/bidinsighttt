@@ -153,7 +153,7 @@ const BidHeader = ({
               </svg>
             </div>
 
-            <div className="flex gap-6 text-sm mt-2">
+            {/* <div className="flex gap-6 text-sm mt-2">
               {[
                 { label: "Hours", value: countdown.hours },
                 { label: "Minutes", value: countdown.minutes },
@@ -166,7 +166,7 @@ const BidHeader = ({
                   <p className="text-gray-300 font-inter text-xl">{item.label}</p>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

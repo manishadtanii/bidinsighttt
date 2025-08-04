@@ -9,7 +9,7 @@ import onboardingReducer from "./reducer/onboardingSlice";
 import loginReducer from "./reducer/loginSlice";
 import savedSearchesReducer from "./reducer/savedSearchesSlice";
 import bidReducer from "./reducer/bidSlice";
-import profileReducer from "./reducer/profileBidsSlice"; // ✅ NEW
+import profileReducer from "./reducer/profileSlice"; // ✅ NEW
 
 // Combine all reducers
 const rootReducer = combineReducers({

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -19,60 +17,59 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
   const [fromDate, setFromDate] = useState(from || "");
   const [toDate, setToDate] = useState(to || "");
 
-useEffect(() => {
-  const { type = "", within = "7", from = "", to = "", after, before } = publishedDate;
+  useEffect(() => {
+    const { type = "", within = "7", from = "", to = "", after, before } = publishedDate;
 
-  // DEBUG: Console log to check what's coming from filters
-  console.log("PublishedDateTab - Received filters:", { publishedDate, type, within, from, to, after, before });
+    // DEBUG: Console log to check what's coming from filters
+    console.log("PublishedDateTab - Received filters:", { publishedDate, type, within, from, to, after, before });
 
-  // FIXED: Agar type already set hai, to use that directly without inference
-  if (type) {
-    console.log("Setting type directly:", type);
-    setSelectedType(type);
-    
-    if (type === "lastLogin") {
-      setWithinDays(""); // clear others
-      setFromDate("");
-      setToDate("");
-    } else if (type === "within") {
-      setWithinDays(within || "7");
-      setFromDate("");
-      setToDate("");
-    } else if (type === "timeline") {
-      setWithinDays("");
-      setFromDate(from || "");
-      setToDate(to || "");
+    // FIXED: Agar type already set hai, to use that directly without inference
+    if (type) {
+      console.log("Setting type directly:", type);
+      setSelectedType(type);
+      
+      if (type === "lastLogin") {
+        setWithinDays(""); // clear others
+        setFromDate("");
+        setToDate("");
+      } else if (type === "within") {
+        setWithinDays(within || "7");
+        setFromDate("");
+        setToDate("");
+      } else if (type === "timeline") {
+        setWithinDays("");
+        setFromDate(from || "");
+        setToDate(to || "");
+      }
+      return; // IMPORTANT: Return early to avoid inference logic
     }
-    return; // IMPORTANT: Return early to avoid inference logic
-  }
 
-  // Inference logic - only run if type is not explicitly set
-  let inferredType = "";
-  let inferredWithin = within;
-  let inferredFrom = from;
-  let inferredTo = to;
+    // Inference logic - only run if type is not explicitly set
+    let inferredType = "";
+    let inferredWithin = within;
+    let inferredFrom = from;
+    let inferredTo = to;
 
-  // Only infer type if it's actually missing
-  if (after && before && !type) {
-    const diffInMs = new Date(before) - new Date(after);
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    // Only infer type if it's actually missing
+    if (after && before && !type) {
+      const diffInMs = new Date(before) - new Date(after);
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
-    if ([7, 30, 90].includes(diffInDays)) {
-      inferredType = "within";
-      inferredWithin = diffInDays.toString();
-    } else {
-      inferredType = "timeline";
-      inferredFrom = after;
-      inferredTo = before;
+      if ([7, 30, 90].includes(diffInDays)) {
+        inferredType = "within";
+        inferredWithin = diffInDays.toString();
+      } else {
+        inferredType = "timeline";
+        inferredFrom = after;
+        inferredTo = before;
+      }
     }
-  }
 
-  setSelectedType(inferredType);
-  setWithinDays(inferredWithin);
-  setFromDate(inferredFrom);
-  setToDate(inferredTo);
-}, [publishedDate]);
-
+    setSelectedType(inferredType);
+    setWithinDays(inferredWithin);
+    setFromDate(inferredFrom);
+    setToDate(inferredTo);
+  }, [publishedDate]);
 
   const calculateDateRange = (days) => {
     const today = new Date();
@@ -137,6 +134,32 @@ useEffect(() => {
     setFilters(updated);
   };
 
+  // 🔥 NEW: Clear all selections function
+  const handleClearAll = () => {
+    setSelectedType("");
+    setWithinDays("7");
+    setFromDate("");
+    setToDate("");
+    updateFilters("", "7", "", "");
+  };
+
+  // 🔥 NEW: Clear specific selection function
+  const handleClearSelection = (selectionType) => {
+    if (selectionType === selectedType) {
+      if (selectionType === "lastLogin") {
+        // No additional clearing needed for lastLogin
+      } else if (selectionType === "within") {
+        setWithinDays("7");
+      } else if (selectionType === "timeline") {
+        setFromDate("");
+        setToDate("");
+      }
+      
+      setSelectedType("");
+      updateFilters("", "7", "", "");
+    }
+  };
+
   const handleTypeChange = (type) => {
     setSelectedType(type);
     if (type === "within") {
@@ -169,15 +192,34 @@ useEffect(() => {
     }
   };
 
+  // 🔥 NEW: Check if any filter is active
+  const hasActiveFilter = selectedType !== "" || fromDate !== "" || toDate !== "";
+
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between p-10 ps-14">
       <div className="flex flex-col gap-6">
+        
+        {/* 🔥 NEW: Clear All Button - Only show when filters are active (COMMENTED OUT) */}
+        {/* {hasActiveFilter && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={handleClearAll}
+              className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200 font-inter text-sm border border-red-200 hover:border-red-300"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear All Dates
+            </button>
+          </div>
+        )} */}
+
         {/* Last Login */}
-        <div>
+        <div className="relative">
           <label className="font-semibold block font-inter text-p mb-2">
             Last Login
           </label>
-          <label className="flex items-center space-x-2 cursor-pointer">
+          <div className="flex items-center space-x-2">
             <input
               type="radio"
               name="publishedDateFilter"
@@ -187,11 +229,24 @@ useEffect(() => {
               className="accent-purple-600"
             />
             <span className="font-inter text-xl">{formattedLastLogin}</span>
-          </label>
+            
+            {/* 🔥 NEW: Individual Clear Button for Last Login (COMMENTED OUT) */}
+            {/* {selectedType === "lastLogin" && (
+              <button
+                onClick={() => handleClearSelection("lastLogin")}
+                className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                title="Clear last login selection"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )} */}
+          </div>
         </div>
 
         {/* Within */}
-        <div>
+        <div className="relative">
           <label className="font-semibold block font-inter text-p mb-2">
             Within
           </label>
@@ -209,16 +264,30 @@ useEffect(() => {
               className="border border-gray-300 rounded-md font-inter text-xl px-2 py-1 w-[200px] disabled:bg-gray-100"
               value={withinDays}
               onChange={(e) => handleWithinChange(e.target.value)}
-            >
+            > 
+               <option value="">-Select-</option>
               <option value="7">Last 7 Days</option>
               <option value="30">Last 30 Days</option>
               <option value="90">Last 90 Days</option>
             </select>
+
+            {/* 🔥 NEW: Individual Clear Button for Within (COMMENTED OUT) */}
+            {/* {selectedType === "within" && withinDays && (
+              <button
+                onClick={() => handleClearSelection("within")}
+                className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                title="Clear within selection"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )} */}
           </div>
         </div>
 
         {/* Timeline */}
-        <div>
+        <div className="relative">
           <label className="font-semibold block font-inter text-p mb-2">
             Timeline
           </label>
@@ -243,7 +312,21 @@ useEffect(() => {
                 onChange={(e) => handleFromDateChange(e.target.value)}
               />
             </div>
+
+            {/* 🔥 NEW: Individual Clear Button for Timeline (COMMENTED OUT) */}
+            {/* {selectedType === "timeline" && (fromDate || toDate) && (
+              <button
+                onClick={() => handleClearSelection("timeline")}
+                className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200 mt-6"
+                title="Clear timeline selection"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )} */}
           </div>
+          
           <div className="ml-6">
             <div className="font-inter text-xl text-gray-800 mb-2">Ending</div>
             <input
@@ -255,6 +338,29 @@ useEffect(() => {
             />
           </div>
         </div>
+
+        {/* 🔥 NEW: Selected Filter Display - Bottom approach */}
+        {hasActiveFilter && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="font-inter text-sm text-blue-800 font-medium">Active Filter:</span>
+                <div className="font-inter text-blue-900 mt-1">
+                  {selectedType === "lastLogin" && `Last Login: ${formattedLastLogin}`}
+                  {selectedType === "within" && withinDays && `Within: Last ${withinDays} Days`}
+                  {selectedType === "timeline" && (fromDate || toDate) && 
+                    `Timeline: ${fromDate || 'Not set'} to ${toDate || 'Not set'}`}
+                </div>
+              </div>
+              <button
+                onClick={handleClearAll}
+                className="text-blue-600 hover:text-blue-800 text-sm underline"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

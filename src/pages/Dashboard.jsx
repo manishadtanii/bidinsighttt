@@ -11,7 +11,9 @@ import { getBidCount, getBids, getSavedSearches } from "../services/bid.service"
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
-import { fetchProfileBids } from "../redux/reducer/profileBidsSlice";
+// import { fetchProfileBids } from "../redux/reducer/profileSlice";
+import ProfessionalSavedSearchDropdown from '../components/ProfessionalSavedSearchDropdown'; // Add this import
+
 
 function Dashboard() {
   const data = { title: "Dashboard" };
@@ -23,33 +25,15 @@ function Dashboard() {
 
   const dispatch = useDispatch();
   const { bidsInfo } = useSelector((state) => state.bids);
-  // const [savedSearches, setSavedSearches] = useState([]);
   const { savedSearches } = useSelector((state) => state.savedSearches);
-  // const profile = useSelector((state) => state.profile?.data); // from Redux
-  // const getProfileIdFromPersistedStore = () => {
-  //   try {
-  //     const persisted = JSON.parse(localStorage.getItem("persist:root"));
-  //     const loginData = JSON.parse(persisted?.login || "{}");
-  //     return loginData?.user?.id || null;
-  //   } catch (err) {
-  //     console.error("Error parsing persisted login:", err);
-  //     return null;
-  //   }
-  // };
 
-  // const profileId = getProfileIdFromPersistedStore();
+  // const profileBids = useSelector((state) => state.profileBids.data);
+// const profileLoading = useSelector((state) => state.profileBids.loading);
+// const profileError = useSelector((state) => state.profileBids.error);
 
-
-  // console.log("🔥 Fetching profile bids for ID:", profileId);
-  // useEffect(() => {
-  //   if (profileId) {
-  //     dispatch(fetchProfileBids(profileId));
-  //   }
-  // }, [profileId, dispatch]);
-
-  // console.log(profileId, "🔥 Profile ID from Redux or localStorage");
-  // console.log(profile, "🔥 Profile data from Redux");
-
+// Add debugging to see the full state structure
+console.log("🔥 Full Redux State:", useSelector((state) => state));
+console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
@@ -93,22 +77,22 @@ function Dashboard() {
   const [searchTimeout, setSearchTimeout] = useState(null);
 
 
-  
-  useEffect(() => {
-  const fetchBidCount = async () => {
-    try {
-      const countData = await getBidCount();
-      setBidCount(countData);
-      console.log("🔥 Fetched bid count:", countData);
-      console.log(bidCount, "🔥 Bid count state updated") ;
-    } catch (error) {
-      console.error("❌ Error fetching bid count:", error);
-    }
-  };
 
-  fetchBidCount();
-}, []);
-  
+  useEffect(() => {
+    const fetchBidCount = async () => {
+      try {
+        const countData = await getBidCount();
+        setBidCount(countData);
+        console.log("🔥 Fetched bid count:", countData);
+        console.log(bidCount, "🔥 Bid count state updated");
+      } catch (error) {
+        console.error("❌ Error fetching bid count:", error);
+      }
+    };
+
+    fetchBidCount();
+  }, []);
+
   // Summary data for dashboard middle section
   const middle = [
     { id: 1, title: "Total Bids", num: bidCount?.count || 0 },
@@ -400,7 +384,7 @@ function Dashboard() {
   };
 
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -656,12 +640,28 @@ function Dashboard() {
     // console.log(search);
   }, [location.search])
 
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id"); // or from login state if stored
-    if (userId) {
-      dispatch(fetchProfileBids(userId));
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const getProfileIdFromPersistedStore = () => {
+  //     try {
+  //       const persisted = JSON.parse(localStorage.getItem("persist:root"));
+  //       const loginData = JSON.parse(persisted?.login || "{}");
+  //       return loginData?.user?.id || null;
+  //     } catch (err) {
+  //       console.error("Error parsing persisted login:", err);
+  //       return null;
+  //     }
+  //   };
+
+  //   const userId = getProfileIdFromPersistedStore();
+
+  //   console.log("🔥 Dashboard - Fetching profile for userId:", userId);
+
+  //   if (userId) {
+  //     dispatch(fetchProfileBids(userId));
+  //   }
+  // }, [dispatch]);
+
+
 
 
   return (
@@ -694,7 +694,12 @@ function Dashboard() {
 
         <div className="container-fixed py-10 px-4">
           <div className="dashboard-header flex justify-between items-center">
-            <HeroHeading data={data} />
+            <HeroHeading
+              data={data}
+              // profileBids={profileBids}
+              // profileLoading={profileLoading}
+              // profileError={profileError}
+            />
             <div className="flex items-center gap-[15px]">
               <span className="font-inter text-[#DBDBDB]">Alert</span>
               <AlertToggle />
@@ -761,8 +766,9 @@ function Dashboard() {
                 </div>
               </div>
 
+
               <div className="feature-right">
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
                   <div
                     className="bg-btn p-4 rounded-[16px] cursor-pointer"
                     onClick={handleExport}
@@ -770,32 +776,14 @@ function Dashboard() {
                   >
                     <img src="export.png" className="w-6" alt="Export" />
                   </div>
-                  <div className="saved-search bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium">
-                    <select
-                      className="bg-transparent text-white focus:outline-none focus:ring-0"
-                      value={selectedSavedSearch?.id || "_default_"}
-                      onChange={(e) =>
-                        handleSavedSearchSelect(
-                          e.target.value === "_default_"
-                            ? "_default_"
-                            : Number(e.target.value)
-                        )
-                      }
-                    >
-                      <option value="_default_" className="text-black">
-                        My Saved Searches
-                      </option>
-                      {savedSearches.map((search, index) => (
-                        <option
-                          key={search.id || index}
-                          className="text-black"
-                          value={search.id}
-                        >
-                          {search.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+
+                  {/* UPDATED: the select dropdown */}  
+                  <ProfessionalSavedSearchDropdown
+                    savedSearches={savedSearches}
+                    selectedSavedSearch={selectedSavedSearch}
+                    handleSavedSearchSelect={handleSavedSearchSelect}
+                  />
+
                   <BgCover>
                     <div
                       className="text-white cursor-pointer"
@@ -819,7 +807,7 @@ function Dashboard() {
               <BidTable
                 bids={bidsInfo?.results || []}
                 totalCount={bidsInfo?.count || 0}
-                currentSortField={appliedFilters.ordering || "closing_date"} // Show default sort
+                currentSortField={appliedFilters.ordering || "closing_date"} 
                 currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}
                 onSort={handleSort}
                 ref={tableRef}
@@ -829,7 +817,7 @@ function Dashboard() {
             )}
 
             <Pagination
-              totalResults={bidCount?.count || 0}
+              totalResults={bidsInfo?.count || 0}
               perPage={bidsInfo?.page_size || perPage}
               currentPage={bidsInfo?.page || currentPage}
               onPageChange={handlePageChange}

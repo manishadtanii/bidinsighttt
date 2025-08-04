@@ -63,7 +63,7 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
       const response = await getUNSPSCCodes({
         page,
         pageSize: 10,
-        code: currentSearch,
+        search: currentSearch,
       });
 
       const { count, page: currentPage, page_size, total_pages, results } = response;
