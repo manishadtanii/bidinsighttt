@@ -5,10 +5,12 @@ const prodBaseURL = "https://apibid.collegedwarka.com/api";
 
 const baseURL = process.env.NODE_ENV === "production" ? prodBaseURL : devBaseURL;
 
+const token = localStorage.getItem("access_token");
 const instance = axios.create({
   baseURL: baseURL,
   headers: {
     "Content-Type": "multipart/form-data",
+    "Authorization": `Bearer ${token}`,
   },
 });
 

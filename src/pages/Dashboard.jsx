@@ -6,6 +6,7 @@ import BidTable from "../components/BidTable";
 import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
+import api from "../utils/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getBidCount, getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";

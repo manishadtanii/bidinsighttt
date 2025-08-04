@@ -40,7 +40,7 @@ header {
   background-repeat: no-repeat;
   background-size: cover;
 }
-.summary{
+.summary {
   @apply bg-summary bg-image border border-white text-white p-6 rounded-2xl;
 }
 /* .bg-primary {
@@ -304,26 +304,27 @@ p {
   background-color: #999999;
   transform: translateX(94%);
 }
-.tooltip{
-  transition: .5s;
+.tooltip {
+  transition: 0.5s;
   opacity: 0;
   visibility: hidden;
 }
-.tooltip-wrapper:hover .tooltip{
+.tooltip-wrapper:hover .tooltip {
   opacity: 1;
   visibility: visible;
 }
-#filter-panel-save-search .sticky.bottom-0{
+#filter-panel-save-search .sticky.bottom-0 {
   /* display: none; */
 }
 
-
-
-
-
-
-
-
+.our-story .slick-slide p {
+  color: #FFFFFFB2;
+  transform: translateX(150px);
+}
+.our-story .slick-slide.slick-active.slick-current p {
+  color: white;
+  transform: translateX(0px);
+} 
 
 .shimmer {
   position: relative;
