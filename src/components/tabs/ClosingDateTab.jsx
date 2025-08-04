@@ -251,9 +251,9 @@ const ClosingDateTab = ({
               onChange={(e) => handleWithinChange(e.target.value)}
             >
               <option value="">-Select-</option>
-              <option value="7">Last 7 Days</option>
-              <option value="30">Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
+              <option value="7">Next 7 Days</option>
+              <option value="30">Next 30 Days</option>
+              <option value="90">Next 90 Days</option>
             </select>
           </div>
         </div>

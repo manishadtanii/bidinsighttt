@@ -319,10 +319,12 @@ p {
 
 .our-story .slick-slide p {
   color: #FFFFFFB2;
+  transform: translateX(150px);
 }
 .our-story .slick-slide.slick-active.slick-current p {
   color: white;
-}
+  transform: translateX(0px);
+} 
 
 .shimmer {
   position: relative;

@@ -34,8 +34,8 @@ function OurStory() {
   };
 
   return (
-    <div className='our-story bg-[url("./our-story.jpg")] bg-image'>
-      <div className="container-section ps-[50px]">
+    <div className='our-story bg-[url("./our-story.jpg")] bg-image h-[100vh]'>
+      <div className="container-section ps-[50px] flex flex-col justify-between h-full">
         <h1 className="text-topH font-archivo font-bold text-g mb-4" data-aos="fade-up" data-aos-delay="300">
           Our Story
         </h1>
@@ -46,6 +46,7 @@ function OurStory() {
           style={{
             left: cursorPos.x,
             top: cursorPos.y,
+            scale: hovered ? 4 : 1,
             backgroundImage: `url(${'cursor-pop.png'})`,
           }}
         ></div>
