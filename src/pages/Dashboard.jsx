@@ -49,7 +49,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
     publishedDate: { after: "", before: "" },
     closingDate: { after: "", before: "" },
     solicitationType: [],
-    ordering: "",
+    ordering: "closing_date", // 🔥 FIXED: Added default ordering
   });
 
   // 🔥 APPLIED FILTERS - Only these are used for API calls
@@ -62,7 +62,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
     publishedDate: { after: "", before: "" },
     closingDate: { after: "", before: "" },
     solicitationType: [],
-    ordering: ""
+    ordering: "closing_date" // 🔥 FIXED: Added default ordering
   });
 
   const [saveSearchFilters, setSaveSearchFilters] = useState({});
@@ -102,28 +102,44 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
     { id: 5, title: "Followed", num: "0/25" },
   ];
 
-
+  // 🔥 FIXED: Proper sort handler with toggle logic
   const handleSort = (field) => {
+    console.log("🔥 Sort requested for field:", field);
+    console.log("🔥 Current ordering:", appliedFilters.ordering);
+    
     setFilters((prev) => {
       const current = prev.ordering;
-      const newOrder =
-        current === `-${field}` ? field : `-${field}`;
+      let newOrder;
+      
+      // 🔥 PROPER TOGGLE LOGIC
+      if (current === field) {
+        // Currently ascending, make it descending
+        newOrder = `-${field}`;
+      } else if (current === `-${field}`) {
+        // Currently descending, make it ascending
+        newOrder = field;
+      } else {
+        // Different field or no sorting, start with ascending
+        newOrder = field;
+      }
+
+      console.log("🔥 New ordering:", newOrder);
 
       const updatedFilters = {
         ...prev,
         ordering: newOrder,
       };
 
+      // 🔥 IMMEDIATELY UPDATE APPLIED FILTERS
       setAppliedFilters(updatedFilters);
+      
+      // 🔥 BUILD URL WITH NEW SORT
+      const queryString = buildQueryString(updatedFilters);
+      navigate(`/dashboard?${queryString}`);
 
       return updatedFilters;
     });
   };
-
-
-
-
-
 
   // 🔥 IMPROVED DECODE FUNCTION - Matches FilterPanel exactly
   const decodeUrlToFilters = (searchParams) => {
@@ -136,6 +152,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
       NAICSCode: [],
       publishedDate: { after: "", before: "" },
       closingDate: { after: "", before: "" },
+      ordering: "closing_date", // 🔥 FIXED: Added default ordering
     };
 
     if (searchParams.get("bid_type")) {
@@ -189,6 +206,11 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
       );
     }
 
+    // 🔥 FIXED: Added ordering decode from URL
+    if (searchParams.get("ordering")) {
+      decodedFilters.ordering = searchParams.get("ordering");
+    }
+
     return decodedFilters;
   };
 
@@ -207,7 +229,8 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
       searchParams.get("open_date_after") ||
       searchParams.get("open_date_before") ||
       searchParams.get("closing_date_after") ||
-      searchParams.get("closing_date_before");
+      searchParams.get("closing_date_before") ||
+      searchParams.get("ordering"); // 🔥 FIXED: Added ordering check
 
     if (isInitialLoad) {
       // First load - check if URL has filters
@@ -228,10 +251,11 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
           NAICSCode: [],
           publishedDate: { after: "", before: "" },
           closingDate: { after: "", before: "" },
+          ordering: "closing_date", // 🔥 FIXED: Added default ordering
         };
         setFilters(defaultFilters);
         setAppliedFilters(defaultFilters);
-        navigate("/dashboard?page=1&pageSize=25&bid_type=Active", {
+        navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date", {
           replace: true,
         });
       }
@@ -343,14 +367,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
 
       let queryString = buildQueryString(filtersToUse);
 
-      // Add default sorting by countdown (closing_date ascending) when no explicit sorting
-      if (appliedFilters.ordering) {
-        queryString += `&ordering=${appliedFilters.ordering}`;
-      } else {
-        // Default: Sort by closing_date ascending (soonest closing dates first)
-        queryString += `&ordering=closing_date`;
-      }
-
+      // 🔥 FIXED: Removed double ordering logic - buildQueryString already handles it
       console.log("🔥 Fetching bids with query:", queryString);
 
       const res = await getBids(`?${queryString}`);
@@ -435,6 +452,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
         NAICSCode: [],
         publishedDate: { after: "", before: "" },
         closingDate: { after: "", before: "" },
+        ordering: "closing_date", // 🔥 FIXED: Added default ordering
       };
 
       console.log("🔥 Resetting to default dashboard state");
@@ -447,7 +465,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
       setTopSearchTerm(""); // Clear search input too
 
       // Navigate to default URL
-      navigate("/dashboard?page=1&pageSize=25&bid_type=Active");
+      navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
       return;
     }
 
