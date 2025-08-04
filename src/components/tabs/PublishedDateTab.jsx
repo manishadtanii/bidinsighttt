@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 
 const PublishedDateTab = ({ filters = {}, setFilters }) => {
   const { publishedDate = {} } = filters;
@@ -344,8 +346,8 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
           <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <span className="font-inter text-sm text-blue-800 font-medium">Active Filter:</span>
-                <div className="font-inter text-blue-900 mt-1">
+                <span className="font-inter text-sm font-medium">Active Filter:</span>
+                <div className="font-inter mt-1">
                   {selectedType === "lastLogin" && `Last Login: ${formattedLastLogin}`}
                   {selectedType === "within" && withinDays && `Within: Last ${withinDays} Days`}
                   {selectedType === "timeline" && (fromDate || toDate) && 
@@ -354,9 +356,9 @@ const PublishedDateTab = ({ filters = {}, setFilters }) => {
               </div>
               <button
                 onClick={handleClearAll}
-                className="text-blue-600 hover:text-blue-800 text-sm underline"
+                className="text-blue-600 w-12 hover:text-blue-800 text-lg underline"
               >
-                Remove
+                  <RiDeleteBin6Line />
               </button>
             </div>
           </div>
