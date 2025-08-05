@@ -26,7 +26,7 @@ function AboutUs() {
         mHeading={['Ease','Accuracy','Transparency']}
         mPera="To revolutionize the way businesses pursue contracts—using cutting-edge AI to bring"
       />
-      <Vision />
+      {/* <Vision /> */}
       <OurStory />
       <OurValue />
       <OurBrand />
