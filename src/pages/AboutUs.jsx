@@ -30,7 +30,7 @@ function AboutUs() {
       <OurStory />
       <OurValue />
       <OurBrand />
-      <CallToAction />
+      <CallToAction t1="Quit the guesswork." t2="Own the pipeline." p="Discover how BidInsight transforms opportunity into strategy! Try for free today and find out what focused insight can do for your growth." link={'/pricing'} />
     </div>
   );
 }

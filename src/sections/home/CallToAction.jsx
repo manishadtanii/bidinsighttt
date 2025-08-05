@@ -2,19 +2,17 @@ import React from "react";
 import Heading from "../../components/Heading";
 import Button from "../../components/Button";
 
-function CallToAction() {
+function CallToAction({t1, t2, p, link}) {
   return (
     <div className="call-to-action pt-[80px] overflow-x-hidden">
       <div className="container-fixed px-[40px]">
         <div className="flex flex-col items-start gap-6" data-aos="fade-up">
-            <Heading textD={"Still Thinking"} textL={"About It?"} />
+            <Heading textD={t1} textL={t2} />
         <p data-aos="fade-up" data-aos-delay="100">
-          Dive right in and discover how BidInsight simplifies your gov­ern­ment
-          bidding - no heavy lifting required. Start your free trial now and see
-          opportunities tailored to you, risk-free.
+       {p}
         </p>
         <div className="" data-aos="fade-up" data-aos-delay="200">
-        <Button btnBg={"bg-white text-black"} text={"Get Started"} arrowBg={"bg-primary text-white"}  />
+        <Button btnBg={"bg-white text-black"} text={"Get Started"} arrowBg={"bg-primary text-white"} link={link}  />
         </div>
         </div>
       </div>

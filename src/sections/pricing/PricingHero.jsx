@@ -17,6 +17,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-1.png",
       delay: "200",
     },
     {
@@ -27,6 +28,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-2.png",
       delay: "300",
     },
     {
@@ -37,6 +39,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-3.png",
       delay: "400",
     },
   ];
@@ -49,6 +52,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-1.png",
       delay: "200",
     },
     {
@@ -59,6 +63,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-2.png",
       delay: "300",
     },
     {
@@ -69,6 +74,7 @@ function PricingHero() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-3.png",
       delay: "400",
     },
   ];
