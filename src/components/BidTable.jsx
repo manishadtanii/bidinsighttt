@@ -70,39 +70,7 @@ const BidTable = forwardRef(
     const [data, setData] = useState([]);
 
     useEffect(() => {
-      // Sort data by countdown priority: Closes soon → Days → Months → Years → Closed last
-      // const sortedData = [...bids].sort((a, b) => {
-      //   const countdownA = getCountdown(a.closing_date);
-      //   const countdownB = getCountdown(b.closing_date);
-
-      //   // console.log('🔥 Sorting - A:', countdownA, 'B:', countdownB);
-
-      //   // Helper function to get sort priority
-      //   const getSortPriority = (countdown, closingDate) => {
-      //     // Check if bid is actually closed from status
-      //     if (countdown === "Closed") return 999999; // Closed items go last
-      //     if (countdown === "-") return 999998; // Invalid dates second last
-      //     if (countdown === "Closes today") return 0; // Highest priority
-
-      //     // Extract days from countdown string
-      //     const match = countdown.match(/(\d+)/);
-      //     if (match) {
-      //       const days = parseInt(match[0], 10);
-      //       // console.log('🔥 Days extracted:', days, 'from:', countdown);
-      //       return days; // Return actual days for sorting
-      //     }
-      //     return 999997; // Unknown format
-      //   };
-
-      //   const priorityA = getSortPriority(countdownA, a.closing_date);
-      //   const priorityB = getSortPriority(countdownB, b.closing_date);
-
-      //   // console.log('🔥 Priority A:', priorityA, 'Priority B:', priorityB);
-
-      //   return priorityA - priorityB; // Ascending order (soon to late)
-      // });
-
-      // console.log('🔥 Final sorted data length:', sortedData.length);
+     
       setData([...bids]);
     }, [bids]);
 
