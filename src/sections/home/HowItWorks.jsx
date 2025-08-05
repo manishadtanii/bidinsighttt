@@ -74,10 +74,10 @@ function HowItWorks() {
     <div className="how-it-works">
       <div className="let-show bg-image bg-[url('https://bid-insight.vercel.app/line-bg.png')] relative">
         <div className="container-fixed">
-          <div className="flex flex-col md:flex-row justify-center items-center h-screen gap-4">
+          <div className="flex flex-col max-w-3xl mx-auto justify-center items-center h-screen gap-4">
             <div className="" data-aos="fade-up">
               <Heading
-                textD={"Let’s show you how to"}
+                textD={"From signup to bidding in under 10 minutes"}
                 textAlign={"text-center"}
               />
             </div>
