@@ -2,7 +2,7 @@ import React from 'react'
 
 function OurBrand() {
   return (
-   <div className='our-brand bg-blue'>
+   <div className='our-brand bg-blue overflow-x-hidden'>
       <div className="container-fixed">
         <div className="pt-[140px] pb-[80px] lg:pb-[120px] px-5">
         <div className="max-w-6xl text-center mx-auto">

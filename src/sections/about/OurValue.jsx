@@ -23,7 +23,7 @@ const values = [
 
 const OurValue = () => {
   return (
-    <div className="container-fixed">
+    <div className="container-fixed overflow-x-hidden">
     <div className="container-section">
         <h2 className="text-h2 font-bold text-blue-700 mb-10" data-aos="fade-up" data-aos-delay="300">
         Our Values

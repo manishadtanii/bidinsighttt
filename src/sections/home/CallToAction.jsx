@@ -4,7 +4,7 @@ import Button from "../../components/Button";
 
 function CallToAction() {
   return (
-    <div className="call-to-action pt-[80px]">
+    <div className="call-to-action pt-[80px] overflow-x-hidden">
       <div className="container-fixed px-[40px]">
         <div className="flex flex-col items-start gap-6" data-aos="fade-up">
             <Heading textD={"Still Thinking"} textL={"About It?"} />
