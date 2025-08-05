@@ -40,7 +40,39 @@ function PricingHero() {
       delay: "400",
     },
   ];
- const data = {
+  const plansYear = [
+    {
+      title: "Regular",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "200",
+    },
+    {
+      title: "Essentials",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "300",
+    },
+    {
+      title: "A.I. Powerhouse",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "400",
+    },
+  ];
+  const data = {
     title: "Plans that grow with you",
     para: "Choose the subscription tier that fits your needs and enter your payment details securely to unlock full access.",
     // btnText: "Get Started",
@@ -48,7 +80,7 @@ function PricingHero() {
     container: "max-w-4xl mx-auto text-center",
   };
   return (
-    <section className="py-16 py-[130px] px-4 bg-blue text-center">
+    <section className=" py-[130px] px-4 bg-blue text-center">
       <div className="mb-5" data-aos="fade-up">
         <HeroHeading data={data} />
       </div>
@@ -91,16 +123,27 @@ function PricingHero() {
         ))}
       </div> */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center max-w-6xl mx-auto">
-        {plans.map((plan, index) => (
-          <div
-            key={index}
-            className={`transform transition-transform duration-300 ${
-              index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
-            }`}
-          >
-            <PricingCard {...plan} />
-          </div>
-        ))}
+        {billingCycle === "Annual"
+          ? plans.map((plan, index) => (
+              <div
+                key={index}
+                className={`transform transition-transform duration-300 ${
+                  index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
+                }`}
+              >
+                <PricingCard {...plan} />
+              </div>
+            ))
+          : plansYear.map((plan, index) => (
+              <div
+                key={index}
+                className={`transform transition-transform duration-300 ${
+                  index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
+                }`}
+              >
+                <PricingCard {...plan} />
+              </div>
+            ))}
       </div>
 
       {/* <p

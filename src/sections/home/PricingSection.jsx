@@ -39,6 +39,38 @@ function PricingSection() {
       delay:"400"
     },
   ];
+    const plansYear = [
+    {
+      title: "Regular",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "200",
+    },
+    {
+      title: "Essentials",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "300",
+    },
+    {
+      title: "A.I. Powerhouse",
+      price: "400",
+      features: [
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+        "Lorem ipsum dolor sit amet",
+      ],
+      delay: "400",
+    },
+  ];
 
   return (
     <section className="py-16 px-4 bg-[url('https://bid-insight.vercel.app/pricing-bg.jpg')] bg-no-repeat bg-center bg-cover text-center">
@@ -78,10 +110,28 @@ function PricingSection() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center max-w-6xl mx-auto">
-        {plans.map((plan, index) => (
-          <PricingCard key={index} {...plan} />
-        ))}
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center max-w-6xl mx-auto">
+        {billingCycle === "Annual"
+          ? plans.map((plan, index) => (
+              <div
+                key={index}
+                className={`transform transition-transform duration-300 ${
+                  index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
+                }`}
+              >
+                <PricingCard {...plan} />
+              </div>
+            ))
+          : plansYear.map((plan, index) => (
+              <div
+                key={index}
+                className={`transform transition-transform duration-300 ${
+                  index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
+                }`}
+              >
+                <PricingCard {...plan} />
+              </div>
+            ))}
       </div>
 
       <p className="mt-10 text-[22px]  font-t" data-aos="fade-up" data-aos-delay="300">
