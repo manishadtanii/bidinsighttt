@@ -98,7 +98,7 @@ const Navbar = () => {
             to="/"
             className={`flex items-center space-x-2 p-3 lg:p-4 xl:p-5 rounded-2xl lg:rounded-3xl xl:rounded-[30px] group ${getContentClasses(true)}`}
           >
-            <img src="./icon.png" className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
+            <img src="/icon.png" className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
             <span className="text-lg font-semibold font-h bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
               BidInsight
             </span>

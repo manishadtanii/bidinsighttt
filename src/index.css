@@ -40,7 +40,7 @@ header {
   background-repeat: no-repeat;
   background-size: cover;
 }
-.summary{
+.summary {
   @apply bg-summary bg-image border border-white text-white p-6 rounded-2xl;
 }
 /* .bg-primary {
@@ -304,47 +304,91 @@ p {
   background-color: #999999;
   transform: translateX(94%);
 }
-.tooltip{
-  transition: .5s;
+.tooltip {
+  transition: 0.5s;
   opacity: 0;
   visibility: hidden;
 }
-.tooltip-wrapper:hover .tooltip{
+.tooltip-wrapper:hover .tooltip {
   opacity: 1;
   visibility: visible;
 }
-#filter-panel-save-search .sticky.bottom-0{
+#filter-panel-save-search .sticky.bottom-0 {
   /* display: none; */
 }
 
+.our-story .slick-slide p {
+  color: #FFFFFFB2;
+  transform: translateX(150px);
+}
+.our-story .slick-slide.slick-active.slick-current p {
+  color: white;
+  transform: translateX(0px);
+} 
 
 
 
-
-
-
-
-
-.shimmer {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
-  background-color: rgba(255, 255, 255, 0.06);
-  background-size: 200% 100%;
-  animation: shimmerAnim 1.6s infinite ease-in-out;
-  border-radius: 6px;
+@keyframes shimmerFlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-@keyframes shimmerAnim {
+
+@keyframes shimmerFlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+
+
+@keyframes shimmer {
   0% {
-    background-position: -200% 0;
+    background-position: -1000px 0;
   }
   100% {
-    background-position: 200% 0;
+    background-position: 1000px 0;
   }
 }
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(99, 125, 183, 0.05) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
+/* Background Starry Gradient */
+.bg-summary-glow {
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 400px),
+              radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 400px),
+              linear-gradient(180deg, #0e1856 0%, #1b2d6e 50%, #273d8a 100%);
+  background-image: url('/path-to-your-stars-noise.png'), radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 400px),
+                    radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 400px),
+                    linear-gradient(180deg, #0e1856 0%, #1b2d6e 50%, #273d8a 100%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: contain, cover, cover, cover;
+}
+
+
+
+
+
+.bg-bidtable-glow {
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 400px),
+              radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 400px),
+              linear-gradient(180deg, #0e1856 0%, #1b2d6e 50%, #273d8a 100%);
+  background-image: url('/stars-noise.png'),
+                    radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 400px),
+                    radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 400px),
+                    linear-gradient(180deg, #0e1856 0%, #1b2d6e 50%, #273d8a 100%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: contain, cover, cover, cover;
+}
+
+
+
+

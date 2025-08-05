@@ -37,7 +37,7 @@ function SummaryPage() {
     fetchBid();
   }, [id]);
 
-  if (loading) return <div className="text-white p-10">Loading...</div>;
+  // if (loading) return <div className="text-white p-10">Loading...</div>;
 
   const bidData = bid || fallback;
   console.log("Bid Data:", bidData);

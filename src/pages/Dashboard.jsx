@@ -6,6 +6,7 @@ import BidTable from "../components/BidTable";
 import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
+import api from "../utils/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getBidCount, getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +14,8 @@ import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
 // import { fetchProfileBids } from "../redux/reducer/profileSlice";
 import ProfessionalSavedSearchDropdown from '../components/ProfessionalSavedSearchDropdown'; // Add this import
+import StatShimmer from "../components/StatShimmer";
+import BidTableShimmer from "../components/shimmereffects/BidTableShimmer";
 
 
 function Dashboard() {
@@ -28,12 +31,12 @@ function Dashboard() {
   const { savedSearches } = useSelector((state) => state.savedSearches);
 
   // const profileBids = useSelector((state) => state.profileBids.data);
-// const profileLoading = useSelector((state) => state.profileBids.loading);
-// const profileError = useSelector((state) => state.profileBids.error);
+  // const profileLoading = useSelector((state) => state.profileBids.loading);
+  // const profileError = useSelector((state) => state.profileBids.error);
 
-// Add debugging to see the full state structure
-console.log("🔥 Full Redux State:", useSelector((state) => state));
-console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
+  // Add debugging to see the full state structure
+  console.log("🔥 Full Redux State:", useSelector((state) => state));
+  console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
@@ -106,11 +109,11 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
   const handleSort = (field) => {
     console.log("🔥 Sort requested for field:", field);
     console.log("🔥 Current ordering:", appliedFilters.ordering);
-    
+
     setFilters((prev) => {
       const current = prev.ordering;
       let newOrder;
-      
+
       // 🔥 PROPER TOGGLE LOGIC
       if (current === field) {
         // Currently ascending, make it descending
@@ -132,7 +135,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
 
       // 🔥 IMMEDIATELY UPDATE APPLIED FILTERS
       setAppliedFilters(updatedFilters);
-      
+
       // 🔥 BUILD URL WITH NEW SORT
       const queryString = buildQueryString(updatedFilters);
       navigate(`/dashboard?${queryString}`);
@@ -714,9 +717,9 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
           <div className="dashboard-header flex justify-between items-center">
             <HeroHeading
               data={data}
-              // profileBids={profileBids}
-              // profileLoading={profileLoading}
-              // profileError={profileError}
+            // profileBids={profileBids}
+            // profileLoading={profileLoading}
+            // profileError={profileError}
             />
             <div className="flex items-center gap-[15px]">
               <span className="font-inter text-[#DBDBDB]">Alert</span>
@@ -766,23 +769,27 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
                   />
                 </div>
               </div>
-
               <div className="dashboard-middle">
-                <div className="flex gap-3 text-[1em]">
-                  {middle.map((item) => (
-                    <BgCover key={item.id}>
-                      <div className="flex gap-2">
-                        <div className="text font-inter text-[#DBDBDB]">
-                          {item.title}
+                {loading ? (
+                  <StatShimmer /> // Updated professional shimmer
+                ) : (
+                  <div className="flex gap-3 text-[1em]">
+                    {middle.map((item) => (
+                      <BgCover key={item.id}>
+                        <div className="flex gap-2">
+                          <div className="text font-inter text-[#DBDBDB]">
+                            {item.title}
+                          </div>
+                          <p className="num font-inter font-semibold text-white">
+                            {item.num}
+                          </p>
                         </div>
-                        <p className="num font-inter font-semibold text-white">
-                          {item.num}
-                        </p>
-                      </div>
-                    </BgCover>
-                  ))}
-                </div>
+                      </BgCover>
+                    ))}
+                  </div>
+                )}
               </div>
+
 
 
               <div className="feature-right">
@@ -795,7 +802,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
                     <img src="export.png" className="w-6" alt="Export" />
                   </div>
 
-                  {/* UPDATED: the select dropdown */}  
+                  {/* UPDATED: the select dropdown */}
                   <ProfessionalSavedSearchDropdown
                     savedSearches={savedSearches}
                     selectedSavedSearch={selectedSavedSearch}
@@ -815,9 +822,9 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
             </div>
           </div>
 
-          <div ref={bidsSectionRef}>
+          <div className="w-full" ref={bidsSectionRef}>
             {loading ? (
-              <div className="text-white text-center py-10">Loading...</div>
+              <div className="text-white text-center py-10"><BidTableShimmer /></div>
             ) : error ? (
               <div className="text-red-400 text-center py-10">{error}</div>
             ) : (
@@ -825,7 +832,7 @@ console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids)
               <BidTable
                 bids={bidsInfo?.results || []}
                 totalCount={bidsInfo?.count || 0}
-                currentSortField={appliedFilters.ordering || "closing_date"} 
+                currentSortField={appliedFilters.ordering || "closing_date"}
                 currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}
                 onSort={handleSort}
                 ref={tableRef}

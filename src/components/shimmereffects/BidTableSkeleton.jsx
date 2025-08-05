@@ -1,5 +1,5 @@
 import React from "react";
-import "../index.css"; // Assuming you have styles for shimmer effect
+// import "./index.css"; // Assuming you have styles for shimmer effect
 
 const HEADERS = [
   "Entity Type",
@@ -17,9 +17,9 @@ const ROWS_COUNT = 10;
 const BidTableSkeleton = () => {
   return (
     <div
-      className="rounded-2xl bg-btn text-white my-12 shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto"
-      aria-busy="true"
-    >
+  className="rounded-2xl bg-bidtable-glow text-white my-12 shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto"
+  aria-busy="true"
+>
       <table className="min-w-full table-auto text-sm text-center">
         <thead className="sticky top-0 bg-white/5 backdrop-blur-sm z-10">
           <tr className="text-white/80 text-xs border-b border-white/20">

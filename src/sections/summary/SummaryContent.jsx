@@ -1,6 +1,5 @@
 import React from "react";
 import Unlock from "../../components/Unlock";
-import line from "../../../public/line.png";
 
 export default function SummaryContent({ bidData = {} }) {
   console.log(bidData);
@@ -25,7 +24,7 @@ export default function SummaryContent({ bidData = {} }) {
             {summaryText || "No summary available at the moment."}
           </p>
           <div className="text-center">
-            <img src={line} alt="divider" className="mx-auto my-10" />
+            <img src="/line.png" alt="divider" className="mx-auto my-10" />
           </div>
           <Unlock data={data} />
         </div>

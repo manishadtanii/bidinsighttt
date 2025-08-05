@@ -6,6 +6,7 @@ const US_STATES = [/* fallback states if needed */];
 
 const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
   const [selectedStates, setSelectedStates] = useState(filters.location || []);
+  const [selectedEntity, setSelectedEntity] = useState(filters.entity || ["Federal", "State","Local"]);
   const [searchTerm, setSearchTerm] = useState("");
   const [states, setStates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,10 +100,83 @@ const LocationTab = ({ filters = {}, setFilters = () => {} }) => {
           </div>
         </div>
 
+        {/* Selected Entity */}
+        <div className="hidden justify-between items-center mb-4">
+          <h2 className="text-p font-medium font-inter">
+            Selected Entity{" "}
+            <span className="text-primary">({selectedEntity.length})</span>
+          </h2>
+          {selectedEntity.length > 0 && (
+            <button
+              onClick={clearAll}
+              className="text-lg underline font-inter"
+              aria-label="Clear all selected entity"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
+
+        <div className="hidden flex-wrap gap-2 mb-6">
+          {selectedEntity.map((name) => (
+            <div
+              key={name}
+              className="flex border-[2px] gap-1 px-3 rounded-[30px] border-primary items-center text-lg py-1 font-inter"
+            >
+              <div>{name}</div>
+              <button
+                onClick={() => toggleState(name)}
+                className="text-primary"
+                aria-label={`Remove ${name}`}
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+         {/* Entity List */}
+        <div className="hidden border-[#273BE280] border-[2px] rounded-[10px] max-h-[400px] overflow-y-auto mb-10">
+          <div className="flex items-center px-4 py-3 border-b font-medium font-inter text-p">
+            <input
+              type="checkbox"
+              className="accent-primary mr-3"
+              checked={isAllSelected}
+              onChange={toggleSelectAll}
+              aria-label="Select all visible states"
+            />
+            <span>Select All States</span>
+          </div>
+
+          {loading ? (
+            <div className="p-4 text-center text-gray-500">Loading states...</div>
+          ) : selectedEntity.length === 0 ? (
+            <div className="p-4 text-center text-gray-500">No states found</div>
+          ) : (
+            selectedEntity.map((state) => {
+              const name = state.name || state;
+              const checked = selectedStates.includes(name);
+              return (
+                <label
+                  key={name}
+                  className="flex items-center gap-5 py-2 cursor-pointer font-inter px-4 text-xl border-[#273BE280] border-t-[2px]"
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1 accent-primary"
+                    checked={checked}
+                    onChange={() => toggleState(name)}
+                    aria-label={`Select state ${name}`}
+                  />
+                  <div className="text-[16px]">{name}</div>
+                </label>
+              );
+            })
+          )}
+        </div>
         {/* Selected States */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-p font-medium font-inter">
-            Selected States{" "}
+            Selected Location{" "}
             <span className="text-primary">({selectedStates.length})</span>
           </h2>
           {selectedStates.length > 0 && (

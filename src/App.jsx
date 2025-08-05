@@ -4,9 +4,10 @@ import LayoutWrapper from "./LayoutWrapper";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ScrollToTop from "./components/ScrollToTop";
-import BidTableSkeleton from "./components/BidTableSkeleton";
+import BidTableSkeleton from "./components/shimmereffects/BidTableSkeleton";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
-// import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";
+import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
+// import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";  
 
 
 // Lazy-loaded Pages
@@ -58,8 +59,8 @@ const App = () => {
             <Route path="/email-verification" element={<EmailVerification />} />
             <Route path="/verification" element={<Verification />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/summary" element={<SummaryPage />} />
-            <Route path="/summary/:id" element={<SummaryPage />} />
+            {/* <Route path="/skl" element={<ShimmerSummaryCard />} /> */}
+            <Route path="/summary/:id" element={<Suspense fallback={<ShimmerSummaryCard />}> <SummaryPage /> </Suspense>} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/super-admin" element={<SuperAdmin />} />

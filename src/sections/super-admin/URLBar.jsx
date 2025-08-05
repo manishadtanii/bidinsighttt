@@ -131,7 +131,7 @@ const URLBar = () => {
         <thead>
           <tr className="bg-bl text-white text-center">
             {["ID", "URL", "Bid Name", "Type", "Last 24H", "Override", "Action"].map((head) => (
-              <th key={head} className="px-4 py-3">{head}</th>
+              <th key={head} className="px-4 py-3 font-inter">{head}</th>
             ))}
           </tr>
         </thead>
@@ -153,21 +153,20 @@ const URLBar = () => {
                 )}
               </td>
 
-              <td className="px-4 py-3">{row.bidName}</td>
-              <td className="px-4 py-3">{row.type}</td>
-              <td className="px-4 py-3">{row.time}</td>
-
-              <td className="px-4 py-3">
+              <td className="px-4 py-3 font-inter">{row.bidName}</td>
+              <td className="px-4 py-3 font-inter">{row.type}</td>
+              <td className="px-4 py-3 font-inter">{row.time}</td>
+              <td className="px-4 py-3 font-inter">
                 <select
                   defaultValue={row.override}
-                  className={`px-2 py-1 rounded-full text-xs outline-none ${getOverrideStyles(row.override)}`}
+                  className={`px-2 py-1 rounded-full text-xs outline-none font-inter ${getOverrideStyles(row.override)}`}
                 >
                   <option value="Automated">Automated</option>
                   <option value="Manual">Manual</option>
                 </select>
               </td>
 
-              <td className="px-4 py-3 relative">
+              <td className="px-4 py-3 relative font-inter">
                 <button onClick={() => toggleAction(i)} className="text-gray-600 hover:text-black">
                   <FontAwesomeIcon icon="ellipsis-v" />
                 </button>
