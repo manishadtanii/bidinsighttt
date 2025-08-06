@@ -10,10 +10,12 @@ import loginReducer from "./reducer/loginSlice";
 import savedSearchesReducer from "./reducer/savedSearchesSlice";
 import bidReducer from "./reducer/bidSlice";
 import profileReducer from "./reducer/profileSlice"; // ✅ NEW
+import authReducer from "./reducer/authSlice"
 
 // Combine all reducers
 const rootReducer = combineReducers({
   onboarding: onboardingReducer,
+  auth: authReducer,
   login: loginReducer,
   savedSearches: savedSearchesReducer,
   bids: bidReducer,

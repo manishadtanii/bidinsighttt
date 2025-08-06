@@ -59,7 +59,7 @@ const App = () => {
             <Route path="/email-verification" element={<EmailVerification />} />
             <Route path="/verification" element={<Verification />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/summary/:id" element={<Suspense fallback={<ShimmerSummaryCard />}> <SummaryPage /> </Suspense>} />
+            <Route path="/summary/:id" element={<Suspense fallback={<ShimmerSummaryCard />}> <ProtectedRoute><SummaryPage /></ProtectedRoute> </Suspense>} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/super-admin" element={<SuperAdmin />} />

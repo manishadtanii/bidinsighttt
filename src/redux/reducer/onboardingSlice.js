@@ -50,6 +50,22 @@ const onboardingSlice = createSlice({
       state.skippedInsurance = action.payload;
     },
 
+
+    clearInsuranceData: (state) => {
+      state.insuranceData = {
+        workersCompensation: "",
+        generalLiability: "",
+        autoLiability: "",
+        medicalProfessional: "",
+        cyberInsurance: "",
+        environmentalInsurance: "",
+      };
+      console.log(state.insuranceData);
+    },
+    clearInsuranceAmounts: (state) => {
+      state.insuranceAmounts = { ...initialState.insuranceAmounts };
+    },
+
     clearOnboardingData: (state) => {
       Object.assign(state, initialState);
     },
@@ -61,6 +77,8 @@ export const {
   saveIndustryCategory,
   saveInsuranceData,
   saveInsuranceAmounts,
+  clearInsuranceData,      // ✅ EXPORT THIS
+  clearInsuranceAmounts,
   clearOnboardingData,
   setSkippedInsurance, // ✅ EXPORT THIS TOO
 } = onboardingSlice.actions;

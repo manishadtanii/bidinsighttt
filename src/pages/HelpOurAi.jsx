@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -31,14 +32,9 @@ function HelpOurAi() {
     activeStep: 4,
   };
 
+  // ✅ Simple skip handler - Only set skip flag, don't clear data yet
   function skipHandle() {
-    const allNo = {};
-    fields.forEach((f) => {
-      allNo[f.name] = "no";
-    });
-    dispatch(saveInsuranceData(allNo));
-    dispatch(setSkippedInsurance(true)); // ✅ set skip flag in redux
-    setFormValues(allNo); 
+    dispatch(setSkippedInsurance(true)); // ✅ Set skip flag in Redux
     navigate("/extra-data");
   }
 
@@ -74,18 +70,23 @@ function HelpOurAi() {
     },
   ];
 
-   useEffect(() => {
-      checkTTLAndClear(navigate);
-    }, []);
+  useEffect(() => {
+    checkTTLAndClear(navigate);
+  }, []);
 
   const insuranceData = useSelector((state) => state.onboarding.insuranceData);
   const [formValues, setFormValues] = useState({});
   const [showValidation, setShowValidation] = useState(false);
   const [allDisabled, setAllDisabled] = useState(false);
 
+  // ✅ Load existing data normally and handle reset case
   useEffect(() => {
     if (insuranceData && Object.keys(insuranceData).length > 0) {
       setFormValues(insuranceData);
+    } else {
+      // ✅ If insurance data is empty/cleared, reset form completely
+      setFormValues({});
+      setShowValidation(false);
     }
   }, [insuranceData]);
 
@@ -109,13 +110,18 @@ function HelpOurAi() {
   const handleNextClick = (e) => {
     e.preventDefault();
     setShowValidation(true);
+    
+    // Check if all fields are filled
     const allFilled = fields.every((field) => formValues[field.name]);
+    
     if (allFilled) {
-      dispatch(saveInsuranceData(formValues));
-      dispatch(setSkippedInsurance(false)); // ✅ reset skip flag if user completes form
+      dispatch(saveInsuranceData(formValues)); // ✅ Save form data to Redux
+      dispatch(setSkippedInsurance(false)); // ✅ Reset skip flag if user completes form
       navigate("/extra-data");
     }
   };
+
+
 
   return (
     <ProcessWrapper>
@@ -126,7 +132,7 @@ function HelpOurAi() {
             <HeroHeading data={data} />
           </div>
 
-          <form className="forn-container flex flex-col h-full justify-between">
+          <form className="form-container flex flex-col h-full justify-between">
             <div className="flex flex-col gap-4">
               {[0, 1, 2].map((row) => (
                 <div key={row} className="flex gap-4">
@@ -144,14 +150,20 @@ function HelpOurAi() {
                         messageType={getMessageType(field.name)}
                         delay={100}
                         disabled={allDisabled}
+                        placeholder="Select option" // ✅ Better UX
                       />
                     </div>
                   ))}
                 </div>
               ))}
             </div>
+            
             <div>
-              <FormFooter data={formFooter} onNextClick={handleNextClick} onSkipClick={skipHandle} />
+              <FormFooter 
+                data={formFooter} 
+                onNextClick={handleNextClick} 
+                onSkipClick={skipHandle}
+              />
             </div>
           </form>
         </div>

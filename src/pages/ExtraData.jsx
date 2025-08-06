@@ -1,4 +1,4 @@
-// ✅ Updated ExtraData.jsx - Skip karne par bhi inputs background mein visible
+// ✅ Enhanced ExtraData.jsx - Proper blur effect for non-selected fields
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import SubmissionModal from "../components/SubmissionModal";
 import api from "../utils/axios";
-import { clearOnboardingData, setSkippedInsurance } from "../redux/reducer/onboardingSlice";
+import { clearInsuranceData, clearOnboardingData, setSkippedInsurance } from "../redux/reducer/onboardingSlice";
 import { checkTTLAndClear } from "../utils/ttlCheck";
 
 function ExtraData() {
@@ -27,44 +27,68 @@ function ExtraData() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-   useEffect(() => {
-      checkTTLAndClear(navigate);
-    }, []);
+  useEffect(() => {
+    checkTTLAndClear(navigate);
+  }, []);
 
-  // Field mapping
+  // Field mapping with proper labels
   const insuranceFields = {
-    workersCompensation: "workersCompensationAmount",
-    generalLiability: "generalLiabilityAmount",
-    autoLiability: "autoLiabilityAmount",
-    medicalProfessional: "medicalProfessionalAmount",
-    environmentalInsurance: "environmentAmount",
-    cyberInsurance: "cybersecurityAmount",
+    workersCompensation: {
+      fieldName: "workersCompensationAmount",
+      label: "Workers Compensation Amount"
+    },
+    generalLiability: {
+      fieldName: "generalLiabilityAmount",
+      label: "General Liability Insurance Amount"
+    },
+    autoLiability: {
+      fieldName: "autoLiabilityAmount",
+      label: "Automobile Liability Insurance Amount"
+    },
+    medicalProfessional: {
+      fieldName: "medicalProfessionalAmount",
+      label: "Medical/Professional/ESO Liability Insurance Amount"
+    },
+    environmentalInsurance: {
+      fieldName: "environmentAmount",
+      label: "Environmental Insurance Amount"
+    },
+    cyberInsurance: {
+      fieldName: "cybersecurityAmount",
+      label: "Cybersecurity Insurance Amount"
+    },
   };
 
-  // ✅ Always show all possible fields for better UX
+  // ✅ All possible fields with their labels
   const allPossibleFields = useMemo(() => {
     return Object.values(insuranceFields);
   }, []);
 
-  // ✅ Fields to actually validate/submit (based on user selections)
-  const enabledKeys = useMemo(() => {
-    if (isSkipMode) {
-      return []; // Skip mode mein validation nahi
+  // ✅ Get enabled fields based on user selections (only "yes" fields)
+  const enabledFields = useMemo(() => {
+    if (isSkipMode || !insuranceData) {
+      return [];
     }
     return Object.entries(insuranceFields)
-      .filter(([key]) => insuranceData?.[key] === "yes")
-      .map(([_, value]) => value);
+      .filter(([key]) => insuranceData[key] === "yes")
+      .map(([_, config]) => config.fieldName);
   }, [insuranceData, isSkipMode]);
 
   // ✅ Setup initial fields - show all but only validate enabled ones
   useEffect(() => {
     const newState = {};
-    allPossibleFields.forEach((key) => {
-      newState[key] = "";
+    const newErrors = {};
+    const newTouched = {};
+
+    allPossibleFields.forEach((config) => {
+      newState[config.fieldName] = "";
+      newErrors[config.fieldName] = "";
+      newTouched[config.fieldName] = false;
     });
+
     setFields(newState);
-    setErrors({ ...newState });
-    setTouched({ ...newState });
+    setErrors(newErrors);
+    setTouched(newTouched);
   }, [allPossibleFields]);
 
   // ✅ Handle previous skip state
@@ -77,31 +101,48 @@ function ExtraData() {
   }, [skippedInsurance, dispatch]);
 
   const validateField = (name, value) => {
-    if (!value) return { msg: "This field is required", type: "error" };
-    if (!/^[0-9]+$/.test(value)) return { msg: "Please enter digits", type: "error" };
+    if (!value || value.trim() === "") {
+      return { msg: "This field is required", type: "error" };
+    }
+    if (!/^[0-9]+(\.[0-9]{1,2})?$/.test(value)) {
+      return { msg: "Please enter a valid amount (numbers only)", type: "error" };
+    }
+    if (parseFloat(value) <= 0) {
+      return { msg: "Amount must be greater than 0", type: "error" };
+    }
     return { msg: "This field is valid", type: "success" };
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Only allow changes to enabled fields
+    if (!enabledFields.includes(name) && !isSkipMode) {
+      return;
+    }
+
     setFields((prev) => ({ ...prev, [name]: value }));
-    setTouched((prev) => ({ ...prev, [name]: true }));
-    
-    // Only validate if field is enabled or not in skip mode
-    if (!isSkipMode && enabledKeys.includes(name)) {
-      const { msg } = validateField(name, value);
-      setErrors((prev) => ({ ...prev, [name]: msg }));
+
+    // Only validate enabled fields
+    if (enabledFields.includes(name)) {
+      const validation = validateField(name, value);
+      setErrors((prev) => ({ ...prev, [name]: validation.msg }));
     }
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
+
+    // Only process blur for enabled fields
+    if (!enabledFields.includes(name) && !isSkipMode) {
+      return;
+    }
+
     setTouched((prev) => ({ ...prev, [name]: true }));
-    
-    // Only validate if field is enabled or not in skip mode
-    if (!isSkipMode && enabledKeys.includes(name)) {
-      const { msg } = validateField(name, value);
-      setErrors((prev) => ({ ...prev, [name]: msg }));
+
+    if (enabledFields.includes(name)) {
+      const validation = validateField(name, value);
+      setErrors((prev) => ({ ...prev, [name]: validation.msg }));
     }
   };
 
@@ -139,13 +180,13 @@ function ExtraData() {
     } else {
       // Normal mode - use actual selections
       Object.entries(boolMap).forEach(([key, apiKey]) => {
-        payload[apiKey] = insuranceData[key] === "yes";
+        payload[apiKey] = insuranceData?.[key] === "yes";
       });
 
       // Only add amounts for enabled fields with values
       Object.entries(fields).forEach(([key, val]) => {
-        if (val && enabledKeys.includes(key)) {
-          payload[insuranceMap[key]] = Number(val);
+        if (val && enabledFields.includes(key) && parseFloat(val) > 0) {
+          payload[insuranceMap[key]] = parseFloat(val);
         }
       });
     }
@@ -154,41 +195,50 @@ function ExtraData() {
       const res = await api.post("/auth/profile/", payload);
       console.log("✅ Profile submitted:", res.data);
 
+      // Clear session data
       sessionStorage.removeItem("onboardingForm");
       sessionStorage.removeItem("ttlStartTime");
-      dispatch(setSkippedInsurance(false)); // Reset skip state
+      dispatch(setSkippedInsurance(false));
       dispatch(clearOnboardingData());
 
       navigate("/dashboard");
     } catch (err) {
       const message = err.response ? JSON.stringify(err.response.data) : err.message;
-      alert("API Error: " + message);
+      console.error("API Error:", message);
+      alert("Submission failed: " + message);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // ✅ Skip mode mein direct submit
     if (isSkipMode) {
       submitProfile();
       return;
     }
 
-    // Normal validation for enabled fields only
-    let valid = true;
-    const newErrors = {};
-    
-    enabledKeys.forEach((key) => {
-      const { msg, type } = validateField(key, fields[key]);
-      newErrors[key] = msg;
-      if (type !== "success") valid = false;
+    // Validate only enabled fields
+    let isValid = true;
+    const newErrors = { ...errors };
+    const newTouched = { ...touched };
+
+    enabledFields.forEach((fieldName) => {
+      const validation = validateField(fieldName, fields[fieldName]);
+      newErrors[fieldName] = validation.msg;
+      newTouched[fieldName] = true;
+
+      if (validation.type !== "success") {
+        isValid = false;
+      }
     });
-    
-    setErrors(prev => ({ ...prev, ...newErrors }));
-    setTouched(enabledKeys.reduce((acc, key) => ({ ...acc, [key]: true }), {}));
-    
-    if (valid) submitProfile();
+
+    setErrors(newErrors);
+    setTouched(newTouched);
+
+    if (isValid) {
+      submitProfile();
+    }
   };
 
   // ✅ Skip functionality
@@ -199,59 +249,85 @@ function ExtraData() {
 
   const handleSkipConfirm = () => {
     setShowSkipModal(false);
-    // Keep isSkipMode true and submit
     submitProfile();
   };
 
-  // ✅ Fixed: Navigate to help-our-ai when back is clicked from modal
   const handleSkipCancel = () => {
+    console.log("back cliked")
+    dispatch(clearInsuranceData());
     setShowSkipModal(false);
     setIsSkipMode(false);
-    navigate("/help-our-ai"); // Navigate back to previous page
+    navigate("/help-our-ai");
   };
 
-  const handleBack = () => navigate("/help-our-ai");
-
-  // ✅ Helper function to check if field should be shown as active
-  const isFieldActive = (key) => {
-    if (isSkipMode) return false; // Skip mode mein sab inactive
-    return enabledKeys.includes(key);
+  const handleBack = () => {
+      // ✅ Clear insuranceData from Redux
+    navigate("/help-our-ai");        // ✅ Navigate to the route
   };
 
-  // ✅ Helper function to get field display state
-  const getFieldProps = (key, index) => {
-    const isActive = isFieldActive(key);
+
+  // ✅ Enhanced helper function to get field properties with proper blur effect
+  const getFieldProps = (config, index) => {
+    const { fieldName, label } = config;
+    const isEnabled = enabledFields.includes(fieldName);
+    const isFieldTouched = touched[fieldName];
+    const fieldError = errors[fieldName];
+
+    // Base properties for all fields
     const baseProps = {
-      key: key,
-      label: key.replace(/([A-Z])/g, " $1").trim() + " (amount)",
-      name: key,
+      key: fieldName,
+      label: label,
+      name: fieldName,
       type: "text",
-      placeholder: isActive ? "e.g. Value" : "Skipped - No input needed",
       delay: index * 100,
-      value: fields[key] || "",
-      onChange: handleChange,
-      onBlur: handleBlur,
+      value: fields[fieldName] || "",
     };
 
-    if (isActive) {
-      // Active field - normal behavior
-      return {
-        ...baseProps,
-        message: touched[key] && errors[key] ? errors[key] : "",
-        messageType: touched[key] && errors[key] === "This field is valid" 
-          ? "success" 
-          : touched[key] && errors[key] 
-          ? "error" 
-          : "",
-      };
-    } else {
-      // Inactive field - show as disabled/dimmed
+    if (isSkipMode) {
+      // Skip mode - all fields disabled and non-interactive
       return {
         ...baseProps,
         disabled: true,
-        message: isSkipMode ? "Skipped" : "Not selected in previous step",
+        readOnly: true,
+        placeholder: "Skipped - No input required",
+        message: "This step was skipped",
         messageType: "info",
-        className: "opacity-50", // Visual indicator
+        className: "opacity-40 cursor-not-allowed pointer-events-none bg-gray-100 transition-all duration-200",
+        tabIndex: -1, // Remove from tab navigation
+      };
+    }
+
+    if (isEnabled) {
+      // Enabled field - normal interactive behavior
+      return {
+        ...baseProps,
+        placeholder: "Enter amount (e.g., 50000)",
+        onChange: handleChange,
+        onBlur: handleBlur,
+        message: isFieldTouched && fieldError ? fieldError : "",
+        messageType: isFieldTouched && fieldError === "This field is valid"
+          ? "success"
+          : isFieldTouched && fieldError
+            ? "error"
+            : "",
+        className: "transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+      };
+    } else {
+      // Disabled field - non-interactive with no cursor
+      return {
+        ...baseProps,
+        disabled: true,
+        readOnly: true,
+        placeholder: "Not selected in previous step",
+        message: "This insurance type was not selected",
+        messageType: "info",
+        className: "opacity-30 cursor-not-allowed pointer-events-none bg-gray-100 transition-all duration-200",
+        // Prevent any interaction
+        onChange: () => { },
+        onBlur: () => { },
+        onFocus: () => { },
+        onClick: () => { },
+        tabIndex: -1, // Remove from tab navigation
       };
     }
   };
@@ -276,7 +352,7 @@ function ExtraData() {
   const formFooter = {
     back: { text: "Back", link: "/help-our-ai" },
     next: { text: isSkipMode ? "Continue" : "Submit", link: "" },
-    skip: isSkipMode ? "" : "Skip this step", // Show skip only if not already skipped
+    skip: isSkipMode ? "" : "Skip this step",
   };
 
   return (
@@ -287,47 +363,47 @@ function ExtraData() {
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
-          
+
           {/* ✅ Form container with overlay effect when modal is shown */}
           <div className={`relative ${showSkipModal ? 'overflow-hidden' : ''}`}>
-            <form 
-              className={`form-container flex flex-col h-full justify-between transition-opacity duration-300 ${
-                showSkipModal ? 'opacity-30 pointer-events-none' : 'opacity-100'
-              }`} 
+            <form
+              className={`form-container flex flex-col h-full justify-between transition-opacity duration-300 ${showSkipModal ? 'opacity-30 pointer-events-none' : 'opacity-100'
+                }`}
               onSubmit={handleSubmit}
             >
               <div className="flex flex-col gap-4">
-                {/* ✅ Show all fields, but with different states */}
-                {allPossibleFields.map((key, index) => (
-                  <FormField {...getFieldProps(key, index)} />
+                {/* ✅ Show all fields with proper disabled states */}
+                {allPossibleFields.map((config, index) => (
+                  <FormField {...getFieldProps(config, index)} />
                 ))}
               </div>
-              
-              <FormFooter 
-                data={formFooter} 
-                onSkip={handleSkip} // Pass skip handler to footer
+
+              <FormFooter
+                data={formFooter}
+                onSkip={handleSkip}
+                onBack={handleBack}
               />
             </form>
 
             {/* ✅ Skip Modal Overlay */}
             {showSkipModal && (
-              <div className="absolute inset-0 flex items-center justify-center z-50">
+              <div className="fixed inset-0 flex items-center justify-center z-50">
                 <div className="bg-black bg-opacity-50 absolute inset-0"></div>
                 <SubmissionModal
                   title="Skip Insurance Details?"
-                  message="You can skip this step and continue. You can always add this information later."
+                  message="You can skip this step and continue. You can always add this information later from your profile settings."
                   onBack={handleSkipCancel}
                   onContinue={handleSkipConfirm}
                   onClose={handleSkipCancel}
-                  backText="Cancel"
-                  continueText="Yes, Skip"
+                  backText="Go Back"
+                  continueText="Yes, Skip This Step"
                 />
               </div>
             )}
           </div>
         </div>
       </div>
-      
+
       <div className="sticky top-0">
         <FormImg src="login-img.png" />
       </div>
