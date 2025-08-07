@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Search, Trash2 } from "lucide-react";
-import { getSolicitationTypes } from "../../services/bid.service.js";
+import { getSolicitationTypes } from "../../services/user.service.js";
 
 const mockOptions = [
   { name: "Type A" }, { name: "Type B" }, { name: "Type C" }, { name: "Type D" },

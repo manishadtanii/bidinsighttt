@@ -1,17 +1,17 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getUserProfile } from "../../services/bid.service"; // ✅ Correct path
+// profileSlice.js
 
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getUserProfile } from "../../services/bid.service";
+
+// Async thunk to fetch profile
 export const fetchUserProfile = createAsyncThunk(
   "profile/fetchUserProfile",
-  async (profileId, thunkAPI) => {
-    console.log("🔥 Fetching profile with ID:", profileId);
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await getUserProfile(profileId);
-      console.log("🔥 Profile API Success:", response);
-      return response;
+      const data = await getUserProfile();
+      return data;
     } catch (error) {
-      console.error("🔥 Profile API Error:", error);
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || "Error fetching profile");
     }
   }
 );
@@ -19,35 +19,26 @@ export const fetchUserProfile = createAsyncThunk(
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
+    profile: null,
     loading: false,
     error: null,
-    data: null,
   },
-  reducers: {
-    clearProfile: (state) => {
-      state.data = null;
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
-        console.log("🔥 Profile loading started...");
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
-        console.log("🔥 Profile loaded successfully:", action.payload);
+        state.profile = action.payload;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.error("🔥 Profile loading failed:", action.payload);
       });
   },
 });
 
-export const { clearProfile } = profileSlice.actions;
 export default profileSlice.reducer;

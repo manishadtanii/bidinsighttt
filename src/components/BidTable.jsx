@@ -748,29 +748,35 @@ import React, {
   forwardRef,
 } from "react";
 import { useNavigate } from "react-router-dom";
+// import { utcToZonedTime, format } from 'date-fns-tz';
+
 
 // Helper to format date
+// Helper to format date in user's local timezone
 function formatDate(dateStr) {
   if (!dateStr) return "-";
   const date = new Date(dateStr);
-  const month = date.toLocaleString("default", { month: "short" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  return `${month} ${day}, ${year}`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' });
 }
 
-// Countdown in days
+// Countdown calculation (local time)
 function getCountdown(closingDateStr) {
   if (!closingDateStr) return "-";
-  const closing = new Date(closingDateStr);
+
+  const closingDate = new Date(closingDateStr);
   const now = new Date();
-  const diffInMs = closing.getTime() - now.getTime();
+
+  const diffInMs = closingDate.getTime() - now.getTime();
   const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
   if (isNaN(diffInDays)) return "-";
   if (diffInDays < 0) return "Closed";
   if (diffInDays === 1) return "1 day";
   return `${diffInDays} days`;
 }
+
+
+
 
 
 // Convert rows to CSV

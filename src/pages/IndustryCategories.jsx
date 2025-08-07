@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveIndustryCategory } from "../redux/reducer/onboardingSlice";
-
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";

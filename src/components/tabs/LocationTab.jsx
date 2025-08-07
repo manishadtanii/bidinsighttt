@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Trash2, Search } from "lucide-react";
-import { getAllStates } from "../../services/bid.service.js";
+import { getAllStates } from "../../services/user.service.js";
 
 const US_STATES = [/* fallback states if needed */];
 

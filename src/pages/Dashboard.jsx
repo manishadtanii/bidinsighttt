@@ -6,16 +6,16 @@ import BidTable from "../components/BidTable";
 import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
-import api from "../utils/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getBidCount, getBids, getSavedSearches } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
-// import { fetchProfileBids } from "../redux/reducer/profileSlice";
 import ProfessionalSavedSearchDropdown from '../components/ProfessionalSavedSearchDropdown'; // Add this import
 import StatShimmer from "../components/StatShimmer";
 import BidTableShimmer from "../components/shimmereffects/BidTableShimmer";
+import { useUserTimezone } from "../timezone/useUserTimezone";
+import { fetchUserProfile } from "../redux/reducer/profileSlice";
 
 
 function Dashboard() {
@@ -25,14 +25,12 @@ function Dashboard() {
   const location = useLocation();
   const tableRef = useRef();
   const bidsSectionRef = useRef(null);
-
   const dispatch = useDispatch();
   const { bidsInfo } = useSelector((state) => state.bids);
   const { savedSearches } = useSelector((state) => state.savedSearches);
 
-  // const profileBids = useSelector((state) => state.profileBids.data);
-  // const profileLoading = useSelector((state) => state.profileBids.loading);
-  // const profileError = useSelector((state) => state.profileBids.error);
+  const { timezone: userTimezone } = useUserTimezone();
+
 
   // Add debugging to see the full state structure
   console.log("🔥 Full Redux State:", useSelector((state) => state));
@@ -41,7 +39,7 @@ function Dashboard() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
 
-  // console.log(savedSearches);
+
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
     status: "Active",
@@ -78,6 +76,29 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
+
+  const { timezone, locationPermission } = useUserTimezone();
+
+  useEffect(() => {
+    const handlePopState = (e) => {
+      window.history.pushState(null, '', window.location.href);
+    };
+
+    // Push a new state
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    console.log("Current Timezone:", timezone);
+    console.log("Location Permission:", locationPermission);
+    // Use timezone in your logic here...
+  }, [timezone, locationPermission]);
 
 
 
@@ -384,11 +405,13 @@ function Dashboard() {
   }, [currentPage, navigate, perPage, appliedFilters, dispatch]);
 
 
+
   // Fetch bids on component mount and page change
   useEffect(() => {
     if (!isInitialLoad) {
       fetchBids();
     }
+
   }, [fetchBids, isInitialLoad]);
 
   // 🔥 FILTER APPLY HANDLER - When filters are applied from FilterPanel
@@ -440,6 +463,17 @@ function Dashboard() {
       setSelectedSavedSearch(null);
     }
   }, [location.search, savedSearches]);
+
+  // useEffect(() => {
+  //   dispatch(fetchUserProfile());
+  // }, [dispatch]);
+
+
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
+
+
 
   // Handle selecting a saved search and applying filters
   const handleSavedSearchSelect = async (searchId) => {
@@ -661,26 +695,7 @@ function Dashboard() {
     // console.log(search);
   }, [location.search])
 
-  // useEffect(() => {
-  //   const getProfileIdFromPersistedStore = () => {
-  //     try {
-  //       const persisted = JSON.parse(localStorage.getItem("persist:root"));
-  //       const loginData = JSON.parse(persisted?.login || "{}");
-  //       return loginData?.user?.id || null;
-  //     } catch (err) {
-  //       console.error("Error parsing persisted login:", err);
-  //       return null;
-  //     }
-  //   };
 
-  //   const userId = getProfileIdFromPersistedStore();
-
-  //   console.log("🔥 Dashboard - Fetching profile for userId:", userId);
-
-  //   if (userId) {
-  //     dispatch(fetchProfileBids(userId));
-  //   }
-  // }, [dispatch]);
 
 
 
@@ -830,6 +845,7 @@ function Dashboard() {
             ) : (
               // <BidTable bids={bidsInfo?.results || []} ref={tableRef} />
               <BidTable
+                timezone={userTimezone}
                 bids={bidsInfo?.results || []}
                 totalCount={bidsInfo?.count || 0}
                 currentSortField={appliedFilters.ordering || "closing_date"}

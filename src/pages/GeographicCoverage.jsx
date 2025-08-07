@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  saveGeographicCoverage,
-  saveIndustryCategory,
-} from "../redux/reducer/onboardingSlice";
+import {saveGeographicCoverage, saveIndustryCategory} from "../redux/reducer/onboardingSlice";
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
@@ -12,8 +9,8 @@ import FormImg from "../components/FormImg";
 import FormMultiSelect from "../components/FormMultiSelect";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/axios";
 import { checkTTLAndClear } from "../utils/ttlCheck";
+import { getAllStates } from "../services/user.service";
 
 function GeographicCoverage() {
   const data = {
@@ -88,24 +85,25 @@ function GeographicCoverage() {
   }, [selectedRegions, nationwideSelected, selectedIndustries, skipClicked]);
 
   // 🌐 Fetch states
-  useEffect(() => {
-    async function fetchStates() {
-      try {
-        const res = await api.get("/auth/states/");
-        if (Array.isArray(res.data)) {
-          setStateOptions(
-            res.data.map((item) => ({
-              value: item.id,
-              label: item.name,
-            }))
-          );
-        }
-      } catch (err) {
-        setStateOptions([{ value: "", label: "Error loading states" }]);
+useEffect(() => {
+  async function fetchStates() {
+    try {
+      const data = await getAllStates(); // ✅ use the service function
+      if (Array.isArray(data)) {
+        setStateOptions(
+          data.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }))
+        );
       }
+    } catch (err) {
+      setStateOptions([{ value: "", label: "Error loading states" }]);
     }
-    fetchStates();
-  }, []);
+  }
+
+  fetchStates();
+}, []);
 
   const handleNationwide = () => {
     setNationwideSelected(true);

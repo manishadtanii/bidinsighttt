@@ -19,13 +19,15 @@ const rootReducer = combineReducers({
   login: loginReducer,
   savedSearches: savedSearchesReducer,
   bids: bidReducer,
-  profile: profileReducer, // ✅ Added profile reducer
+  profile: profileReducer,
+  // profile: profileReducer, // ✅ Added profile reducer
 });
 
 // Redux Persist config
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["bids"],
 };
 
 // Wrap rootReducer with persistReducer

@@ -6,10 +6,10 @@ import FormFooter from "../components/FormFooter";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { useNavigate, useLocation } from "react-router-dom";
-import api from "../utils/axios"
 import { checkTTLAndClear } from "../utils/ttlCheck";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/reducer/authSlice"; // path check kar lena
+import { resendOtp, verifyOtp } from "../services/user.service";
 
 
 function Verification() {
@@ -117,84 +117,30 @@ function Verification() {
     setOtpMessage("");
     setOtpMessageType("");
 
-    console.log("Email for verification:", email);
-    console.log("OTP entered:", enteredOtp);
-    console.log("OTP from signup:", otpFromSignup);
+    const otpToVerify = otpFromSignup || enteredOtp;
+    const cleanEmail = email.toLowerCase().trim().replace(/\s+/g, '');
+
+    const payload = {
+      email: cleanEmail,
+      otp: otpToVerify.toString()
+    };
 
     try {
-      // Use the OTP from signup if available, otherwise use entered OTP
-      const otpToVerify = otpFromSignup || enteredOtp;
-
-      // Clean the email thoroughly
-      const cleanEmail = email.toLowerCase().trim().replace(/\s+/g, '');
-
-      const payload = {
-        email: cleanEmail,
-        otp: otpToVerify.toString()
-      };
-
-      console.log("Final payload being sent:", payload);
-
-      console.log("Sending payload:", payload);
-
-      // Try different endpoints
-      const endpoints = [
-        "/auth/verify-otp/",
-        "/auth/verify/",
-        "/auth/email-verify/",
-        "/auth/activate/",
-        "/users/verify-email/"
-      ];
-
-      let response = null;
-      let lastError = null;
-
-      for (const endpoint of endpoints) {
-        try {
-          console.log(`Trying endpoint: ${endpoint}`);
-
-          response = await api.post(endpoint, payload, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          console.log(`✅ Success with endpoint: ${endpoint}`);
-          break;
-
-        } catch (error) {
-          console.log(`❌ Failed with endpoint ${endpoint}:`, error.response?.data);
-          lastError = error;
-
-          // If 404, try next endpoint
-          if (error.response?.status === 404) continue;
-
-          // If "user not found" with 400, try next endpoint
-          if (error.response?.status === 400 &&
-            error.response?.data?.detail?.toLowerCase().includes('user')) {
-            continue;
-          }
-
-          // Other errors, stop trying
-          break;
-        }
-      }
-
-      if (!response) {
-        throw lastError;
-      }
+      const response = await verifyOtp(payload); // ✅ calling user.service function
 
       setApiResponse(response.data);
       console.log("✅ API Response:", response.data);
 
-      // Check for success - be more flexible with response structure
-      if (response.status === 200 || response.status === 201) {
-        // Look for access token in various possible fields
-        const accessToken = response.data.access ||
-          response.data.access_token ||
-          response.data.token ||
-          response.data.data?.access ||
-          response.data.data?.access_token;
+      const status = response.status;
+      const data = response.data;
+
+      if (status === 200 || status === 201) {
+        const accessToken =
+          data.access ||
+          data.access_token ||
+          data.token ||
+          data.data?.access ||
+          data.data?.access_token;
 
         if (accessToken) {
           localStorage.setItem("access_token", accessToken);
@@ -202,31 +148,24 @@ function Verification() {
           setOtpMessageType("success");
 
           dispatch(setUser({
-            user: response.data.user || response.data.data?.user || null,
+            user: data.user || data.data?.user || null,
             token: accessToken,
           }));
 
-
-          // Navigate after a brief delay to show success message
+          setTimeout(() => {
+            navigate("/plan");
+          }, 1000);
+        } else if (data.success || data.message?.includes("success")) {
+          setOtpMessage("Verification successful!");
+          setOtpMessageType("success");
           setTimeout(() => {
             navigate("/plan");
           }, 1000);
         } else {
-          // Success but no token - might be a different flow
-          console.log("Success response but no access token:", response.data);
-
-          // Check if it's just a success message without token
-          if (response.data.success || response.data.message?.includes("success")) {
-            setOtpMessage("Verification successful!");
-            setOtpMessageType("success");
-            setTimeout(() => {
-              navigate("/plan");
-            }, 1000);
-          } else {
-            setOtpMessage("Verification successful but no access token received.");
-            setOtpMessageType("error");
-          }
+          setOtpMessage("Verification successful but no access token received.");
+          setOtpMessageType("error");
         }
+
       } else {
         setOtpMessage("OTP is invalid or expired.");
         setOtpMessageType("error");
@@ -238,35 +177,34 @@ function Verification() {
       let errorMessage = "OTP verification failed. Please try again.";
 
       if (error.response) {
+        const res = error.response;
+
         console.log("❌ Full Error Response:", {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers
+          status: res.status,
+          data: res.data,
+          headers: res.headers
         });
 
-        // Extract error message from various possible locations
-        if (error.response.data) {
-          errorMessage =
-            error.response.data.detail ||
-            error.response.data.message ||
-            error.response.data.error ||
-            error.response.data.msg ||
-            error.response.data.non_field_errors?.[0] ||
-            (typeof error.response.data === 'string' ? error.response.data : errorMessage);
-        }
+        errorMessage =
+          res.data?.detail ||
+          res.data?.message ||
+          res.data?.error ||
+          res.data?.msg ||
+          res.data?.non_field_errors?.[0] ||
+          (typeof res.data === "string" ? res.data : errorMessage);
 
-        // Handle specific error codes
-        if (error.response.status === 400) {
-          if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('expired')) {
+        if (res.status === 400) {
+          if (errorMessage.toLowerCase().includes("invalid") || errorMessage.toLowerCase().includes("expired")) {
             errorMessage = "Invalid or expired OTP. Please try again.";
-          } else if (errorMessage.toLowerCase().includes('email')) {
+          } else if (errorMessage.toLowerCase().includes("email")) {
             errorMessage = "Email not found. Please check your email address.";
           }
-        } else if (error.response.status === 429) {
+        } else if (res.status === 429) {
           errorMessage = "Too many attempts. Please try again later.";
-        } else if (error.response.status === 500) {
+        } else if (res.status === 500) {
           errorMessage = "Server error. Please try again later.";
         }
+
       } else if (error.request) {
         errorMessage = "Network error. Please check your connection.";
       }
@@ -291,7 +229,7 @@ function Verification() {
         const payload = { email: email.toLowerCase().trim() };
         console.log("Resending OTP for:", payload);
 
-        const response = await api.post("/auth/resend-otp/", payload);
+        const response = await resendOtp(payload); // ✅ Using user service
         setApiResponse(response.data);
         console.log("Resend OTP API Response:", response.data);
 
@@ -312,7 +250,8 @@ function Verification() {
 
         let errorMessage = "Failed to resend OTP. Please try again.";
         if (error.response?.data) {
-          errorMessage = error.response.data.detail ||
+          errorMessage =
+            error.response.data.detail ||
             error.response.data.message ||
             error.response.data.error ||
             errorMessage;
@@ -324,6 +263,7 @@ function Verification() {
       }
     }
   };
+
 
   return (
     <ProcessWrapper>
@@ -358,8 +298,8 @@ function Verification() {
               {otpMessage && (
                 <p
                   className={`text-sm flex items-center gap-1 mt-2 mb-1 ${otpMessageType === "success"
-                      ? "text-green-400"
-                      : "text-red-400"
+                    ? "text-green-400"
+                    : "text-red-400"
                     }`}
                 >
                   {otpMessageType === "success" ? (

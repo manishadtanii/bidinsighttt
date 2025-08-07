@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Search } from "lucide-react";
-import { getNAICSCodes } from "@/services/bid.service";
+import { getNAICSCodes } from "../../services/user.service.js";
 
 const NAICSCode = ({ filters = {}, setFilters = () => {} }) => {
   const [allNAICS, setAllNAICS] = useState([]);

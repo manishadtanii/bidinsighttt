@@ -3,6 +3,7 @@ import API from "../utils/axios.js";
 // utils/bids.js ya jahan bhi rakha ho
 
 
+
 export const getBids = async (queryOrId) => {
   try {
     const token = localStorage.getItem("access_token");
@@ -24,6 +25,9 @@ export const getBids = async (queryOrId) => {
   }
 };
 
+
+
+
 export const getBidCount = async () => {
   try {
     const token = localStorage.getItem("access_token");
@@ -38,32 +42,26 @@ export const getBidCount = async () => {
   }
 };
 
-  export const getUserProfile = async (profileId) => { 
-    try {
-      const token = localStorage.getItem("access_token");
-      const headers = { Authorization: `Bearer ${token}` };
 
-      // If specific ID is passed
-      if (profileId) {
-        const response = await API.get(`/auth/profile/${profileId}/`, { headers });
-        return response.data;
-      }
-      
-      // Default: fetch current user profile
-      const response = await API.get(`/auth/profile/`, { headers });
+
+
+export const getUserProfile = async (profileId) => {
+  try {
+    const token = localStorage.getItem("access_token");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    if (profileId) {
+      const response = await API.get(`/auth/profile/${profileId}/`, { headers });
       return response.data;
-
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      throw error;
     }
+
+    const response = await API.get(`/auth/profile/`, { headers });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
   }
-
-
-
-
-
-
+};
 
 
 
@@ -81,6 +79,8 @@ export const getSavedSearches = async () => {
     throw err;
   }
 };
+
+
 
 export const createSavedSearch = async (body) => {
   const token = localStorage.getItem("access_token");
@@ -102,6 +102,9 @@ export const createSavedSearch = async (body) => {
   }
 };
 
+
+
+
 export const updateSavedSearch = async (id, body) => {
   const token = localStorage.getItem("access_token");
   if (!token) {
@@ -114,7 +117,7 @@ export const updateSavedSearch = async (id, body) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Saved search updated: ----->", res.data);  
+    console.log("Saved search updated: ----->", res.data);
     return res.data;
   } catch (err) {
     console.error("Error updating saved search:", err);
@@ -124,65 +127,3 @@ export const updateSavedSearch = async (id, body) => {
 
 
 
-
-
-
-
-
-
-//for filters
-
-
-export const getUNSPSCCodes = async ({
-  page = 1,
-  pageSize = 20,
-  search = "",
-} = {}) => {
-  try {
-    const params = new URLSearchParams({
-      page,
-      pageSize,
-      search,
-    });
-
-    const res = await API.get(`/bids/unspsc-codes/?${params.toString()}`);
-    return res.data;
-  } catch (err) {
-    console.error("Error fetching UNSPSC codes:", err);
-    throw err;
-  }
-};
-
-export const getAllStates = async () => {
-  try {
-    const response = await API.get("/auth/states/");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching states:", error);
-    throw error;
-  }
-};
-
-export const getSolicitationTypes = async () => {
-  try {
-    const res = await API.get("/bids/solicitation/");
-    console.log(res);
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching solicitation types:", error);
-    throw error;
-  }
-};
-
-export const getNAICSCodes = async () => {
-  try {
-    const response = await API.get("/bids/naics-codes/");
-    return response.data.results || [];
-  } catch (error) {
-    console.error(
-      "Error fetching NAICS codes:",
-      error?.response?.data || error.message
-    );
-    throw new Error("Failed to fetch NAICS codes");
-  }
-};

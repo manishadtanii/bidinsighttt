@@ -11,8 +11,9 @@ import FormSelect from "../components/FormSelect";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import api from "../utils/axios"; // <-- Import your custom axios instance
-import { getAllStates } from "../services/bid.service";
+import { getAllStates } from "../services/user.service";
 import { checkTTLAndClear } from "../utils/ttlCheck";
+import { signupUser } from "../services/user.service";
 
 function CompanyBuild() {
   const location = useLocation();
@@ -22,11 +23,11 @@ function CompanyBuild() {
 
   // Company fields
   const [fields, setFields] = useState(() => {
-  const saved = sessionStorage.getItem("companyBuildFields");
-  const parsed = saved ? JSON.parse(saved) : null;
+    const saved = sessionStorage.getItem("companyBuildFields");
+    const parsed = saved ? JSON.parse(saved) : null;
 
-  return parsed
-    ? {
+    return parsed
+      ? {
         companyName: parsed.companyName || "",
         companyFienOrSsn: parsed.companyFienOrSsn || "",
         companyWebsite: parsed.companyWebsite || "",
@@ -36,7 +37,7 @@ function CompanyBuild() {
         targetContractSize: parsed.targetContractSize || "",
         upload: parsed.upload || null,
       }
-    : {
+      : {
         companyName: "",
         companyFienOrSsn: "",
         companyWebsite: "",
@@ -46,7 +47,7 @@ function CompanyBuild() {
         targetContractSize: "",
         upload: null,
       };
-});
+  });
 
 
   const [touched, setTouched] = useState({
@@ -76,13 +77,13 @@ function CompanyBuild() {
   // State for API states
   const [stateOptions, setStateOptions] = useState([]);
 
-   useEffect(() => {
+  useEffect(() => {
     checkTTLAndClear(navigate);
   }, []);
 
   useEffect(() => {
-  sessionStorage.setItem("companyBuildFields", JSON.stringify(fields));
-}, [fields]);
+    sessionStorage.setItem("companyBuildFields", JSON.stringify(fields));
+  }, [fields]);
 
 
   // Fetch states from API on mount
@@ -260,20 +261,17 @@ function CompanyBuild() {
       });
       if (fields.upload) {
         formData.append("capability_statement", fields.upload); // <-- backend expects this
-      } 
+      }
 
 
       try {
-        const res = await api.post("/auth/signup/", formData);
+        const res = await signupUser(formData);
         console.log("Signup API Response:", res);
 
-        // ✅ Remove saved fields after successful signup
         sessionStorage.removeItem("registerFields");
-        sessionStorage.removeItem("companyBuildFields");  
+        sessionStorage.removeItem("companyBuildFields");
 
-
-        // ✅ Pass OTP to verification page if present in response
-        let otp = res.data && res.data.otp ? res.data.otp : null;
+        let otp = res.data?.otp ?? null;
 
         if ((res.status === 200 || res.status === 201) && otp) {
           navigate("/verification", { state: { email, otp } });
@@ -283,7 +281,6 @@ function CompanyBuild() {
           alert("Signup failed");
         }
       } catch (err) {
-        // Check for email already registered error
         if (
           err.response &&
           err.response.status === 400 &&

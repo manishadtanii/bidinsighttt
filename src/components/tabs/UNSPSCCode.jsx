@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Search } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { getUNSPSCCodes } from "../../services/bid.service.js";
+import { getUNSPSCCodes } from "../../services/user.service.js";
 
-const MOCK_DATA = [
-  { code: "10000000", description: "Live Plant and Animal Material" },
-  { code: "10100000", description: "Live animals" },
-  { code: "10101500", description: "Livestock" },
-  { code: "10101600", description: "Poultry" },
-  { code: "10101700", description: "Aquatic animals" },
-  { code: "11000000", description: "Mineral and Textile Materials" },
-  { code: "11100000", description: "Minerals" },
-  { code: "11101500", description: "Metallic minerals" },
-  { code: "11101600", description: "Non-metallic minerals" },
-  { code: "12000000", description: "Chemical including Bio Chemicals" },
-];
+// const MOCK_DATA = [
+//   { code: "10000000", description: "Live Plant and Animal Material" },
+//   { code: "10100000", description: "Live animals" },
+//   { code: "10101500", description: "Livestock" },
+//   { code: "10101600", description: "Poultry" },
+//   { code: "10101700", description: "Aquatic animals" },
+//   { code: "11000000", description: "Mineral and Textile Materials" },
+//   { code: "11100000", description: "Minerals" },
+//   { code: "11101500", description: "Metallic minerals" },
+//   { code: "11101600", description: "Non-metallic minerals" },
+//   { code: "12000000", description: "Chemical including Bio Chemicals" },
+// ];
 
-const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
+const UNSPSCCode = ({ 
+  filters = {}, 
+  setFilters = () => {}
+}) => {
   const [selected, setSelected] = useState(filters.UNSPSCCode || []);
   const [unspscData, setUnspscData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,14 +63,20 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
     try {
       if (page === 1) setLoading(true);
 
-      const response = await getUNSPSCCodes({
+      const requestParams = {
         page,
         pageSize: 10,
-        search: currentSearch,
-      });
+      };
 
+      // Use 'code' parameter for exact search instead of 'search'
+      if (currentSearch) {
+        requestParams.code = currentSearch; // Changed to 'code' for exact match
+      }
+
+      const response = await getUNSPSCCodes(requestParams);
       const { count, page: currentPage, page_size, total_pages, results } = response;
 
+      // NO SORTING - Use results as they come from API for exact match
       setUnspscData((prevData) =>
         append ? [...prevData, ...results] : results
       );
@@ -82,11 +91,22 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
     } catch (error) {
       console.error("Error fetching UNSPSC codes:", error);
       if (page === 1) {
-        setUnspscData(MOCK_DATA);
+        let filteredMockData = [];
+        
+        if (currentSearch) {
+          // EXACT match only in mock data - no partial matches
+          filteredMockData = MOCK_DATA.filter(item => 
+            item.code === currentSearch // Only exact match
+          );
+        } else {
+          filteredMockData = MOCK_DATA;
+        }
+
+        setUnspscData(filteredMockData);
         setPagination({
-          count: MOCK_DATA.length,
+          count: filteredMockData.length,
           page: 1,
-          page_size: MOCK_DATA.length,
+          page_size: filteredMockData.length,
           total_pages: 1,
           hasMore: false,
         });
@@ -106,6 +126,12 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
     fetchData(1, false, searchTerm);
   }, [searchTerm]);
 
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setSearchTerm(value);
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-between p-10 ps-14 overflow-y-auto">
       <div>
@@ -117,15 +143,23 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
               placeholder="Search by code or description"
               className="w-full px-10 py-2 rounded-full border border-primary outline-none placeholder-gray-500"
               value={searchTerm}
-              onChange={(e) => {
-                setPagination((prev) => ({ ...prev, page: 1 }));
-                setSearchTerm(e.target.value);
-              }}
+              onChange={handleSearchChange}
             />
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
               size={18}
             />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setPagination((prev) => ({ ...prev, page: 1 }));
+                }}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
@@ -142,7 +176,7 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
             {selected.length > 0 && (
               <button
                 onClick={clearAllSelected}
-                className="text-lg underline font-inter"
+                className="text-lg underline font-inter text-blue-500 hover:text-blue-700"
               >
                 Clear All
               </button>
@@ -161,7 +195,7 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
             </div>
             <button
               onClick={() => removeSelected(item.code)}
-              className="text-primary ml-4"
+              className="text-blue-500 ml-4 hover:text-blue-600"
             >
               <Trash2 size={16} />
             </button>
@@ -182,7 +216,12 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
             </div>
           ) : unspscData.length === 0 ? (
             <div className="px-8 py-4 text-center">
-              <div className="text-lg font-inter text-gray-500">No UNSPSC codes available</div>
+              <div className="text-lg font-inter text-gray-500">
+                {searchTerm 
+                  ? "Not Available"
+                  : "No UNSPSC codes available"
+                }
+              </div>
             </div>
           ) : (
             <div id="scrollableDiv" style={{ height: '400px', overflow: 'auto' }}>
@@ -206,10 +245,11 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
               >
                 {unspscData.map((cat) => {
                   const isSelected = selected.some((item) => item.code === cat.code);
+                  
                   return (
                     <label
                       key={cat.code}
-                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-t-[2px] border-[#273BE280]"
+                      className="flex items-center gap-5 py-2 cursor-pointer font-inter px-8 text-xl border-t-[2px] border-[#273BE280] hover:bg-gray-50"
                     >
                       <input
                         type="checkbox"
@@ -217,7 +257,9 @@ const UNSPSCCode = ({ filters = {}, setFilters = () => {} }) => {
                         checked={isSelected}
                         onChange={() => toggleSelect(cat)}
                       />
-                      <div className="font-semibold text-lg">{cat.code}</div>
+                      <div className="font-semibold text-lg">
+                        {cat.code}
+                      </div>
                       <div className="text-[16px]">
                         {cat.description || "No description"}
                       </div>
