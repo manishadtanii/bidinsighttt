@@ -16,7 +16,8 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
-      delay:"200"
+      icon: "/price-1.png",
+      delay: "200",
     },
     {
       title: "Essentials",
@@ -26,7 +27,8 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
-      delay:"300"
+      icon: "/price-2.png",
+      delay: "300",
     },
     {
       title: "A.I. Powerhouse",
@@ -36,10 +38,11 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
-      delay:"400"
+      icon: "/price-3.png",
+      delay: "400",
     },
   ];
-    const plansYear = [
+  const plansYear = [
     {
       title: "Regular",
       price: "400",
@@ -48,6 +51,7 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-1.png",
       delay: "200",
     },
     {
@@ -58,6 +62,7 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-2.png",
       delay: "300",
     },
     {
@@ -68,6 +73,7 @@ function PricingSection() {
         "Lorem ipsum dolor sit amet",
         "Lorem ipsum dolor sit amet",
       ],
+      icon: "/price-3.png",
       delay: "400",
     },
   ];
@@ -83,7 +89,11 @@ function PricingSection() {
       </div>
 
       {/* Toggle */}
-      <div className="bg-blue inline-flex items-center bg-gradient-to-r from-[#0f123f] to-[#131866] p-3 rounded-full mb-12 text-sm" data-aos="fade-up" data-aos-delay="100">
+      <div
+        className="bg-blue inline-flex items-center bg-gradient-to-r from-[#0f123f] to-[#131866] p-3 rounded-full mb-12 text-sm"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
         <button
           onClick={() => setBillingCycle("Annual")}
           className={`px-2 py-4 rounded-full transition ${
@@ -110,7 +120,7 @@ function PricingSection() {
       </div>
 
       {/* Pricing Cards */}
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-center max-w-6xl mx-auto">
         {billingCycle === "Annual"
           ? plans.map((plan, index) => (
               <div
@@ -134,7 +144,11 @@ function PricingSection() {
             ))}
       </div>
 
-      <p className="mt-10 text-[22px]  font-t" data-aos="fade-up" data-aos-delay="300">
+      <p
+        className="mt-10 text-[22px]  font-t"
+        data-aos="fade-up"
+        data-aos-delay="300"
+      >
         Know Everything There Is! <br />
         <Link
           to="/pricing"

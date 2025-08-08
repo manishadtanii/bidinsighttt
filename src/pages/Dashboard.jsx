@@ -19,7 +19,6 @@ import { fetchUserProfile } from "../redux/reducer/profileSlice";
 
 
 function Dashboard() {
-  const data = { title: "Dashboard" };
   const perPage = 25;
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +34,15 @@ function Dashboard() {
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
+  
+  
+  const profile = useSelector((state) => state.profile.profile);
+  // const loading = useSelector((state) => state.profile.loading);
+  console.log(profile);
+  const companyName = profile?.user?.company_name;
+  console.log(companyName)
+  
+  const data = { title: `${companyName} Dashboard` };
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({

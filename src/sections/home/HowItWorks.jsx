@@ -43,7 +43,7 @@ function HowItWorks() {
       para: "Create your free BidInsight account in under two minutes - just your name, email, and a secure password to get started.",
       btnText: "Register/ Login",
       link: "/",
-      img: "work-img.png",
+      img: "work-img-1.png",
     },
     {
       number: "02:",
@@ -51,7 +51,7 @@ function HowItWorks() {
       para: "Choose the subscription tier that fits your needs and enter your payment details securely to unlock full access.",
       btnText: "View Plan",
       link: "/",
-      img: "work-img.png",
+      img: "work-img-2.jpg",
     },
     {
       number: "03:",
@@ -59,7 +59,7 @@ function HowItWorks() {
       para: "Tell us about your business - industry codes, contract history, geographic focus - so we can surface the most relevant opportunities.",
       btnText: "Set Profile",
       link: "/",
-      img: "work-img.png",
+      img: "work-img-3.jpg",
     },
     {
       number: "04:",
@@ -67,17 +67,17 @@ function HowItWorks() {
       para: "Dive into our real-time RFP feed, filter for your targets and submit winning proposals right from your dashboard.",
       btnText: "Go to Bids",
       link: "/",
-      img: "work-img.png",
+      img: "work-img-4.jpg",
     },
   ];
   return (
     <div className="how-it-works">
       <div className="let-show bg-image bg-[url('https://bid-insight.vercel.app/line-bg.png')] relative">
         <div className="container-fixed">
-          <div className="flex flex-col md:flex-row justify-center items-center h-screen gap-4">
+          <div className="flex flex-col max-w-3xl mx-auto justify-center items-center h-screen gap-4">
             <div className="" data-aos="fade-up">
               <Heading
-                textD={"Let’s show you how to"}
+                textD={"From signup to bidding in under 10 minutes"}
                 textAlign={"text-center"}
               />
             </div>
@@ -97,7 +97,7 @@ function HowItWorks() {
                 {item.number}
               </div>
               <div className="work-content grid lg:grid-cols-2 gap-5">
-                <div className="work-img">
+                <div className="work-img rounded-[20px] overflow-hidden">
                   <img src={item.img} alt="" />
                 </div>
                 <div className="work-text">
