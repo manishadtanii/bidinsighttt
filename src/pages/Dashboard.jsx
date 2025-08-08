@@ -47,6 +47,7 @@ function Dashboard() {
     closingDate: { after: "", before: "" },
     solicitationType: [],
     ordering: "closing_date", // 🔥 FIXED: Added default ordering
+    entityType: "",
   });
 
   // 🔥 APPLIED FILTERS - Only these are used for API calls
@@ -59,7 +60,8 @@ function Dashboard() {
     publishedDate: { after: "", before: "" },
     closingDate: { after: "", before: "" },
     solicitationType: [],
-    ordering: "closing_date" // 🔥 FIXED: Added default ordering
+    ordering: "closing_date", // 🔥 FIXED: Added default ordering
+    entityType: "",
   });
 
   const [saveSearchFilters, setSaveSearchFilters] = useState({});
@@ -73,7 +75,7 @@ function Dashboard() {
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
   const { timezone, locationPermission } = useUserTimezone();
-
+  const [entityTypeFilter, setEntityTypeFilter] = useState("");
   useEffect(() => {
     const handlePopState = (e) => {
       window.history.pushState(null, '', window.location.href);
@@ -169,6 +171,7 @@ function Dashboard() {
       publishedDate: { after: "", before: "" },
       closingDate: { after: "", before: "" },
       ordering: "closing_date", // 🔥 FIXED: Added default ordering
+      entityType: "",
     };
 
     if (searchParams.get("bid_type")) {
@@ -227,6 +230,10 @@ function Dashboard() {
       decodedFilters.ordering = searchParams.get("ordering");
     }
 
+    if (searchParams.get("entity_type")) {
+      decodedFilters.entityType = searchParams.get("entity_type");
+    }
+
     return decodedFilters;
   };
 
@@ -279,7 +286,7 @@ function Dashboard() {
     } else if (hasFilterParams) {
       // Subsequent navigation with filters - restore them
       const decodedFilters = decodeUrlToFilters(searchParams);
-      
+
       setFilters(decodedFilters);
       setAppliedFilters(decodedFilters);
     }
@@ -342,6 +349,10 @@ function Dashboard() {
     if (filters.ordering) {
       params.append("ordering", filters.ordering);
     }
+    if (filters.entityType) {
+      params.append("entity_type", filters.entityType);
+    }
+
     console.log(params.toString(), "🔥 Built query string from filters");
     return params.toString();
   };
@@ -372,7 +383,8 @@ function Dashboard() {
         appliedFilters.publishedDate?.after ||
         appliedFilters.publishedDate?.before ||
         appliedFilters.closingDate?.after ||
-        appliedFilters.closingDate?.before;
+        appliedFilters.closingDate?.before ||
+        appliedFilters.entityType;
 
       const filtersToUse = hasActiveFilters
         ? appliedFilters
@@ -393,6 +405,25 @@ function Dashboard() {
       setLoading(false);
     }
   }, [currentPage, navigate, perPage, appliedFilters, dispatch]);
+
+
+  const handleEntityTypeChange = (entityType) => {
+    console.log("🔥 Entity type selected:", entityType);
+
+    const updatedFilters = {
+      ...appliedFilters,
+      entityType: entityType
+    };
+
+    // Update both filter states
+    setFilters(updatedFilters);
+    setAppliedFilters(updatedFilters);
+    setCurrentPage(1); // Reset to first page
+
+    // Build new URL with entity type filter
+    const queryString = buildQueryString(updatedFilters);
+    navigate(`/dashboard?${queryString}`);
+  };
 
 
 
@@ -802,32 +833,6 @@ function Dashboard() {
     setSearchTimeout(newTimeout);
   };
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   const urlInclude = searchParams.get("include");
-
-  //   if (urlInclude && urlInclude.trim() !== "") {
-  //     // Get current filter panel keywords
-  //     const filterKeywords = filters.keyword?.include || [];
-  //     const urlKeywords = urlInclude.split(',');
-
-  //     // Find search term that's not in filter panel
-  //     const searchOnlyTerms = urlKeywords.filter(term =>
-  //       !filterKeywords.includes(term.trim())
-  //     );
-
-  //     // Only populate search if there's a search-only term and it's single
-  //     if (searchOnlyTerms.length === 1) {
-  //       setTopSearchTerm(searchOnlyTerms[0]);
-  //     } else if (searchOnlyTerms.length === 0) {
-  //       setTopSearchTerm(""); // All terms are from filters
-  //     }
-  //   } else {
-  //     setTopSearchTerm(""); // No include parameter
-  //   }
-  // }, [location.search, filters.keyword?.include]);
-
-
 
   useEffect(() => {
     const search = new URLSearchParams(location.search).get("include");
@@ -984,6 +989,8 @@ function Dashboard() {
               <BidTable
                 timezone={userTimezone}
                 bids={bidsInfo?.results || []}
+                onEntityTypeChange={handleEntityTypeChange} // 🔥 ADD THIS
+                currentEntityType={appliedFilters.entityType}
                 totalCount={bidsInfo?.count || 0}
                 currentSortField={appliedFilters.ordering || "closing_date"}
                 currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}

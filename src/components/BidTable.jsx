@@ -736,36 +736,27 @@
 
 
 
-
-
-
-
+// ✅ Updated `BidTable` with Enhanced Entity Type Dropdown UI
 
 import React, {
   useEffect,
   useState,
   useImperativeHandle,
   forwardRef,
+  useRef
 } from "react";
 import { useNavigate } from "react-router-dom";
-// import { utcToZonedTime, format } from 'date-fns-tz';
 
-
-// Helper to format date
-// Helper to format date in user's local timezone
 function formatDate(dateStr) {
   if (!dateStr) return "-";
   const date = new Date(dateStr);
   return date.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' });
 }
 
-// Countdown calculation (local time)
 function getCountdown(closingDateStr) {
   if (!closingDateStr) return "-";
-
   const closingDate = new Date(closingDateStr);
   const now = new Date();
-
   const diffInMs = closingDate.getTime() - now.getTime();
   const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
@@ -775,22 +766,10 @@ function getCountdown(closingDateStr) {
   return `${diffInDays} days`;
 }
 
-
-
-
-
-// Convert rows to CSV
 const convertToCSV = (rows) => {
   if (!rows?.length) return "";
 
-  const headers = [
-    "Jurisdiction",
-    "Bid Name",
-    "Open Date",
-    "Closed Date",
-    "Countdown",
-    "Status",
-  ];
+  const headers = ["Jurisdiction", "Bid Name", "Open Date", "Closed Date", "Countdown", "Status"];
 
   const csvRows = rows.map((bid) => [
     `"${bid.jurisdiction ?? ""}"`,
@@ -804,225 +783,178 @@ const convertToCSV = (rows) => {
   return [headers.join(","), ...csvRows.map((r) => r.join(","))].join("\n");
 };
 
-const BidTable = forwardRef(
-  (
-    {
-      bids = [],
-      totalCount = 0,
-      currentSortField = "",
-      currentSortOrder = "",
-      onSort = () => { },
-    },
-    ref
-  ) => {
-    const navigate = useNavigate();
-    const [data, setData] = useState([]);
+const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "", currentSortOrder = "", onSort = () => {}, onEntityTypeChange = () => {} }, ref) => {
+  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState("Select Entity");
+  const dropdownRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
+    setData([...bids]);
+  }, [bids]);
 
-      setData([...bids]);
-    }, [bids]);
-
-    const handleRowClick = (id) => navigate(`/summary/${id}`);
-
-    const exportToCSV = () => {
-      const csv = convertToCSV(data);
-      const blob = new Blob(["\uFEFF" + csv], {
-        type: "text/csv;charset=utf-8;",
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-      link.href = url;
-      link.setAttribute("download", `bids_export_${timestamp}.csv`);
-      link.click();
-      URL.revokeObjectURL(url);
-    };
-
-    useImperativeHandle(ref, () => ({
-      exportToCSV,
-    }));
-
-    const truncate = (text) =>
-      !text ? "-" : text.length > 30 ? text.slice(0, 30) + "..." : text;
-
-    // Simple sort icon - keep same always, no change on click
-    // Replace getSortIcon function:
-    const getSortIcon = (field) => {
-      const isCurrentField = currentSortField === field || currentSortField === `-${field}`;
-      const isDescending = currentSortField === `-${field}`;
-
-      if (!isCurrentField) {
-        return <span className="ml-2"><i className="fas fa-sort text-white/50 text-xs"></i></span>;
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
       }
-
-      return (
-        <span className="ml-2">
-          <i className={`fas ${isDescending ? 'fa-sort-down' : 'fa-sort-up'} text-white text-xs`}></i>
-        </span>
-      );
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    const handleHeaderClick = (field, e) => {
-      e.stopPropagation(); // prevent row click
-      // console.log(`🔥 Sorting by field: ${field}`);
-      onSort(field);
-    };
+  const handleRowClick = (id) => navigate(`/summary/${id}`);
 
-    // Debug logging
-    // console.log('🔥 BidTable currentSortField:', currentSortField);
-    // console.log('🔥 BidTable data count:', data.length);
+  const exportToCSV = () => {
+    const csv = convertToCSV(data);
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+    link.href = url;
+    link.setAttribute("download", `bids_export_${timestamp}.csv`);
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
-    return (
-      <div className="bid-table rounded-2xl bg-btn text-white my-[50px] shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto">
-        <table className="min-w-full table-auto text-sm text-center">
-          <thead className="sticky top-0 bg-white/5 backdrop-blur-sm">
-            <tr className="text-white/80 text-xs border-b border-white/20">
-              <th className="px-4 py-4 font-inter text-lg">Entity Type</th>
+  useImperativeHandle(ref, () => ({ exportToCSV }));
 
-              {/* Sortable headers with simple up/down icons */}
-              <th
-                className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
-                onClick={(e) => handleHeaderClick("bid_name", e)}
-              >
-                Bid Name {getSortIcon("bid_name")}
-              </th>
+  const truncate = (text) => !text ? "-" : text.length > 30 ? text.slice(0, 30) + "..." : text;
 
-              <th
-                className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
-                onClick={(e) => handleHeaderClick("open_date", e)}
-              >
-                Open Date {getSortIcon("open_date")}
-              </th>
+  const getSortIcon = (field) => {
+    const isCurrentField = currentSortField === field || currentSortField === `-${field}`;
+    const isDescending = currentSortField === `-${field}`;
+    if (!isCurrentField) return <span className="ml-2"><i className="fas fa-sort text-white/50 text-xs"></i></span>;
+    return <span className="ml-2"><i className={`fas ${isDescending ? 'fa-sort-down' : 'fa-sort-up'} text-white text-xs`}></i></span>;
+  };
 
-              <th
-                className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
-                onClick={(e) => handleHeaderClick("closing_date", e)}
-              >
-                Closed Date {getSortIcon("closing_date")}
-              </th>
+  const handleHeaderClick = (field, e) => {
+    e.stopPropagation();
+    onSort(field);
+  };
 
-              {/* Countdown uses closing_date for sorting */}
-              <th
-                className="px-4 py-4 font-inter text-lg cursor-pointer hover:bg-white/10 transition-colors select-none"
-                onClick={(e) => handleHeaderClick("closing_date", e)}
-                title="Sorted by closing date"
-              >
-                Countdown {getSortIcon("closing_date")}
-              </th>
+  const handleEntityTypeClick = (type) => {
+    setSelectedEntity(type);
+    onEntityTypeChange(type === "Select Entity" ? "" : type);
+    setDropdownOpen(false);
+  };
 
-              <th className="px-4 py-4 font-inter text-lg">Status</th>
-              <th className="px-4 py-4 font-inter text-lg text-center">Share</th>
-              <th className="px-4 py-4 font-inter text-lg text-center">Follow</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="px-4 py-8 text-center text-white/60">
-                  No bids found
-                </td>
-              </tr>
-            ) : (
-              data.map((bid) => {
-                const statusLabel = bid.bid_type || "Unknown";
-                const countdownRaw = getCountdown(bid.closing_date);
-                let countdownDisplay = countdownRaw;
+  return (
+    <div className="bid-table rounded-2xl bg-btn text-white my-[50px] shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto">
+      <table className="min-w-full table-auto text-sm text-center">
+        <thead className="sticky top-0 bg-white/5 backdrop-blur-sm">
+          <tr className="text-white/80 text-xs border-b border-white/20">
 
-                const closingDateObj = new Date(bid.closing_date);
-                const today = new Date();
-
-                const isClosingToday =
-                  closingDateObj.getDate() === today.getDate() &&
-                  closingDateObj.getMonth() === today.getMonth() &&
-                  closingDateObj.getFullYear() === today.getFullYear();
-
-                if (statusLabel.toLowerCase() === 'inactive' || bid.status === false || statusLabel.toLowerCase() === 'closed') {
-                  countdownDisplay = "Closed";
-                } else if (isClosingToday) {
-                  countdownDisplay = "Today";
-                } else if (countdownRaw === "Closed") {
-                  countdownDisplay = "Closed";
-                } else if (!["-", "Closed"].includes(countdownRaw)) {
-                  const days = parseInt(countdownRaw.match(/\d+/)?.[0] || "0", 10);
-
-                  if (days <= 0) {
-                    countdownDisplay = "Closed";
-                  } else if (days < 30) {
-                    countdownDisplay = `${days} days`;
-                  } else if (days < 365) {
-                    const months = Math.floor(days / 30);
-                    const remainingDays = days % 30;
-                    countdownDisplay = remainingDays === 0 ? `${months}m` : `${months}mo ${remainingDays}d`;
-                  } else {
-                    const years = Math.floor(days / 365);
-                    const months = Math.floor((days % 365) / 30);
-                    const remainingDays = (days % 365) % 30;
-
-                    const parts = [];
-                    if (years > 0) parts.push(`${years}y`);
-                    if (months > 0) parts.push(`${months}m`);
-                    if (years === 0 && remainingDays > 0) parts.push(`${remainingDays}d`);
-
-                    countdownDisplay = parts.join(" ");
-                  }
-                }
-
-
-                return (
-                  <tr
-                    key={bid.id}
-                    className="border-b border-white/10 hover:bg-white/5 transition cursor-pointer"
-                    onClick={() => handleRowClick(bid.id)}
-                  >
-                    <td className="px-4 py-4 font-semibold font-inter">{truncate(bid.entity_type)}</td>
-                    <td className="px-4 py-4 font-medium font-inter">{truncate(bid.bid_name)}</td>
-                    <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date)}</td>
-                    <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
-                    <td className="px-4 py-4 font-medium font-inter" title={countdownRaw}>
-                      <span className="text-white">
-                        {countdownDisplay}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 font-medium font-inter">{statusLabel}</td>
-                    <td className="btn-box px-4 py-4 text-center">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (navigator.share) {
-                            navigator
-                              .share({
-                                title: `Bid: ${bid.bid_name}`,
-                                text: `Check out this bid from ${bid.jurisdiction}`,
-                                url: `${window.location.origin}/summary/${bid.id}`,
-                              })
-                              .then(() => console.log("Shared successfully!"))
-                              .catch((err) => console.error("Share failed:", err));
-                          } else {
-                            alert("Sharing is not supported on this device.");
-                          }
-                        }}
+            <th className="px-4 py-4 font-inter text-lg relative">
+              <div ref={dropdownRef} className="inline-block text-left">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2  px-3 py-1 rounded-full"
+                >
+                  {selectedEntity} <i className="fas fa-caret-down text-sm"></i>
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute mt-2 w-40 rounded-md bg-white text-black font-medium z-10">
+                    {["Select Entity", "Federal", "State", "Local"].map((type) => (
+                      <div
+                        key={type}
+                        onClick={() => handleEntityTypeClick(type)}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${selectedEntity === type ? 'bg-gray-100 font-semibold' : ''}`}
                       >
-                        <i className="fas fa-share-alt"></i>
-                      </button>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <button>
-                        <i
-                          className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"
-                            }`}
-                        ></i>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-);
+                        {type}
+                      </div>  
+                    ))}
+                  </div>
+                )}
+              </div>
+            </th>
+
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("bid_name", e)}>Bid Name {getSortIcon("bid_name")}</th>
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("open_date", e)}>Open Date {getSortIcon("open_date")}</th>
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)}>Closed Date {getSortIcon("closing_date")}</th>
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)} title="Sorted by closing date">Countdown {getSortIcon("closing_date")}</th>
+            <th className="px-4 py-4 font-inter text-lg">Status</th>
+            <th className="px-4 py-4 font-inter text-lg text-center">Share</th>
+            <th className="px-4 py-4 font-inter text-lg text-center">Follow</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan="8" className="px-4 py-8 text-center text-white/60">No bids found</td>
+            </tr>
+          ) : (
+            data.map((bid) => {
+              const statusLabel = bid.bid_type || "Unknown";
+              const countdownRaw = getCountdown(bid.closing_date);
+              let countdownDisplay = countdownRaw;
+
+              const closingDateObj = new Date(bid.closing_date);
+              const today = new Date();
+              const isClosingToday = closingDateObj.toDateString() === today.toDateString();
+
+              if (statusLabel.toLowerCase() === 'inactive' || bid.status === false || statusLabel.toLowerCase() === 'closed') {
+                countdownDisplay = "Closed";
+              } else if (isClosingToday) {
+                countdownDisplay = "Today";
+              } else if (!["-", "Closed"].includes(countdownRaw)) {
+                const days = parseInt(countdownRaw.match(/\d+/)?.[0] || "0", 10);
+                if (days <= 0) countdownDisplay = "Closed";
+                else if (days < 30) countdownDisplay = `${days} days`;
+                else if (days < 365) {
+                  const months = Math.floor(days / 30);
+                  const remainingDays = days % 30;
+                  countdownDisplay = remainingDays === 0 ? `${months}m` : `${months}mo ${remainingDays}d`;
+                } else {
+                  const years = Math.floor(days / 365);
+                  const months = Math.floor((days % 365) / 30);
+                  const remainingDays = (days % 365) % 30;
+                  const parts = [];
+                  if (years > 0) parts.push(`${years}y`);
+                  if (months > 0) parts.push(`${months}m`);
+                  if (years === 0 && remainingDays > 0) parts.push(`${remainingDays}d`);
+                  countdownDisplay = parts.join(" ");
+                }
+              }
+
+              return (
+                <tr key={bid.id} className="border-b border-white/10 hover:bg-white/5 transition cursor-pointer" onClick={() => handleRowClick(bid.id)}>
+                  <td className="px-4 py-4 font-semibold font-inter">{truncate(bid.entity_type)}</td>
+                  <td className="px-4 py-4 font-medium font-inter">{truncate(bid.bid_name)}</td>
+                  <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.open_date)}</td>
+                  <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
+                  <td className="px-4 py-4 font-medium font-inter" title={countdownRaw}><span className="text-white">{countdownDisplay}</span></td>
+                  <td className="px-4 py-4 font-medium font-inter">{statusLabel}</td>
+                  <td className="btn-box px-4 py-4 text-center">
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      if (navigator.share) {
+                        navigator.share({
+                          title: `Bid: ${bid.bid_name}`,
+                          text: `Check out this bid from ${bid.jurisdiction}`,
+                          url: `${window.location.origin}/summary/${bid.id}`,
+                        }).catch((err) => console.error("Share failed:", err));
+                      } else {
+                        alert("Sharing is not supported on this device.");
+                      }
+                    }}>
+                      <i className="fas fa-share-alt"></i>
+                    </button>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <button>
+                      <i className={`fas ${bid.followed ? "fa-minus-circle" : "fa-plus-circle"}`}></i>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+});
 
 export default BidTable;
