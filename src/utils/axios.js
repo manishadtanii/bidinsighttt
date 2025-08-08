@@ -8,7 +8,7 @@ const baseURL = process.env.NODE_ENV === "production" ? prodBaseURL : devBaseURL
 const token = localStorage.getItem("access_token");
 const instance = axios.create({
   baseURL: baseURL,
-  headers: {
+  headers: {  
     "Content-Type": "multipart/form-data",
     "Authorization": `Bearer ${token}`,
   },

@@ -410,6 +410,9 @@ function Dashboard() {
   // 🔥 FILTER APPLY HANDLER - When filters are applied from FilterPanel
   const handleFiltersApply = (newFilters) => {
     // console.log("🔥 Filters applied from FilterPanel:", newFilters);
+
+    setTopSearchTerm(""); // Clear top search term when filters are applied
+
     setFilters(newFilters);
     setAppliedFilters(newFilters);
     setCurrentPage(1); // Reset to first page
@@ -561,113 +564,228 @@ const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.
     setSidebarToggle(true);
   };
 
+
+
+
+
+
   // 🔥 REAL-TIME SEARCH FUNCTION
-  const handleTopSearch = (searchTerm) => {
-    const cleanedTerm = searchTerm.trim();
+  // const handleTopSearch = (searchTerm) => {
+  //   const cleanedTerm = searchTerm.trim();
 
-    // If empty search, reset to default filters
-    if (!cleanedTerm) {
-      const defaultFilters = {
-        ...appliedFilters,
-        keyword: { include: [], exclude: [] },
-      };
+  //   // If empty search, reset to default filters
+  //   if (!cleanedTerm) {
+  //     const defaultFilters = {
+  //       ...appliedFilters,
+  //       keyword: { include: [], exclude: [] },
+  //     };
 
-      setFilters(defaultFilters);
-      setAppliedFilters(defaultFilters);
-      setCurrentPage(1);
+  //     setFilters(defaultFilters);
+  //     setAppliedFilters(defaultFilters);
+  //     setCurrentPage(1);
 
-      const params = new URLSearchParams();
-      params.append("page", "1");
-      params.append("pageSize", perPage.toString());
-      params.append("bid_type", defaultFilters.status || "Active");
+  //     const params = new URLSearchParams();
+  //     params.append("page", "1");
+  //     params.append("pageSize", perPage.toString());
+  //     params.append("bid_type", defaultFilters.status || "Active");
 
-      const queryString = params.toString();
-      navigate(`/dashboard?${queryString}`);
-      return;
-    }
+  //     const queryString = params.toString();
+  //     navigate(`/dashboard?${queryString}`);
+  //     return;
+  //   }
 
-    // Create updated filters with the search term
-    const updatedFilters = {
+  //   // Create updated filters with the search term
+  //   const updatedFilters = {
+  //     ...appliedFilters,
+  //     keyword: {
+  //       ...appliedFilters.keyword,
+  //       include: [cleanedTerm],
+  //     },
+  //   };
+
+  //   console.log("🔥 Real-time search with term:", cleanedTerm);
+  //   console.log("🔥 Updated filters:", updatedFilters);
+
+  //   // Update both filter states
+  //   setFilters(updatedFilters);
+  //   setAppliedFilters(updatedFilters);
+  //   setCurrentPage(1);
+
+  //   // Build query string with page reset
+  //   const params = new URLSearchParams();
+  //   params.append("page", "1");
+  //   params.append("pageSize", perPage.toString());
+
+  //   if (updatedFilters.status) {
+  //     params.append("bid_type", updatedFilters.status);
+  //   }
+
+  //   if (updatedFilters.location && updatedFilters.location.length > 0) {
+  //     params.append("state", updatedFilters.location.join(","));
+  //   }
+
+  //   if (
+  //     updatedFilters.solicitationType &&
+  //     updatedFilters.solicitationType.length > 0
+  //   ) {
+  //     params.append("solicitation", updatedFilters.solicitationType.join(","));
+  //   }
+
+  //   if (
+  //     updatedFilters.keyword?.include &&
+  //     updatedFilters.keyword.include.length > 0
+  //   ) {
+  //     params.append("include", updatedFilters.keyword.include.join(","));
+  //   }
+
+  //   if (
+  //     updatedFilters.keyword?.exclude &&
+  //     updatedFilters.keyword.exclude.length > 0
+  //   ) {
+  //     params.append("exclude", updatedFilters.keyword.exclude.join(","));
+  //   }
+
+  //   if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
+  //     const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
+  //     params.append("unspsc_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
+  //     const codes = updatedFilters.NAICSCode.map((item) => item.code);
+  //     params.append("naics_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.publishedDate?.after) {
+  //     params.append("open_date_after", updatedFilters.publishedDate.after);
+  //   }
+
+  //   if (updatedFilters.publishedDate?.before) {
+  //     params.append("open_date_before", updatedFilters.publishedDate.before);
+  //   }
+
+  //   if (updatedFilters.closingDate?.after) {
+  //     params.append("closing_date_after", updatedFilters.closingDate.after);
+  //   }
+
+  //   if (updatedFilters.closingDate?.before) {
+  //     params.append("closing_date_before", updatedFilters.closingDate.before);
+  //   }
+
+  //   const queryString = params.toString();
+  //   console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
+
+  //   navigate(`/dashboard?${queryString}`);
+  // };
+
+
+
+const handleTopSearch = (searchTerm) => {
+  const cleanedTerm = searchTerm.trim();
+
+  // If empty search, reset to filters without search keywords
+  if (!cleanedTerm) {
+    const defaultFilters = {
       ...appliedFilters,
-      keyword: {
-        ...appliedFilters.keyword,
-        include: [cleanedTerm],
+      keyword: { 
+        include: appliedFilters.keyword?.include?.filter(term => 
+          // Keep only filter panel keywords, remove search terms
+          filters.keyword?.include?.includes(term)
+        ) || [], 
+        exclude: appliedFilters.keyword?.exclude || [] 
       },
     };
 
-    console.log("🔥 Real-time search with term:", cleanedTerm);
-    console.log("🔥 Updated filters:", updatedFilters);
-
-    // Update both filter states
-    setFilters(updatedFilters);
-    setAppliedFilters(updatedFilters);
+    // Don't update filter panel state, only applied filters
+    setAppliedFilters(defaultFilters);
     setCurrentPage(1);
 
-    // Build query string with page reset
-    const params = new URLSearchParams();
-    params.append("page", "1");
-    params.append("pageSize", perPage.toString());
-
-    if (updatedFilters.status) {
-      params.append("bid_type", updatedFilters.status);
-    }
-
-    if (updatedFilters.location && updatedFilters.location.length > 0) {
-      params.append("state", updatedFilters.location.join(","));
-    }
-
-    if (
-      updatedFilters.solicitationType &&
-      updatedFilters.solicitationType.length > 0
-    ) {
-      params.append("solicitation", updatedFilters.solicitationType.join(","));
-    }
-
-    if (
-      updatedFilters.keyword?.include &&
-      updatedFilters.keyword.include.length > 0
-    ) {
-      params.append("include", updatedFilters.keyword.include.join(","));
-    }
-
-    if (
-      updatedFilters.keyword?.exclude &&
-      updatedFilters.keyword.exclude.length > 0
-    ) {
-      params.append("exclude", updatedFilters.keyword.exclude.join(","));
-    }
-
-    if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
-      const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
-      params.append("unspsc_codes", codes.join(","));
-    }
-
-    if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
-      const codes = updatedFilters.NAICSCode.map((item) => item.code);
-      params.append("naics_codes", codes.join(","));
-    }
-
-    if (updatedFilters.publishedDate?.after) {
-      params.append("open_date_after", updatedFilters.publishedDate.after);
-    }
-
-    if (updatedFilters.publishedDate?.before) {
-      params.append("open_date_before", updatedFilters.publishedDate.before);
-    }
-
-    if (updatedFilters.closingDate?.after) {
-      params.append("closing_date_after", updatedFilters.closingDate.after);
-    }
-
-    if (updatedFilters.closingDate?.before) {
-      params.append("closing_date_before", updatedFilters.closingDate.before);
-    }
-
-    const queryString = params.toString();
-    console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
-
+    const queryString = buildQueryString(defaultFilters);
     navigate(`/dashboard?${queryString}`);
+    return;
+  }
+
+  // Create updated filters with search term + existing filter keywords
+  const existingFilterKeywords = filters.keyword?.include || [];
+  const updatedFilters = {
+    ...appliedFilters,
+    keyword: {
+      include: [...existingFilterKeywords, cleanedTerm], // Combine filter keywords + search
+      exclude: appliedFilters.keyword?.exclude || []
+    },
   };
+
+  console.log("🔥 Real-time search with term:", cleanedTerm);
+  console.log("🔥 Updated filters:", updatedFilters);
+
+  // Update only applied filters, not filter panel state
+  setAppliedFilters(updatedFilters);
+  setCurrentPage(1);
+
+  // Build query string manually
+  const params = new URLSearchParams();
+  params.append("page", "1");
+  params.append("pageSize", perPage.toString());
+
+  if (updatedFilters.status) {
+    params.append("bid_type", updatedFilters.status);
+  }
+
+  if (updatedFilters.location && updatedFilters.location.length > 0) {
+    params.append("state", updatedFilters.location.join(","));
+  }
+
+  if (updatedFilters.solicitationType && updatedFilters.solicitationType.length > 0) {
+    params.append("solicitation", updatedFilters.solicitationType.join(","));
+  }
+
+  if (updatedFilters.keyword?.include && updatedFilters.keyword.include.length > 0) {
+    params.append("include", updatedFilters.keyword.include.join(","));
+  }
+
+  if (updatedFilters.keyword?.exclude && updatedFilters.keyword.exclude.length > 0) {
+    params.append("exclude", updatedFilters.keyword.exclude.join(","));
+  }
+
+  if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
+    const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
+    params.append("unspsc_codes", codes.join(","));
+  }
+
+  if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
+    const codes = updatedFilters.NAICSCode.map((item) => item.code);
+    params.append("naics_codes", codes.join(","));
+  }
+
+  if (updatedFilters.publishedDate?.after) {
+    params.append("open_date_after", updatedFilters.publishedDate.after);
+  }
+
+  if (updatedFilters.publishedDate?.before) {
+    params.append("open_date_before", updatedFilters.publishedDate.before);
+  }
+
+  if (updatedFilters.closingDate?.after) {
+    params.append("closing_date_after", updatedFilters.closingDate.after);
+  }
+
+  if (updatedFilters.closingDate?.before) {
+    params.append("closing_date_before", updatedFilters.closingDate.before);
+  }
+
+  if (updatedFilters.ordering) {
+    params.append("ordering", updatedFilters.ordering);
+  }
+
+  const queryString = params.toString();
+  console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
+
+  navigate(`/dashboard?${queryString}`);
+};
+
+
+
+
+
 
   // 🔥 DEBOUNCED SEARCH HANDLER
   const handleSearchInputChange = (e) => {
@@ -688,12 +806,29 @@ const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.
   };
 
   useEffect(() => {
-    const search = new URLSearchParams(location.search).get("include");
-    if (search && search.trim !== "") {
-      setTopSearchTerm(search);
+  const searchParams = new URLSearchParams(location.search);
+  const urlInclude = searchParams.get("include");
+  
+  if (urlInclude && urlInclude.trim() !== "") {
+    // Get current filter panel keywords
+    const filterKeywords = filters.keyword?.include || [];
+    const urlKeywords = urlInclude.split(',');
+    
+    // Find search term that's not in filter panel
+    const searchOnlyTerms = urlKeywords.filter(term => 
+      !filterKeywords.includes(term.trim())
+    );
+    
+    // Only populate search if there's a search-only term and it's single
+    if (searchOnlyTerms.length === 1) {
+      setTopSearchTerm(searchOnlyTerms[0]);
+    } else if (searchOnlyTerms.length === 0) {
+      setTopSearchTerm(""); // All terms are from filters
     }
-    // console.log(search);
-  }, [location.search])
+  } else {
+    setTopSearchTerm(""); // No include parameter
+  }
+}, [location.search, filters.keyword?.include]);
 
 
 
