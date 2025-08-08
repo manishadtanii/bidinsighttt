@@ -28,17 +28,13 @@ function Dashboard() {
   const dispatch = useDispatch();
   const { bidsInfo } = useSelector((state) => state.bids);
   const { savedSearches } = useSelector((state) => state.savedSearches);
-
   const { timezone: userTimezone } = useUserTimezone();
-
-
   // Add debugging to see the full state structure
   console.log("🔥 Full Redux State:", useSelector((state) => state));
   console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
-
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
@@ -76,7 +72,6 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
-
   const { timezone, locationPermission } = useUserTimezone();
 
   useEffect(() => {
@@ -93,14 +88,11 @@ function Dashboard() {
     };
   }, []);
 
-
   useEffect(() => {
     console.log("Current Timezone:", timezone);
     console.log("Location Permission:", locationPermission);
     // Use timezone in your logic here...
   }, [timezone, locationPermission]);
-
-
 
   useEffect(() => {
     const fetchBidCount = async () => {
@@ -353,7 +345,7 @@ function Dashboard() {
     if (filters.ordering) {
       params.append("ordering", filters.ordering);
     }
-
+      console.log(params.toString(), "🔥 Built query string from filters");
     return params.toString();
   };
 
@@ -395,6 +387,7 @@ function Dashboard() {
       console.log("🔥 Fetching bids with query:", queryString);
 
       const res = await getBids(`?${queryString}`);
+      console.log(res, "🔥 Fetched bids data");
       dispatch(setBids(res));
     } catch (err) {
       console.error("Failed to fetch bids:", err);
@@ -511,10 +504,12 @@ function Dashboard() {
       if (!token) return;
 
       const matched = savedSearches.find((item) => item.id === searchId);
+      console.log(matched.query_string, "🔥 Matched saved search");
       if (!matched) return;
 
       const urlParams = new URLSearchParams(matched.query_string);
       const decodedFilters = decodeUrlToFilters(urlParams);
+      console.log(decodedFilters, "🔥 Decoded filters from saved search");
 
       setSelectedSavedSearch({ id: matched.id, name: matched.name });
       setSaveSearchFilters(matched.query_string);
@@ -523,7 +518,12 @@ function Dashboard() {
       setCurrentPage(1);
       setTopSearchTerm(""); // Clear search input
 
-      const fullURL = `/dashboard?page=1&pageSize=25${matched.query_string}&id=${matched.id}`;
+      let cleanQueryString = matched.query_string;
+if (cleanQueryString.startsWith('?')) {
+  cleanQueryString = cleanQueryString.substring(1);
+}
+
+const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
       navigate(fullURL);
     } catch (err) {
       console.error("Failed to load saved search filters", err);
@@ -682,7 +682,7 @@ function Dashboard() {
     // Set new timeout for debounced search
     const newTimeout = setTimeout(() => {
       handleTopSearch(value);
-    }, 500); // 500ms delay
+    }, 500); 
 
     setSearchTimeout(newTimeout);
   };
@@ -732,9 +732,6 @@ function Dashboard() {
           <div className="dashboard-header flex justify-between items-center">
             <HeroHeading
               data={data}
-            // profileBids={profileBids}
-            // profileLoading={profileLoading}
-            // profileError={profileError}
             />
             <div className="flex items-center gap-[15px]">
               <span className="font-inter text-[#DBDBDB]">Alert</span>
