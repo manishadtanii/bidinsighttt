@@ -28,17 +28,13 @@ function Dashboard() {
   const dispatch = useDispatch();
   const { bidsInfo } = useSelector((state) => state.bids);
   const { savedSearches } = useSelector((state) => state.savedSearches);
-
   const { timezone: userTimezone } = useUserTimezone();
-
-
   // Add debugging to see the full state structure
   console.log("🔥 Full Redux State:", useSelector((state) => state));
   console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
-
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
@@ -76,7 +72,6 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
-
   const { timezone, locationPermission } = useUserTimezone();
 
   useEffect(() => {
@@ -93,14 +88,11 @@ function Dashboard() {
     };
   }, []);
 
-
   useEffect(() => {
     console.log("Current Timezone:", timezone);
     console.log("Location Permission:", locationPermission);
     // Use timezone in your logic here...
   }, [timezone, locationPermission]);
-
-
 
   useEffect(() => {
     const fetchBidCount = async () => {
@@ -287,10 +279,7 @@ function Dashboard() {
     } else if (hasFilterParams) {
       // Subsequent navigation with filters - restore them
       const decodedFilters = decodeUrlToFilters(searchParams);
-      // console.log(
-      //   "🔥 Navigation detected - restoring filters:",
-      //   decodedFilters
-      // );
+      
       setFilters(decodedFilters);
       setAppliedFilters(decodedFilters);
     }
@@ -353,7 +342,7 @@ function Dashboard() {
     if (filters.ordering) {
       params.append("ordering", filters.ordering);
     }
-
+    console.log(params.toString(), "🔥 Built query string from filters");
     return params.toString();
   };
 
@@ -395,6 +384,7 @@ function Dashboard() {
       console.log("🔥 Fetching bids with query:", queryString);
 
       const res = await getBids(`?${queryString}`);
+      console.log(res, "🔥 Fetched bids data");
       dispatch(setBids(res));
     } catch (err) {
       console.error("Failed to fetch bids:", err);
@@ -417,6 +407,9 @@ function Dashboard() {
   // 🔥 FILTER APPLY HANDLER - When filters are applied from FilterPanel
   const handleFiltersApply = (newFilters) => {
     // console.log("🔥 Filters applied from FilterPanel:", newFilters);
+
+    // setTopSearchTerm(""); // Clear top search term when filters are applied
+
     setFilters(newFilters);
     setAppliedFilters(newFilters);
     setCurrentPage(1); // Reset to first page
@@ -511,10 +504,12 @@ function Dashboard() {
       if (!token) return;
 
       const matched = savedSearches.find((item) => item.id === searchId);
+      console.log(matched.query_string, "🔥 Matched saved search");
       if (!matched) return;
 
       const urlParams = new URLSearchParams(matched.query_string);
       const decodedFilters = decodeUrlToFilters(urlParams);
+      console.log(decodedFilters, "🔥 Decoded filters from saved search");
 
       setSelectedSavedSearch({ id: matched.id, name: matched.name });
       setSaveSearchFilters(matched.query_string);
@@ -523,7 +518,12 @@ function Dashboard() {
       setCurrentPage(1);
       setTopSearchTerm(""); // Clear search input
 
-      const fullURL = `/dashboard?page=1&pageSize=25${matched.query_string}&id=${matched.id}`;
+      let cleanQueryString = matched.query_string;
+      if (cleanQueryString.startsWith('?')) {
+        cleanQueryString = cleanQueryString.substring(1);
+      }
+
+      const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
       navigate(fullURL);
     } catch (err) {
       console.error("Failed to load saved search filters", err);
@@ -560,6 +560,11 @@ function Dashboard() {
     setActiveFilterTab("Status");
     setSidebarToggle(true);
   };
+
+
+
+
+
 
   // 🔥 REAL-TIME SEARCH FUNCTION
   const handleTopSearch = (searchTerm) => {
@@ -669,6 +674,116 @@ function Dashboard() {
     navigate(`/dashboard?${queryString}`);
   };
 
+
+
+  // const handleTopSearch = (searchTerm) => {
+  //   const cleanedTerm = searchTerm.trim();
+
+  //   // If empty search, reset to filters without search keywords
+  //   if (!cleanedTerm) {
+  //     const defaultFilters = {
+  //       ...appliedFilters,
+  //       keyword: {
+  //         include: appliedFilters.keyword?.include?.filter(term =>
+  //           // Keep only filter panel keywords, remove search terms
+  //           filters.keyword?.include?.includes(term)
+  //         ) || [],
+  //         exclude: appliedFilters.keyword?.exclude || []
+  //       },
+  //     };
+
+  //     // Don't update filter panel state, only applied filters
+  //     setAppliedFilters(defaultFilters);
+  //     setCurrentPage(1);
+
+  //     const queryString = buildQueryString(defaultFilters);
+  //     navigate(`/dashboard?${queryString}`);
+  //     return;
+  //   }
+
+  //   // Create updated filters with search term + existing filter keywords
+  //   const existingFilterKeywords = filters.keyword?.include || [];
+  //   const updatedFilters = {
+  //     ...appliedFilters,
+  //     keyword: {
+  //       include: [...existingFilterKeywords, cleanedTerm], // Combine filter keywords + search
+  //       exclude: appliedFilters.keyword?.exclude || []
+  //     },
+  //   };
+
+  //   console.log("🔥 Real-time search with term:", cleanedTerm);
+  //   console.log("🔥 Updated filters:", updatedFilters);
+
+  //   // Update only applied filters, not filter panel state
+  //   setAppliedFilters(updatedFilters);
+  //   setCurrentPage(1);
+
+  //   // Build query string manually
+  //   const params = new URLSearchParams();
+  //   params.append("page", "1");
+  //   params.append("pageSize", perPage.toString());
+
+  //   if (updatedFilters.status) {
+  //     params.append("bid_type", updatedFilters.status);
+  //   }
+
+  //   if (updatedFilters.location && updatedFilters.location.length > 0) {
+  //     params.append("state", updatedFilters.location.join(","));
+  //   }
+
+  //   if (updatedFilters.solicitationType && updatedFilters.solicitationType.length > 0) {
+  //     params.append("solicitation", updatedFilters.solicitationType.join(","));
+  //   }
+
+  //   if (updatedFilters.keyword?.include && updatedFilters.keyword.include.length > 0) {
+  //     params.append("include", updatedFilters.keyword.include.join(","));
+  //   }
+
+  //   if (updatedFilters.keyword?.exclude && updatedFilters.keyword.exclude.length > 0) {
+  //     params.append("exclude", updatedFilters.keyword.exclude.join(","));
+  //   }
+
+  //   if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
+  //     const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
+  //     params.append("unspsc_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
+  //     const codes = updatedFilters.NAICSCode.map((item) => item.code);
+  //     params.append("naics_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.publishedDate?.after) {
+  //     params.append("open_date_after", updatedFilters.publishedDate.after);
+  //   }
+
+  //   if (updatedFilters.publishedDate?.before) {
+  //     params.append("open_date_before", updatedFilters.publishedDate.before);
+  //   }
+
+  //   if (updatedFilters.closingDate?.after) {
+  //     params.append("closing_date_after", updatedFilters.closingDate.after);
+  //   }
+
+  //   if (updatedFilters.closingDate?.before) {
+  //     params.append("closing_date_before", updatedFilters.closingDate.before);
+  //   }
+
+  //   if (updatedFilters.ordering) {
+  //     params.append("ordering", updatedFilters.ordering);
+  //   }
+
+  //   const queryString = params.toString();
+  //   console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
+
+  //   navigate(`/dashboard?${queryString}`);
+  // };
+
+
+
+
+
+
   // 🔥 DEBOUNCED SEARCH HANDLER
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
@@ -682,10 +797,37 @@ function Dashboard() {
     // Set new timeout for debounced search
     const newTimeout = setTimeout(() => {
       handleTopSearch(value);
-    }, 500); // 500ms delay
+    }, 500);
 
     setSearchTimeout(newTimeout);
   };
+
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(location.search);
+  //   const urlInclude = searchParams.get("include");
+
+  //   if (urlInclude && urlInclude.trim() !== "") {
+  //     // Get current filter panel keywords
+  //     const filterKeywords = filters.keyword?.include || [];
+  //     const urlKeywords = urlInclude.split(',');
+
+  //     // Find search term that's not in filter panel
+  //     const searchOnlyTerms = urlKeywords.filter(term =>
+  //       !filterKeywords.includes(term.trim())
+  //     );
+
+  //     // Only populate search if there's a search-only term and it's single
+  //     if (searchOnlyTerms.length === 1) {
+  //       setTopSearchTerm(searchOnlyTerms[0]);
+  //     } else if (searchOnlyTerms.length === 0) {
+  //       setTopSearchTerm(""); // All terms are from filters
+  //     }
+  //   } else {
+  //     setTopSearchTerm(""); // No include parameter
+  //   }
+  // }, [location.search, filters.keyword?.include]);
+
+
 
   useEffect(() => {
     const search = new URLSearchParams(location.search).get("include");
@@ -694,8 +836,6 @@ function Dashboard() {
     }
     // console.log(search);
   }, [location.search])
-
-
 
 
 
@@ -732,9 +872,6 @@ function Dashboard() {
           <div className="dashboard-header flex justify-between items-center">
             <HeroHeading
               data={data}
-            // profileBids={profileBids}
-            // profileLoading={profileLoading}
-            // profileError={profileError}
             />
             <div className="flex items-center gap-[15px]">
               <span className="font-inter text-[#DBDBDB]">Alert</span>

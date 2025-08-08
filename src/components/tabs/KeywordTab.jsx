@@ -6,10 +6,6 @@ function KeywordTab({filters = {}, setFilters = () => {}}) {
   const [includeKeywords, setIncludeKeywords] = useState([]);
   const [excludeKeywords, setExcludeKeywords] = useState([]);
 
-  // Reference/example tags for user guidance
-  // const includeReferenceTags = ["government contracts", "software development"];
-  // const excludeReferenceTags = ["international", "classified"];
-
   const handleIncludeChange = useCallback((tags) => {
     setIncludeKeywords(tags);
     setFilters(prevFilters => ({
@@ -23,7 +19,7 @@ function KeywordTab({filters = {}, setFilters = () => {}}) {
 
   const handleExcludeChange = useCallback((tags) => {
     setExcludeKeywords(tags);
-    setFilters(prevFilters => ({
+    setFilters(prevFilters => ({  
       ...prevFilters,
       keyword: {
         ...prevFilters.keyword,

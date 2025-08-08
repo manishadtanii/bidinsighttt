@@ -73,6 +73,7 @@ export const getSavedSearches = async () => {
     const res = await API.get("/bids/saved-filters/", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log(res.data, "🔥 Saved searches fetched");
     return res.data;
   } catch (err) {
     console.error("Error fetching saved searches:", err);
