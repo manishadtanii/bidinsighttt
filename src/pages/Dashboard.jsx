@@ -39,10 +39,10 @@ function Dashboard() {
   const profile = useSelector((state) => state.profile.profile);
   // const loading = useSelector((state) => state.profile.loading);
   console.log(profile);
-  const companyName = profile?.user?.company_name;
-  console.log(companyName)
-  
-  const data = { title: `${companyName.toUpperCase()}'s Dashboard` };
+  const companyName = profile?.company_name || "";
+  const formattedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+  console.log("🔥 Formatted Name:", formattedName);  
+  const data = { title: `${formattedName}'s Dashboard` };
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({

@@ -11,6 +11,15 @@ export const signupUser = async (formData) => {
   }
 };
 
+export const validateEmailAPI = async (email) => {
+  try {
+    const response = await API.post("/auth/validate-email/", { email });
+    return response.data; // ✅ Return the data directly
+  } catch (error) {
+    console.error("Error validating email:", error);
+  }
+}
+
 
 
 export const verifyOtp = async (payload) => {
@@ -129,5 +138,20 @@ export const getNAICSCodes = async () => {
       error?.response?.data || error.message
     );
     throw new Error("Failed to fetch NAICS codes");
+  }
+};
+
+
+export const fetchIndustryCategories = async () => {
+  try {
+    const { data } = await API.get("/auth/industries/");
+    console.log("Industry categories fetched:", data?.results || []);
+    return data?.results || [];
+  } catch (error) {
+    console.error(
+      "Error fetching industry categories:",
+      error?.response?.data || error.message
+    );
+    return []; // Return empty array instead of throwing, to prevent UI crash
   }
 };

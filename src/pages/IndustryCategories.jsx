@@ -9,11 +9,13 @@ import FormRadio2 from "../components/FormRadio2";
 import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { checkTTLAndClear } from "../utils/ttlCheck";
+import { fetchIndustryCategories } from "../services/user.service";
 
 function IndustryCategories() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
+  // Static data configurations
   const data = {
     title: "Your Industry Focus",
     para: "Pick sectors where you excel. Our AI will learn your sweet spots!",
@@ -45,74 +47,131 @@ function IndustryCategories() {
     },
   };
 
-  const allIndustries = [
-    "Agriculture, Forestry, Fishing and Hunting",
-    "Mining, Quarrying, Oil and Gas Extraction",
-    "Utilities",
-    "Construction",
-    "Manufacturing",
-    "Wholesale Trade",
-    "Information Technology",
-    "Health Care and Social Assistance",
-    "Finance and Insurance",
-    "Real Estate and Rental Leasing",
-    "Education Services",
-    "Transportation and Warehousing",
-    "Retail Trade",
-    "Professional, Scientific, and Technical Services",
-    "Arts, Entertainment, and Recreation",
-    "Accommodation and Food Services",
-    "Administrative and Support Services",
-    "Public Administration",
-    "Other Services (except Public Administration)",
-  ];
-
+  // State management
+  const [allIndustries, setAllIndustries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [showValidation, setShowValidation] = useState(false);
   const [skipClicked, setSkipClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-   useEffect(() => {
-      checkTTLAndClear(navigate);
-    }, []);
+  // Initial setup and data fetching
+  useEffect(() => {
+    checkTTLAndClear(navigate);
+    loadIndustryCategories();
+  }, []);
 
-  // 🔹 Load industry selection from sessionStorage on mount
-useEffect(() => {
-  const saved = sessionStorage.getItem("onboardingForm");
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    if (parsed.industry && parsed.industry.selectedIndustry) {
-      setSelectedIndustry(parsed.industry.selectedIndustry);
+  // Load industry categories from API
+  const loadIndustryCategories = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const industries = await fetchIndustryCategories();
+      
+      if (Array.isArray(industries) && industries.length > 0) {
+        // Extract industry names or use the full object based on API response structure
+        const industryNames = industries.map(industry => 
+          typeof industry === 'string' ? industry : industry.name || industry.title || industry
+        );
+        setAllIndustries(industryNames);
+      } else {
+        // Fallback to static data if API returns empty or invalid data
+        setAllIndustries([
+          "Agriculture, Forestry, Fishing and Hunting",
+          "Mining, Quarrying, Oil and Gas Extraction",
+          "Utilities",
+          "Construction",
+          "Manufacturing",
+          "Wholesale Trade",
+          "Information Technology",
+          "Health Care and Social Assistance",
+          "Finance and Insurance",
+          "Real Estate and Rental Leasing",
+          "Education Services",
+          "Transportation and Warehousing",
+          "Retail Trade",
+          "Professional, Scientific, and Technical Services",
+          "Arts, Entertainment, and Recreation",
+          "Accommodation and Food Services",
+          "Administrative and Support Services",
+          "Public Administration",
+          "Other Services (except Public Administration)",
+        ]);
+      }
+    } catch (err) {
+      console.error("Failed to load industry categories:", err);
+      setError("Failed to load industries. Using default categories.");
+      
+      // Use fallback static data on error
+      setAllIndustries([
+        "Agriculture, Forestry, Fishing and Hunting",
+        "Mining, Quarrying, Oil and Gas Extraction",
+        "Utilities",
+        "Construction",
+        "Manufacturing",
+        "Wholesale Trade",
+        "Information Technology",
+        "Health Care and Social Assistance",
+        "Finance and Insurance",
+        "Real Estate and Rental Leasing",
+        "Education Services",
+        "Transportation and Warehousing",
+        "Retail Trade",
+        "Professional, Scientific, and Technical Services",
+        "Arts, Entertainment, and Recreation",
+        "Accommodation and Food Services",
+        "Administrative and Support Services",
+        "Public Administration",
+        "Other Services (except Public Administration)",
+      ]);
+    } finally {
+      setIsLoading(false);
     }
-  }
-}, []);
-  
-
-
-useEffect(() => {
-  if (skipClicked) return; // don't save if skipped
-
-  const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
-  const updated = {
-    ...prev,
-    industry: {
-      selectedIndustry,
-    },
   };
 
-  sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
-}, [selectedIndustry, skipClicked]);
+  // Load saved industry selection from sessionStorage on mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem("onboardingForm");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.industry && parsed.industry.selectedIndustry) {
+          setSelectedIndustry(parsed.industry.selectedIndustry);
+        }
+      } catch (err) {
+        console.error("Error parsing saved form data:", err);
+      }
+    }
+  }, []);
 
+  // Save to sessionStorage whenever selection changes
+  useEffect(() => {
+    if (skipClicked || !selectedIndustry) return;
 
+    try {
+      const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+      const updated = {
+        ...prev,
+        industry: {
+          selectedIndustry,
+        },
+      };
+      sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
+    } catch (err) {
+      console.error("Error saving form data:", err);
+    }
+  }, [selectedIndustry, skipClicked]);
 
-
+  // Filter industries based on search term
   const filteredIndustries = useMemo(() => {
     if (!searchTerm) return allIndustries.slice(0, 6);
-    return allIndustries.filter((ind) =>
-      ind.toLowerCase().includes(searchTerm.toLowerCase())
+    return allIndustries.filter((industry) =>
+      industry.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, allIndustries]);
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     setShowValidation(true);
@@ -124,16 +183,47 @@ useEffect(() => {
     }
   };
 
+  // Handle skip action
   const handleSkip = () => {
-  setSkipClicked(true);
+    setSkipClicked(true);
 
-  const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
-  delete prev.industry; // remove just this step's data
-  sessionStorage.setItem("onboardingForm", JSON.stringify(prev));
+    try {
+      const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+      delete prev.industry; // Remove just this step's data
+      sessionStorage.setItem("onboardingForm", JSON.stringify(prev));
+    } catch (err) {
+      console.error("Error updating form data on skip:", err);
+    }
 
-  navigate("/help-our-ai");
-};
+    navigate("/help-our-ai");
+  };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <ProcessWrapper>
+        <div className="form-left">
+          <div className="pe-3 flex flex-col justify-between h-full">
+            <div>
+              <FormHeader {...formHeader} />
+              <HeroHeading data={data} />
+            </div>
+            
+            <div className="forn-container flex flex-col h-full justify-center items-center">
+              <div className="text-white text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p className="text-lg">Loading industries...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="sticky top-0">
+          <FormImg src={"industry-categories.png"} />
+        </div>
+      </ProcessWrapper>
+    );
+  }
 
   return (
     <ProcessWrapper>
@@ -146,9 +236,17 @@ useEffect(() => {
 
           <form
             className="forn-container flex flex-col h-full justify-between"
-            onSubmit={handleSubmit} // ✅ handled properly
+            onSubmit={handleSubmit}
           >
             <div>
+              {/* Error message if API failed */}
+              {error && (
+                <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500 rounded-lg text-yellow-300 text-sm">
+                  <i className="fal fa-exclamation-triangle mr-2"></i>
+                  {error}
+                </div>
+              )}
+
               {/* Search Input */}
               <div className="mb-6 relative">
                 <input
@@ -167,13 +265,13 @@ useEffect(() => {
                 {searchTerm ? "Search Results" : "Popular Industries"}
               </div>
 
-              {/* Grid */}
+              {/* Industry Grid */}
               <div className="forn-container h-[400px] pe-2 overflow-y-auto">
                 {filteredIndustries.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {filteredIndustries.map((industry, i) => (
                       <FormRadio2
-                        key={i}
+                        key={`${industry}-${i}`} // Better key for dynamic data
                         label={industry}
                         name="industry"
                         value={industry}
@@ -184,7 +282,9 @@ useEffect(() => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-white text-sm">No industries found.</div>
+                  <div className="text-white text-sm text-center py-8">
+                    {searchTerm ? "No industries found matching your search." : "No industries available."}
+                  </div>
                 )}
               </div>
 
@@ -204,10 +304,10 @@ useEffect(() => {
               )}
             </div>
 
-            {/* Footer with button type="submit" */}
+            {/* Footer with submit button */}
             <FormFooter
               data={formFooter}
-              onSkipClick={handleSkip} // no need anymore, submit is handled above
+              onSkipClick={handleSkip}
             />
           </form>
         </div>
