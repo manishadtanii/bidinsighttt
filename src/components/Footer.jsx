@@ -57,7 +57,7 @@ const Footer = () => {
               to="/terms"
               className="hover:text-white mb-2 md:mb-0 font-t text-lg"
             >
-              Terms & Condition
+              Terms & Conditions
             </Link>
             <span className="text-center font-t text-lg">
               @2025 BidInsight - All Rights Reserved
