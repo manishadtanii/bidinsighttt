@@ -7,6 +7,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import BidTableSkeleton from "./components/shimmereffects/BidTableSkeleton";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
+import IndustryCategoriesSkeletonLeft from "./components/shimmereffects/IndustryCategoriesSkeletonLeft.jsx";
 // import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";  
 
 
@@ -48,9 +49,8 @@ const App = () => {
             {/* <Route path="/loader" element={<Loader />} /> */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            {/* <Route path="/company-build" element={<CompanyBuildProtectedRoute><CompanyBuild /></CompanyBuildProtectedRoute>} /> */}
                         <Route path="/company-build" element={<CompanyBuild />} />
-
+            <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} />
             <Route path="/plan" element={<Plan />} />
             <Route path="/geographic-coverage" element={<ProtectedRoute> <GeographicCoverage /> </ProtectedRoute> } />
             <Route path="/industry-categories" element={<ProtectedRoute> <IndustryCategories /> </ProtectedRoute> } />

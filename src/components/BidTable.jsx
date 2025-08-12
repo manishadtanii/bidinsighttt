@@ -49,7 +49,7 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedEntity, setSelectedEntity] = useState("Select Entity");
+  const [selectedEntity, setSelectedEntity] = useState("Entity Type");
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
               </div>
             </th>
 
-            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("bid_name", e)}>Bid Name {getSortIcon("bid_name")}</th>
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("bid_name", e)}>Bid Name</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("open_date", e)}>Open Date {getSortIcon("open_date")}</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)}>Closed Date {getSortIcon("closing_date")}</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)} title="Sorted by closing date">Countdown {getSortIcon("closing_date")}</th>

@@ -10,6 +10,7 @@ import FormImg from "../components/FormImg";
 import ProcessWrapper from "../components/ProcessWrapper";
 import { checkTTLAndClear } from "../utils/ttlCheck";
 import { fetchIndustryCategories } from "../services/user.service";
+import IndustryCategoriesSkeletonLeft from "../components/shimmereffects/IndustryCategoriesSkeletonLeft";
 
 function IndustryCategories() {
   const dispatch = useDispatch();
@@ -212,7 +213,7 @@ function IndustryCategories() {
             <div className="forn-container flex flex-col h-full justify-center items-center">
               <div className="text-white text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                <p className="text-lg">Loading industries...</p>
+                <p className="text-lg"><IndustryCategoriesSkeletonLeft /></p>
               </div>
             </div>
           </div>
