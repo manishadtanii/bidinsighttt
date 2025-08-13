@@ -242,9 +242,9 @@ function HelpOurAi() {
   const [allDisabled, setAllDisabled] = useState(false);
   const [skipClicked, setSkipClicked] = useState(false); // 🆕 Skip Flag
 
-  useEffect(() => {
-    checkTTLAndClear(navigate);
-  }, []);
+  // useEffect(() => {
+  //   checkTTLAndClear(navigate);
+  // }, []);
 
   // 🟢 Load from sessionStorage on mount
   useEffect(() => {

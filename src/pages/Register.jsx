@@ -677,27 +677,27 @@ function Register() {
     setErrors((prev) => ({ ...prev, [name]: msg }));
   };
 
-  useEffect(() => {
-    const ttlStart = sessionStorage.getItem("ttlStartTime");
-    if (!ttlStart) sessionStorage.setItem("ttlStartTime", Date.now());
+  // useEffect(() => {
+  //   const ttlStart = sessionStorage.getItem("ttlStartTime");
+  //   if (!ttlStart) sessionStorage.setItem("ttlStartTime", Date.now());
 
-    Object.entries(fields).forEach(([name, value]) => {
-      if (value) {
-        setTouched((prev) => ({ ...prev, [name]: true }));
-        validateField(name, value);
-      }
-    });
+  //   Object.entries(fields).forEach(([name, value]) => {
+  //     if (value) {
+  //       setTouched((prev) => ({ ...prev, [name]: true }));
+  //       validateField(name, value);
+  //     }
+  //   });
 
-    // Cleanup on unmount
-    return () => {
-      if (emailDebounceTimer.current) {
-        clearTimeout(emailDebounceTimer.current);
-      }
-      if (abortController.current) {
-        abortController.current.abort();
-      }
-    };
-  }, []);
+  //   // Cleanup on unmount
+  //   return () => {
+  //     if (emailDebounceTimer.current) {
+  //       clearTimeout(emailDebounceTimer.current);
+  //     }
+  //     if (abortController.current) {
+  //       abortController.current.abort();
+  //     }
+  //   };
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
