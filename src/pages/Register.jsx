@@ -608,7 +608,7 @@ function Register() {
         
         // API success means email is available
         if (response.success || response.available) {
-          setErrors(prev => ({ ...prev, email: "Email is available" }));
+          setErrors(prev => ({ ...prev, email: "Email is Valid" }));
           setEmailApiValidated(true);
           setLastValidatedEmail(email);
         } else {
@@ -654,7 +654,7 @@ function Register() {
           
           // Show appropriate message based on current state
           if (value === lastValidatedEmail) {
-            msg = emailApiValidated ? "Email is available" : errors.email || "Email is valid";
+            msg = emailApiValidated ? "Email is Valid" : errors.email || "Email is valid";
           } else {
             msg = "Email is valid";
           }
@@ -726,7 +726,7 @@ function Register() {
 
   const isValid = {
     fullName: errors.fullName === "Full Name is valid",
-    email: (errors.email === "Email is available") && emailApiValidated,
+    email: (errors.email === "Email is Valid") && emailApiValidated,
     password: errors.password === "Password is strong",
     confirmPassword: errors.confirmPassword === "Password matched",
   };
@@ -989,7 +989,7 @@ function Register() {
         </div>
       </div>
       <div className="sticky top-0">
-        <FormImg src={"login-img.png"} />
+        <FormImg src={"loginbid.png"} />
       </div>
     </ProcessWrapper>
   );
