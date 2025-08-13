@@ -22,6 +22,9 @@
   padding: 80px 40px;
   margin: auto;
 }
+.container-p{
+    padding: 80px 40px;
+}
 header {
   z-index: 100;
   transition: 0.5s;
@@ -319,7 +322,7 @@ p {
 
 .our-story .slick-slide p {
   color: #FFFFFFB2;
-  transform: translateX(150px);
+  /* transform: translateX(150px); */
 }
 .our-story .slick-slide.slick-active.slick-current p {
   color: white;

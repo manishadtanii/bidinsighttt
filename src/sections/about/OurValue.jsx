@@ -3,27 +3,27 @@ import React from "react";
 const values = [
   {
     id: "01",
-    title: "Efficiency with Purpose",
+    title: "Clarity",
     description:
-      "Time is a company’s most valuable resource. Everything we build is designed to save time, reduce friction, and accelerate the path to opportunity.",
+      "We prioritize delivering clear, actionable insights that simplify complex information for smarter decision-making.",
   },
   {
     id: "02",
-    title: "Trust Through Transparency",
+    title: "Innovation",
     description:
-      "We earn our users’ trust by being clear about what we offer, how our platform works, and where the data comes from—no smoke and mirrors.",
+      "We bring to you a cutting-edge AI technology to revolutionize the bidding process, driving efficiency and strategic advantage.",
   },
   {
     id: "03",
-    title: "Empowering Growth",
+    title: "Empowerment",
     description:
-      "Whether you're a startup chasing your first contract or a seasoned firm scaling nationwide, we’re here to help you win more, grow faster, and compete smarter.",
+      "We enable our users to focus their time and energy on winning contracts by providing intelligent tools and meaningful guidance to eliminate all the hassle.",
   },
 ];
 
 const OurValue = () => {
   return (
-    <div className="container-fixed">
+    <div className="container-fixed overflow-x-hidden">
     <div className="container-section">
         <h2 className="text-h2 font-bold text-blue-700 mb-10" data-aos="fade-up" data-aos-delay="300">
         Our Values

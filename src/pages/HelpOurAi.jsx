@@ -232,7 +232,7 @@ function HelpOurAi() {
     { label: "Cybersecurity insurance", name: "cyberInsurance" },
     { label: "Environmental insurance", name: "environmentalInsurance" },
     {
-      label: "Medical/ Professional/ ESO liability insurance",
+      label: "Medical/ Professional/ ESO insurance",
       name: "medicalProfessional",
     },
   ];

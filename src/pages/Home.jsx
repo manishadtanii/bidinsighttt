@@ -16,7 +16,7 @@ function Home() {
      <HowItWorks/>
      <PricingSection />
      <ComparisonGrid />
-     <CallToAction />
+     <CallToAction t1='Still Thinking About It?' t2='About It?' p='Dive right in and discover how BidInsight simplifies your gov­ern­ment bidding - no heavy lifting required. Start your free trial now and see opportunities tailored to you, risk-free.' link='/pricing' />
     </div>
   )
 }

@@ -19,7 +19,6 @@ import { fetchUserProfile } from "../redux/reducer/profileSlice";
 
 
 function Dashboard() {
-  const data = { title: "Dashboard" };
   const perPage = 25;
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,7 +33,16 @@ function Dashboard() {
   console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
+  const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });      
+  
+  
+  const profile = useSelector((state) => state.profile.profile);
+  // const loading = useSelector((state) => state.profile.loading);
+  console.log(profile);
+  const companyName = profile?.company_name || "";
+  const formattedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+  console.log("🔥 Formatted Name:", formattedName);  
+  const data = { title: `${formattedName}'s Dashboard` };
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
   const [filters, setFilters] = useState({
@@ -47,6 +55,7 @@ function Dashboard() {
     closingDate: { after: "", before: "" },
     solicitationType: [],
     ordering: "closing_date", // 🔥 FIXED: Added default ordering
+    entityType: "",
   });
 
   // 🔥 APPLIED FILTERS - Only these are used for API calls
@@ -59,7 +68,8 @@ function Dashboard() {
     publishedDate: { after: "", before: "" },
     closingDate: { after: "", before: "" },
     solicitationType: [],
-    ordering: "closing_date" // 🔥 FIXED: Added default ordering
+    ordering: "closing_date", // 🔥 FIXED: Added default ordering
+    entityType: "",
   });
 
   const [saveSearchFilters, setSaveSearchFilters] = useState({});
@@ -73,7 +83,7 @@ function Dashboard() {
   const [topSearchTerm, setTopSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
   const { timezone, locationPermission } = useUserTimezone();
-
+  const [entityTypeFilter, setEntityTypeFilter] = useState("");
   useEffect(() => {
     const handlePopState = (e) => {
       window.history.pushState(null, '', window.location.href);
@@ -169,6 +179,7 @@ function Dashboard() {
       publishedDate: { after: "", before: "" },
       closingDate: { after: "", before: "" },
       ordering: "closing_date", // 🔥 FIXED: Added default ordering
+      entityType: "",
     };
 
     if (searchParams.get("bid_type")) {
@@ -227,6 +238,10 @@ function Dashboard() {
       decodedFilters.ordering = searchParams.get("ordering");
     }
 
+    if (searchParams.get("entity_type")) {
+      decodedFilters.entityType = searchParams.get("entity_type");
+    }
+
     return decodedFilters;
   };
 
@@ -279,10 +294,7 @@ function Dashboard() {
     } else if (hasFilterParams) {
       // Subsequent navigation with filters - restore them
       const decodedFilters = decodeUrlToFilters(searchParams);
-      // console.log(
-      //   "🔥 Navigation detected - restoring filters:",
-      //   decodedFilters
-      // );
+
       setFilters(decodedFilters);
       setAppliedFilters(decodedFilters);
     }
@@ -345,7 +357,7 @@ function Dashboard() {
     if (filters.ordering) {
       params.append("ordering", filters.ordering);
     }
-      console.log(params.toString(), "🔥 Built query string from filters");
+
     return params.toString();
   };
 
@@ -375,7 +387,8 @@ function Dashboard() {
         appliedFilters.publishedDate?.after ||
         appliedFilters.publishedDate?.before ||
         appliedFilters.closingDate?.after ||
-        appliedFilters.closingDate?.before;
+        appliedFilters.closingDate?.before ||
+        appliedFilters.entityType;
 
       const filtersToUse = hasActiveFilters
         ? appliedFilters
@@ -398,6 +411,25 @@ function Dashboard() {
   }, [currentPage, navigate, perPage, appliedFilters, dispatch]);
 
 
+  const handleEntityTypeChange = (entityType) => {
+    console.log("🔥 Entity type selected:", entityType);
+
+    const updatedFilters = {
+      ...appliedFilters,
+      entityType: entityType
+    };
+
+    // Update both filter states
+    setFilters(updatedFilters);
+    setAppliedFilters(updatedFilters);
+    setCurrentPage(1); // Reset to first page
+
+    // Build new URL with entity type filter
+    const queryString = buildQueryString(updatedFilters);
+    navigate(`/dashboard?${queryString}`);
+  };
+
+
 
   // Fetch bids on component mount and page change
   useEffect(() => {
@@ -411,7 +443,7 @@ function Dashboard() {
   const handleFiltersApply = (newFilters) => {
     // console.log("🔥 Filters applied from FilterPanel:", newFilters);
 
-    setTopSearchTerm(""); // Clear top search term when filters are applied
+    // setTopSearchTerm(""); // Clear top search term when filters are applied
 
     setFilters(newFilters);
     setAppliedFilters(newFilters);
@@ -522,11 +554,11 @@ function Dashboard() {
       setTopSearchTerm(""); // Clear search input
 
       let cleanQueryString = matched.query_string;
-if (cleanQueryString.startsWith('?')) {
-  cleanQueryString = cleanQueryString.substring(1);
-}
+      if (cleanQueryString.startsWith('?')) {
+        cleanQueryString = cleanQueryString.substring(1);
+      }
 
-const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
+      const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
       navigate(fullURL);
     } catch (err) {
       console.error("Failed to load saved search filters", err);
@@ -779,8 +811,113 @@ const handleTopSearch = (searchTerm) => {
   const queryString = params.toString();
   console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
 
-  navigate(`/dashboard?${queryString}`);
-};
+    navigate(`/dashboard?${queryString}`);
+  };
+
+
+
+  // const handleTopSearch = (searchTerm) => {
+  //   const cleanedTerm = searchTerm.trim();
+
+  //   // If empty search, reset to filters without search keywords
+  //   if (!cleanedTerm) {
+  //     const defaultFilters = {
+  //       ...appliedFilters,
+  //       keyword: {
+  //         include: appliedFilters.keyword?.include?.filter(term =>
+  //           // Keep only filter panel keywords, remove search terms
+  //           filters.keyword?.include?.includes(term)
+  //         ) || [],
+  //         exclude: appliedFilters.keyword?.exclude || []
+  //       },
+  //     };
+
+  //     // Don't update filter panel state, only applied filters
+  //     setAppliedFilters(defaultFilters);
+  //     setCurrentPage(1);
+
+  //     const queryString = buildQueryString(defaultFilters);
+  //     navigate(`/dashboard?${queryString}`);
+  //     return;
+  //   }
+
+  //   // Create updated filters with search term + existing filter keywords
+  //   const existingFilterKeywords = filters.keyword?.include || [];
+  //   const updatedFilters = {
+  //     ...appliedFilters,
+  //     keyword: {
+  //       include: [...existingFilterKeywords, cleanedTerm], // Combine filter keywords + search
+  //       exclude: appliedFilters.keyword?.exclude || []
+  //     },
+  //   };
+
+  //   console.log("🔥 Real-time search with term:", cleanedTerm);
+  //   console.log("🔥 Updated filters:", updatedFilters);
+
+  //   // Update only applied filters, not filter panel state
+  //   setAppliedFilters(updatedFilters);
+  //   setCurrentPage(1);
+
+  //   // Build query string manually
+  //   const params = new URLSearchParams();
+  //   params.append("page", "1");
+  //   params.append("pageSize", perPage.toString());
+
+  //   if (updatedFilters.status) {
+  //     params.append("bid_type", updatedFilters.status);
+  //   }
+
+  //   if (updatedFilters.location && updatedFilters.location.length > 0) {
+  //     params.append("state", updatedFilters.location.join(","));
+  //   }
+
+  //   if (updatedFilters.solicitationType && updatedFilters.solicitationType.length > 0) {
+  //     params.append("solicitation", updatedFilters.solicitationType.join(","));
+  //   }
+
+  //   if (updatedFilters.keyword?.include && updatedFilters.keyword.include.length > 0) {
+  //     params.append("include", updatedFilters.keyword.include.join(","));
+  //   }
+
+  //   if (updatedFilters.keyword?.exclude && updatedFilters.keyword.exclude.length > 0) {
+  //     params.append("exclude", updatedFilters.keyword.exclude.join(","));
+  //   }
+
+  //   if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
+  //     const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
+  //     params.append("unspsc_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
+  //     const codes = updatedFilters.NAICSCode.map((item) => item.code);
+  //     params.append("naics_codes", codes.join(","));
+  //   }
+
+  //   if (updatedFilters.publishedDate?.after) {
+  //     params.append("open_date_after", updatedFilters.publishedDate.after);
+  //   }
+
+  //   if (updatedFilters.publishedDate?.before) {
+  //     params.append("open_date_before", updatedFilters.publishedDate.before);
+  //   }
+
+  //   if (updatedFilters.closingDate?.after) {
+  //     params.append("closing_date_after", updatedFilters.closingDate.after);
+  //   }
+
+  //   if (updatedFilters.closingDate?.before) {
+  //     params.append("closing_date_before", updatedFilters.closingDate.before);
+  //   }
+
+  //   if (updatedFilters.ordering) {
+  //     params.append("ordering", updatedFilters.ordering);
+  //   }
+
+  //   const queryString = params.toString();
+  //   console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
+
+  //   navigate(`/dashboard?${queryString}`);
+  // };
 
 
 
@@ -800,10 +937,11 @@ const handleTopSearch = (searchTerm) => {
     // Set new timeout for debounced search
     const newTimeout = setTimeout(() => {
       handleTopSearch(value);
-    }, 500); 
+    }, 500);
 
     setSearchTimeout(newTimeout);
   };
+
 
   useEffect(() => {
   const searchParams = new URLSearchParams(location.search);
@@ -829,8 +967,6 @@ const handleTopSearch = (searchTerm) => {
     setTopSearchTerm(""); // No include parameter
   }
 }, [location.search, filters.keyword?.include]);
-
-
 
 
 
@@ -979,6 +1115,8 @@ const handleTopSearch = (searchTerm) => {
               <BidTable
                 timezone={userTimezone}
                 bids={bidsInfo?.results || []}
+                onEntityTypeChange={handleEntityTypeChange} // 🔥 ADD THIS
+                currentEntityType={appliedFilters.entityType}
                 totalCount={bidsInfo?.count || 0}
                 currentSortField={appliedFilters.ordering || "closing_date"}
                 currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}

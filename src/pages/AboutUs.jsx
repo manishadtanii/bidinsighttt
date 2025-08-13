@@ -12,11 +12,11 @@ function AboutUs() {
   // rendering various sections that describe the company's mission, vision, story, values, and brand
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="">
       <Hero />
       <Mission
         pera="Our Mission Our Mission Our Mission Our Mission Our Mission Our
-          Mission Our Mission"
+          Mission Our Mission "
         mHeading={[' Intelligent Automation', 'Clear Insights', 'Time-Saving Tools']}
         mPera="Our mission is to remove the guesswork from government and public-sector bidding—replacing it with"
       />
@@ -30,7 +30,7 @@ function AboutUs() {
       <OurStory />
       <OurValue />
       <OurBrand />
-      <CallToAction />
+      <CallToAction t1="Quit the guesswork." t2="Own the pipeline." p="Discover how BidInsight transforms opportunity into strategy! Try for free today and find out what focused insight can do for your growth." link={'/pricing'} />
     </div>
   );
 }

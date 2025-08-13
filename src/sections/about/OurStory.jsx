@@ -12,7 +12,8 @@ function OurStory() {
     centerMode: false,
     infinite: true,
     centerPadding: "0px",
-    slidesToShow: 2,
+    slidesToShow: 3,
+    slidesToScroll:2,
     speed: 500,
     autoplay: true, // Enable auto scroll
     autoplaySpeed: 3000, // Slide delay in milliseconds
@@ -22,7 +23,7 @@ function OurStory() {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
-          centerPadding: "30px",
+          centerPadding: "0px",
         },
       },
     ],
@@ -35,7 +36,7 @@ function OurStory() {
 
   return (
     <div className='our-story bg-[url("./our-story.jpg")] bg-image h-[100vh]'>
-      <div className="container-section ps-[50px] flex flex-col justify-between h-full">
+      <div className="container-p flex flex-col justify-between h-full">
         <h1 className="text-topH font-archivo font-bold text-g mb-4" data-aos="fade-up" data-aos-delay="300">
           Our Story
         </h1>
@@ -53,7 +54,7 @@ function OurStory() {
 
         {/* Slider Container with cursor event handlers and hidden native cursor */}
         <div
-          className="slider-container mt-20"
+          className="slider-container py-20"
           style={{ cursor: "none" }}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setHovered(true)}
@@ -62,58 +63,49 @@ function OurStory() {
           <Slider {...settings}>
             <div className="pe-20 font-inter text-p ">
               <p>
-                As a consulting and staffing firm specializing in government
-                contracts, we quickly recognized the inefficiencies inherent in
-                the solicitation search process. Each day involved navigating a
-                complex web of federal, state, and local procurement
-                portals—often spending hours just to identify potential
-                opportunities.
+              
+BidInsight was born out of frustration and a determination to do better. As a consulting and staffing firm specializing in government contracts, we spent our days hopping between multiple procurement portals such as GSA, SAM.gov, state and local sites, just to compile a list of potential RFPs. Then came the manual deep‑dives: reading specs, assessing scope and matching requirements to our capabilities. What should have been strategic decision‑making became a drain on resources, pulling us away from high‑impact work.
+
               </p>
             </div>
             <div className="pe-20 font-inter text-p ">
               <p>
-                As we delved deeper into the bidding landscape, it became clear
-                that many organizations were struggling with similar challenges.
-                The lack of streamlined processes and effective tools often led
-                to missed opportunities and frustration.
+         
+              </p>
+            </div>
+            <div className=" font-inter text-p ">
+              <p>
+               We tried every aggregation tool on the market but most were little more than scrapers. They offered endless lists of opportunities but no way to know which ones truly mattered to us. There was no context around fit, no guidance on prioritization; just a firehose of raw data.
+
+              </p>
+            </div>
+            <div className=" font-inter text-p ">
+              <p>
+             
+
               </p>
             </div>
             <div className="pe-20 font-inter text-p ">
               <p>
-                Recognizing this gap, we set out to develop innovative solutions
-                that would not only simplify the bidding process but also
-                empower businesses to compete more effectively for government
-                contracts.
+                So we decided to build the solution ourselves. We assembled a team of procurement veterans, data scientists and software engineers set out on an unwavering mission to create a platform that did more than scrape. We built BidInsight: an AI‑driven engine that continuously learns from your firm’s history – your past awards, team structure, contract values – and uses that intelligence to rank every new solicitation by compatibility. The result? A streamlined workflow that moves you from “what’s out there?” to “this is what we should pursue” in seconds, not hours.
+
               </p>
             </div>
             <div className="pe-20 font-inter text-p ">
               <p>
-                As a consulting and staffing firm specializing in government
-                contracts, we quickly recognized the inefficiencies inherent in
-                the solicitation search process. Each day involved navigating a
-                complex web of federal, state, and local procurement
-                portals—often spending hours just to identify potential
-                opportunities.
+               
+
               </p>
             </div>
             <div className="pe-20 font-inter text-p ">
               <p>
-                As a consulting and staffing firm specializing in government
-                contracts, we quickly recognized the inefficiencies inherent in
-                the solicitation search process. Each day involved navigating a
-                complex web of federal, state, and local procurement
-                portals—often spending hours just to identify potential
-                opportunities.
+               Today, BidInsight powers the bidding efforts of companies across every industry and geography. We’re proud to deliver clarity where once there was chaos and to help our users turn opportunity into growth.
+
               </p>
             </div>
             <div className="pe-20 font-inter text-p ">
               <p>
-                As a consulting and staffing firm specializing in government
-                contracts, we quickly recognized the inefficiencies inherent in
-                the solicitation search process. Each day involved navigating a
-                complex web of federal, state, and local procurement
-                portals—often spending hours just to identify potential
-                opportunities.
+              
               </p>
             </div>
           </Slider>
