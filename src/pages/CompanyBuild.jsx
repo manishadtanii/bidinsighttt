@@ -77,9 +77,9 @@ function CompanyBuild() {
   // State for API states
   const [stateOptions, setStateOptions] = useState([]);
 
-  useEffect(() => {
-    checkTTLAndClear(navigate);
-  }, []);
+  // useEffect(() => {
+  //   checkTTLAndClear(navigate);
+  // }, []);
 
   useEffect(() => {
     sessionStorage.setItem("companyBuildFields", JSON.stringify(fields));

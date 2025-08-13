@@ -57,9 +57,9 @@ function Verification() {
   const email = location.state?.email || "";
   const otpFromSignup = location.state?.otp || null;
 
-  useEffect(() => {
-    checkTTLAndClear(navigate);
-  }, []);
+  // useEffect(() => {
+  //   checkTTLAndClear(navigate);
+  // }, []);
 
   useEffect(() => {
     console.log("=== COMPONENT MOUNTED ===");
