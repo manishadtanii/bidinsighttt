@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 function HeroHeading({ data, profileBids, profileLoading, profileError }) {
   const { title, para, btnText, btnLink, container, headingSize = "h1", pSize = "text-lg" } = data;
-    console.log(profileBids)
+    // console.log(profileBids)
   const headingRef = useRef();
   const containerRef = useRef();
 
@@ -53,11 +53,11 @@ function HeroHeading({ data, profileBids, profileLoading, profileError }) {
     return title; // Agar title "Dashboard" nahi hai to original title return karo
   };
 
-  console.log("🔥 HeroHeading - profileBids (from props):", profileBids);
-  console.log("🔥 HeroHeading - profileLoading:", profileLoading);
-  console.log("🔥 HeroHeading - profileError:", profileError);
-  console.log("🔥 HeroHeading - Company Name:", getCompanyName());
-  console.log("🔥 HeroHeading - Personalized Title:", getPersonalizedTitle());
+  // console.log("🔥 HeroHeading - profileBids (from props):", profileBids);
+  // console.log("🔥 HeroHeading - profileLoading:", profileLoading);
+  // console.log("🔥 HeroHeading - profileError:", profileError);
+  // console.log("🔥 HeroHeading - Company Name:", getCompanyName());
+  // console.log("🔥 HeroHeading - Personalized Title:", getPersonalizedTitle());
 
   return (
     <div className="hero-heading" ref={containerRef}>

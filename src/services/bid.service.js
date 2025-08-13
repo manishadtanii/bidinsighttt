@@ -4,19 +4,22 @@ import API from "../utils/axios.js";
 
 
 
-export const getBids = async (queryOrId) => {
+export const getBids = async (queryOrId, searchTerm = "") => {
   try {
     const token = localStorage.getItem("access_token");
     const headers = { Authorization: `Bearer ${token}` };
 
-    // Agar specific ID pass ho
     if (typeof queryOrId === "string" && !queryOrId.startsWith("?")) {
       const response = await API.get(`/bids/${queryOrId}/`, { headers });
       return response.data;
     }
 
-    // Agar query string pass ho
-    const query = queryOrId || "?page=1&pageSize=500&include=active";
+    let query = queryOrId || "?page=1&pageSize=500&include=active";
+
+    if (searchTerm.trim()) {
+      query += `&search=${encodeURIComponent(searchTerm)}`;
+    }
+
     const response = await API.get(`/bids/${query}`, { headers });
     return response.data;
   } catch (error) {

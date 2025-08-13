@@ -29,19 +29,19 @@ function Dashboard() {
   const { savedSearches } = useSelector((state) => state.savedSearches);
   const { timezone: userTimezone } = useUserTimezone();
   // Add debugging to see the full state structure
-  console.log("🔥 Full Redux State:", useSelector((state) => state));
-  console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
+  // console.log("🔥 Full Redux State:", useSelector((state) => state));
+  // console.log("🔥 ProfileBids State:", useSelector((state) => state.profileBids));
   const [selectedSavedSearch, setSelectedSavedSearch] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });      
-  
-  
+  const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
+
+
   const profile = useSelector((state) => state.profile.profile);
   // const loading = useSelector((state) => state.profile.loading);
-  console.log(profile);
+  // console.log(profile);
   const companyName = profile?.company_name || "";
   const formattedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
-  console.log("🔥 Formatted Name:", formattedName);  
+  // console.log("🔥 Formatted Name:", formattedName);  
   const data = { title: `${formattedName}'s Dashboard` };
 
   // 🔥 SINGLE SOURCE OF TRUTH - Remove duplicate filter states
@@ -99,8 +99,8 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log("Current Timezone:", timezone);
-    console.log("Location Permission:", locationPermission);
+    // console.log("Current Timezone:", timezone);
+    // console.log("Location Permission:", locationPermission);
     // Use timezone in your logic here...
   }, [timezone, locationPermission]);
 
@@ -109,8 +109,8 @@ function Dashboard() {
       try {
         const countData = await getBidCount();
         setBidCount(countData);
-        console.log("🔥 Fetched bid count:", countData);
-        console.log(bidCount, "🔥 Bid count state updated");
+        // console.log("🔥 Fetched bid count:", countData);
+        // console.log(bidCount, "🔥 Bid count state updated");
       } catch (error) {
         console.error("❌ Error fetching bid count:", error);
       }
@@ -130,8 +130,8 @@ function Dashboard() {
 
   // 🔥 FIXED: Proper sort handler with toggle logic
   const handleSort = (field) => {
-    console.log("🔥 Sort requested for field:", field);
-    console.log("🔥 Current ordering:", appliedFilters.ordering);
+    // console.log("🔥 Sort requested for field:", field);
+    // console.log("🔥 Current ordering:", appliedFilters.ordering);
 
     setFilters((prev) => {
       const current = prev.ordering;
@@ -149,7 +149,7 @@ function Dashboard() {
         newOrder = field;
       }
 
-      console.log("🔥 New ordering:", newOrder);
+      // console.log("🔥 New ordering:", newOrder);
 
       const updatedFilters = {
         ...prev,
@@ -361,7 +361,7 @@ function Dashboard() {
       params.append("entity_type", filters.entityType);
     }
 
-    console.log(params.toString(), "🔥 Built query string from filters");
+    // console.log(params.toString(), "🔥 Built query string from filters");
     return params.toString();
   };
 
@@ -400,10 +400,13 @@ function Dashboard() {
 
       let queryString = buildQueryString(filtersToUse);
 
-      // 🔥 FIXED: Removed double ordering logic - buildQueryString already handles it
-      console.log("🔥 Fetching bids with query:", queryString);
+      const searchParams = new URLSearchParams(location.search);
+      const searchTermFromUrl = searchParams.get("search") || "";
 
-      const res = await getBids(`?${queryString}`);
+      console.log("🔥 Fetching bids with query:", queryString);
+      console.log("🔥 Search term from URL:", searchTermFromUrl);
+
+      const res = await getBids(`?${queryString}`, searchTermFromUrl);
       console.log(res, "🔥 Fetched bids data");
       dispatch(setBids(res));
     } catch (err) {
@@ -412,11 +415,11 @@ function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, navigate, perPage, appliedFilters, dispatch]);
+  }, [currentPage, navigate, perPage, appliedFilters, dispatch, location.search]);
 
 
   const handleEntityTypeChange = (entityType) => {
-    console.log("🔥 Entity type selected:", entityType);
+    // console.log("🔥 Entity type selected:", entityType);
 
     const updatedFilters = {
       ...appliedFilters,
@@ -447,7 +450,7 @@ function Dashboard() {
   const handleFiltersApply = (newFilters) => {
     // console.log("🔥 Filters applied from FilterPanel:", newFilters);
 
-    // setTopSearchTerm(""); // Clear top search term when filters are applied
+    setTopSearchTerm(""); // Clear top search term when filters are applied
 
     setFilters(newFilters);
     setAppliedFilters(newFilters);
@@ -484,17 +487,16 @@ function Dashboard() {
     };
   }, [searchTimeout]);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const id = searchParams.get("id");
-    if (id) {
-      setSelectedSavedSearch(
-        savedSearches.find((search) => String(search.id) === String(id)) || null
-      );
-    } else {
-      setSelectedSavedSearch(null);
-    }
-  }, [location.search, savedSearches]);
+ useEffect(() => {
+  const searchParams = new URLSearchParams(location.search);
+  const searchFromUrl = searchParams.get("search");
+  if (searchFromUrl && searchFromUrl.trim() !== "") {
+    setTopSearchTerm(searchFromUrl);
+  } else {
+    // 🔥 FIX: Clear search term if no search parameter in URL
+    setTopSearchTerm("");
+  }
+}, [location.search]);
 
   // useEffect(() => {
   //   dispatch(fetchUserProfile());
@@ -531,7 +533,11 @@ function Dashboard() {
       setSelectedSavedSearch(null);
       setSaveSearchFilters({});
       setCurrentPage(1);
-      setTopSearchTerm(""); // Clear search input too
+      // setTopSearchTerm(""); // Clear search input too
+
+
+      const searchFromSaved = urlParams.get("search");
+    setTopSearchTerm(searchFromSaved || ""); 
 
       // Navigate to default URL
       navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
@@ -606,220 +612,157 @@ function Dashboard() {
 
 
   // 🔥 REAL-TIME SEARCH FUNCTION
-  const handleTopSearch = (searchTerm) => {
-    const cleanedTerm = searchTerm.trim();
+   const handleTopSearch = (searchTerm) => {
+  const cleanedTerm = searchTerm.trim();
 
-    // If empty search, reset to default filters
-    if (!cleanedTerm) {
-      const defaultFilters = {
-        ...appliedFilters,
-        keyword: { include: [], exclude: [] },
-      };
-
-      setFilters(defaultFilters);
-      setAppliedFilters(defaultFilters);
-      setCurrentPage(1);
-
-      const params = new URLSearchParams();
-      params.append("page", "1");
-      params.append("pageSize", perPage.toString());
-      params.append("bid_type", defaultFilters.status || "Active");
-
-      const queryString = params.toString();
-      navigate(`/dashboard?${queryString}`);
-      return;
-    }
-
-    // Create updated filters with the search term
-    const updatedFilters = {
-      ...appliedFilters,
-      keyword: {
-        ...appliedFilters.keyword,
-        include: [cleanedTerm],
-      },
-    };
-
-    console.log("🔥 Real-time search with term:", cleanedTerm);
-    console.log("🔥 Updated filters:", updatedFilters);
-
-    // Update both filter states
-    setFilters(updatedFilters);
-    setAppliedFilters(updatedFilters);
+  // If empty search, remove search parameter but keep existing filters
+  if (!cleanedTerm) {
     setCurrentPage(1);
 
-    // Build query string with page reset
+    // Build query string with existing filters but NO search parameter
     const params = new URLSearchParams();
     params.append("page", "1");
     params.append("pageSize", perPage.toString());
 
-    if (updatedFilters.status) {
-      params.append("bid_type", updatedFilters.status);
+    // Add existing filters to URL (preserving them)
+    if (appliedFilters.status) {
+      params.append("bid_type", appliedFilters.status);
     }
 
-    if (updatedFilters.location && updatedFilters.location.length > 0) {
-      params.append("state", updatedFilters.location.join(","));
+    if (appliedFilters.location && appliedFilters.location.length > 0) {
+      params.append("state", appliedFilters.location.join(","));
     }
 
-    if (
-      updatedFilters.solicitationType &&
-      updatedFilters.solicitationType.length > 0
-    ) {
-      params.append("solicitation", updatedFilters.solicitationType.join(","));
+    if (appliedFilters.solicitationType && appliedFilters.solicitationType.length > 0) {
+      params.append("solicitation", appliedFilters.solicitationType.join(","));
     }
 
-    if (
-      updatedFilters.keyword?.include &&
-      updatedFilters.keyword.include.length > 0
-    ) {
-      params.append("include", updatedFilters.keyword.include.join(","));
+    if (appliedFilters.keyword?.include && appliedFilters.keyword.include.length > 0) {
+      params.append("include", appliedFilters.keyword.include.join(","));
     }
 
-    if (
-      updatedFilters.keyword?.exclude &&
-      updatedFilters.keyword.exclude.length > 0
-    ) {
-      params.append("exclude", updatedFilters.keyword.exclude.join(","));
+    if (appliedFilters.keyword?.exclude && appliedFilters.keyword.exclude.length > 0) {
+      params.append("exclude", appliedFilters.keyword.exclude.join(","));
     }
 
-    if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
-      const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
+    if (appliedFilters.UNSPSCCode && appliedFilters.UNSPSCCode.length > 0) {
+      const codes = appliedFilters.UNSPSCCode.map((item) => item.code);
       params.append("unspsc_codes", codes.join(","));
     }
 
-    if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
-      const codes = updatedFilters.NAICSCode.map((item) => item.code);
+    if (appliedFilters.NAICSCode && appliedFilters.NAICSCode.length > 0) {
+      const codes = appliedFilters.NAICSCode.map((item) => item.code);
       params.append("naics_codes", codes.join(","));
     }
 
-    if (updatedFilters.publishedDate?.after) {
-      params.append("open_date_after", updatedFilters.publishedDate.after);
+    if (appliedFilters.publishedDate?.after) {
+      params.append("open_date_after", appliedFilters.publishedDate.after);
     }
 
-    if (updatedFilters.publishedDate?.before) {
-      params.append("open_date_before", updatedFilters.publishedDate.before);
+    if (appliedFilters.publishedDate?.before) {
+      params.append("open_date_before", appliedFilters.publishedDate.before);
     }
 
-    if (updatedFilters.closingDate?.after) {
-      params.append("closing_date_after", updatedFilters.closingDate.after);
+    if (appliedFilters.closingDate?.after) {
+      params.append("closing_date_after", appliedFilters.closingDate.after);
     }
 
-    if (updatedFilters.closingDate?.before) {
-      params.append("closing_date_before", updatedFilters.closingDate.before);
+    if (appliedFilters.closingDate?.before) {
+      params.append("closing_date_before", appliedFilters.closingDate.before);
+    }
+
+    if (appliedFilters.ordering) {
+      params.append("ordering", appliedFilters.ordering);
+    }
+
+    if (appliedFilters.entityType) {
+      params.append("entity_type", appliedFilters.entityType);
     }
 
     const queryString = params.toString();
-    console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
-
     navigate(`/dashboard?${queryString}`);
-  };
+    return;
+  }
+
+  console.log("🔥 Real-time search with term:", cleanedTerm);
+
+  // 🔥 FIX: Don't modify filters for search - keep existing filters
+  // Just reset page and build URL with search parameter
+  setCurrentPage(1);
+
+  // Build query string with existing applied filters + search parameter
+  const params = new URLSearchParams();
+  params.append("page", "1");
+  params.append("pageSize", perPage.toString());
+
+  // Add existing filters to URL
+  if (appliedFilters.status) {
+    params.append("bid_type", appliedFilters.status);
+  }
+
+  if (appliedFilters.location && appliedFilters.location.length > 0) {
+    params.append("state", appliedFilters.location.join(","));
+  }
+
+  if (appliedFilters.solicitationType && appliedFilters.solicitationType.length > 0) {
+    params.append("solicitation", appliedFilters.solicitationType.join(","));
+  }
+
+  // 🔥 FIX: Keep existing keyword filters separate from search
+  if (appliedFilters.keyword?.include && appliedFilters.keyword.include.length > 0) {
+    params.append("include", appliedFilters.keyword.include.join(","));
+  }
+
+  if (appliedFilters.keyword?.exclude && appliedFilters.keyword.exclude.length > 0) {
+    params.append("exclude", appliedFilters.keyword.exclude.join(","));
+  }
+
+  if (appliedFilters.UNSPSCCode && appliedFilters.UNSPSCCode.length > 0) {
+    const codes = appliedFilters.UNSPSCCode.map((item) => item.code);
+    params.append("unspsc_codes", codes.join(","));
+  }
+
+  if (appliedFilters.NAICSCode && appliedFilters.NAICSCode.length > 0) {
+    const codes = appliedFilters.NAICSCode.map((item) => item.code);
+    params.append("naics_codes", codes.join(","));
+  }
+
+  if (appliedFilters.publishedDate?.after) {
+    params.append("open_date_after", appliedFilters.publishedDate.after);
+  }
+
+  if (appliedFilters.publishedDate?.before) {
+    params.append("open_date_before", appliedFilters.publishedDate.before);
+  }
+
+  if (appliedFilters.closingDate?.after) {
+    params.append("closing_date_after", appliedFilters.closingDate.after);
+  }
+
+  if (appliedFilters.closingDate?.before) {
+    params.append("closing_date_before", appliedFilters.closingDate.before);
+  }
+
+  if (appliedFilters.ordering) {
+    params.append("ordering", appliedFilters.ordering);
+  }
+
+  if (appliedFilters.entityType) {
+    params.append("entity_type", appliedFilters.entityType);
+  }
+
+  // 🔥 FIX: Add search term as separate 'search' parameter
+  params.append("search", cleanedTerm);
+
+  const queryString = params.toString();
+  console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
+
+  navigate(`/dashboard?${queryString}`);
+};
 
 
 
-  // const handleTopSearch = (searchTerm) => {
-  //   const cleanedTerm = searchTerm.trim();
-
-  //   // If empty search, reset to filters without search keywords
-  //   if (!cleanedTerm) {
-  //     const defaultFilters = {
-  //       ...appliedFilters,
-  //       keyword: {
-  //         include: appliedFilters.keyword?.include?.filter(term =>
-  //           // Keep only filter panel keywords, remove search terms
-  //           filters.keyword?.include?.includes(term)
-  //         ) || [],
-  //         exclude: appliedFilters.keyword?.exclude || []
-  //       },
-  //     };
-
-  //     // Don't update filter panel state, only applied filters
-  //     setAppliedFilters(defaultFilters);
-  //     setCurrentPage(1);
-
-  //     const queryString = buildQueryString(defaultFilters);
-  //     navigate(`/dashboard?${queryString}`);
-  //     return;
-  //   }
-
-  //   // Create updated filters with search term + existing filter keywords
-  //   const existingFilterKeywords = filters.keyword?.include || [];
-  //   const updatedFilters = {
-  //     ...appliedFilters,
-  //     keyword: {
-  //       include: [...existingFilterKeywords, cleanedTerm], // Combine filter keywords + search
-  //       exclude: appliedFilters.keyword?.exclude || []
-  //     },
-  //   };
-
-  //   console.log("🔥 Real-time search with term:", cleanedTerm);
-  //   console.log("🔥 Updated filters:", updatedFilters);
-
-  //   // Update only applied filters, not filter panel state
-  //   setAppliedFilters(updatedFilters);
-  //   setCurrentPage(1);
-
-  //   // Build query string manually
-  //   const params = new URLSearchParams();
-  //   params.append("page", "1");
-  //   params.append("pageSize", perPage.toString());
-
-  //   if (updatedFilters.status) {
-  //     params.append("bid_type", updatedFilters.status);
-  //   }
-
-  //   if (updatedFilters.location && updatedFilters.location.length > 0) {
-  //     params.append("state", updatedFilters.location.join(","));
-  //   }
-
-  //   if (updatedFilters.solicitationType && updatedFilters.solicitationType.length > 0) {
-  //     params.append("solicitation", updatedFilters.solicitationType.join(","));
-  //   }
-
-  //   if (updatedFilters.keyword?.include && updatedFilters.keyword.include.length > 0) {
-  //     params.append("include", updatedFilters.keyword.include.join(","));
-  //   }
-
-  //   if (updatedFilters.keyword?.exclude && updatedFilters.keyword.exclude.length > 0) {
-  //     params.append("exclude", updatedFilters.keyword.exclude.join(","));
-  //   }
-
-  //   if (updatedFilters.UNSPSCCode && updatedFilters.UNSPSCCode.length > 0) {
-  //     const codes = updatedFilters.UNSPSCCode.map((item) => item.code);
-  //     params.append("unspsc_codes", codes.join(","));
-  //   }
-
-  //   if (updatedFilters.NAICSCode && updatedFilters.NAICSCode.length > 0) {
-  //     const codes = updatedFilters.NAICSCode.map((item) => item.code);
-  //     params.append("naics_codes", codes.join(","));
-  //   }
-
-  //   if (updatedFilters.publishedDate?.after) {
-  //     params.append("open_date_after", updatedFilters.publishedDate.after);
-  //   }
-
-  //   if (updatedFilters.publishedDate?.before) {
-  //     params.append("open_date_before", updatedFilters.publishedDate.before);
-  //   }
-
-  //   if (updatedFilters.closingDate?.after) {
-  //     params.append("closing_date_after", updatedFilters.closingDate.after);
-  //   }
-
-  //   if (updatedFilters.closingDate?.before) {
-  //     params.append("closing_date_before", updatedFilters.closingDate.before);
-  //   }
-
-  //   if (updatedFilters.ordering) {
-  //     params.append("ordering", updatedFilters.ordering);
-  //   }
-
-  //   const queryString = params.toString();
-  //   console.log("🔥 Navigating to:", `/dashboard?${queryString}`);
-
-  //   navigate(`/dashboard?${queryString}`);
-  // };
-
-
-
+  
 
 
 
@@ -842,13 +785,13 @@ function Dashboard() {
   };
 
 
-  useEffect(() => {
-    const search = new URLSearchParams(location.search).get("include");
-    if (search && search.trim !== "") {
-      setTopSearchTerm(search);
-    }
-    // console.log(search);
-  }, [location.search])
+  // useEffect(() => {
+  //   const search = new URLSearchParams(location.search).get("include");
+  //   if (search && search.trim !== "") {
+  //     setTopSearchTerm(search);
+  //   }
+  //   // console.log(search);
+  // }, [location.search])
 
 
 
