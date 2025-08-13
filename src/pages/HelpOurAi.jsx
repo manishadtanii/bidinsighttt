@@ -181,16 +181,10 @@
 
 
 
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { saveInsuranceData, setSkippedInsurance } from "../redux/reducer/onboardingSlice"; 
+import { saveInsuranceData, setSkippedInsurance, setAllNoInsurance } from "../redux/reducer/onboardingSlice"; 
 import FormHeader from "../components/FormHeader";
 import HeroHeading from "../components/HeroHeading";
 import FormFooter from "../components/FormFooter";
@@ -237,42 +231,96 @@ function HelpOurAi() {
     },
   ];
 
-  const [formValues, setFormValues] = useState({});
+  // 🔥 FIX 1: Initialize with empty object with all field names
+  const [formValues, setFormValues] = useState(() => {
+    const initialState = {};
+    fields.forEach(field => {
+      initialState[field.name] = "";
+    });
+    return initialState;
+  });
+  
   const [showValidation, setShowValidation] = useState(false);
   const [allDisabled, setAllDisabled] = useState(false);
-  const [skipClicked, setSkipClicked] = useState(false); // 🆕 Skip Flag
+  const [skipClicked, setSkipClicked] = useState(false);
+  // 🔥 FIX 2: Add loading state to prevent premature rendering
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkTTLAndClear(navigate);
   }, []);
 
-  // 🟢 Load from sessionStorage on mount
+  // 🔥 FIX 3: Enhanced session storage loading with proper state management
   useEffect(() => {
-    const saved = sessionStorage.getItem("onboardingForm");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const insurance = parsed.insuranceData || {};
-      setFormValues(insurance);
-    }
+    const loadStoredData = () => {
+      try {
+        console.log("🔄 Loading data from sessionStorage...");
+        const saved = sessionStorage.getItem("onboardingForm");
+        
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const insurance = parsed.insuranceData || {};
+          
+          console.log("📦 Retrieved insurance data:", insurance);
+          console.log("📊 Insurance data keys:", Object.keys(insurance));
+          
+          // 🔥 FIX 4: Create complete form object with all fields
+          const completeFormValues = {};
+          fields.forEach(field => {
+            completeFormValues[field.name] = insurance[field.name] || "";
+          });
+          
+          console.log("✅ Complete form values to set:", completeFormValues);
+          
+          // 🔥 FIX 5: Set form values and then mark as loaded
+          setFormValues(completeFormValues);
+          
+          // Small delay to ensure state is set before rendering
+          setTimeout(() => {
+            setIsLoading(false);
+            console.log("🚀 Form data loaded and ready to render");
+          }, 50);
+        } else {
+          console.log("📭 No saved data found in sessionStorage");
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("❌ Error loading from sessionStorage:", error);
+        setIsLoading(false);
+      }
+    };
+
+    loadStoredData();
   }, []);
 
-  // 🟢 Save to sessionStorage on every form change
+  // 🔥 FIX 6: Enhanced sessionStorage saving with better error handling
   useEffect(() => {
-    if (skipClicked) return; // If skipped, don't save
+    if (skipClicked || isLoading) return; // Don't save if loading or skipped
 
-    const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
-    const updated = {
-      ...prev,
-      insuranceData: formValues,
-    };
-    sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
-  }, [formValues, skipClicked]);
+    try {
+      const prev = JSON.parse(sessionStorage.getItem("onboardingForm")) || {};
+      const updated = {
+        ...prev,
+        insuranceData: formValues,
+      };
+      
+      console.log("💾 Saving to sessionStorage:", updated.insuranceData);
+      sessionStorage.setItem("onboardingForm", JSON.stringify(updated));
+    } catch (error) {
+      console.error("❌ Error saving to sessionStorage:", error);
+    }
+  }, [formValues, skipClicked, isLoading]);
 
   const handleChange = (name, value) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value || "",
-    }));
+    console.log(`🎯 Field changed: ${name} = ${value}`);
+    setFormValues((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value || "",
+      };
+      console.log("📊 Updated form values:", updated);
+      return updated;
+    });
   };
 
   const getMessage = (name) => {
@@ -285,6 +333,16 @@ function HelpOurAi() {
     return formValues[name] ? "success" : "error";
   };
 
+  // ✅ Check if all fields are "No"
+  const checkAllNo = (values) => {
+    return fields.every((field) => values[field.name] === "no");
+  };
+
+  // ✅ Check if at least one field is "Yes"
+  const hasAnyYes = (values) => {
+    return fields.some((field) => values[field.name] === "yes");
+  };
+
   const handleNextClick = (e) => {
     e.preventDefault();
     setShowValidation(true);
@@ -294,7 +352,18 @@ function HelpOurAi() {
     
     if (allFilled) {
       dispatch(saveInsuranceData(formValues)); // ✅ Save to Redux
-      dispatch(setSkippedInsurance(false));    // ✅ Clear skip flag
+      
+      // ✅ Check if all fields are "No"
+      if (checkAllNo(formValues)) {
+        // All "No" case - treat as skip mode
+        dispatch(setAllNoInsurance(true));
+        dispatch(setSkippedInsurance(false));
+      } else {
+        // Normal case - at least one "Yes"
+        dispatch(setAllNoInsurance(false));
+        dispatch(setSkippedInsurance(false));
+      }
+      
       navigate("/extra-data");
     }
   };
@@ -307,6 +376,7 @@ function HelpOurAi() {
     sessionStorage.setItem("onboardingForm", JSON.stringify(prev));
 
     dispatch(setSkippedInsurance(true));
+    dispatch(setAllNoInsurance(false));
     navigate("/extra-data");
   };
 
@@ -325,6 +395,25 @@ function HelpOurAi() {
     },
   };
 
+  // 🔥 FIX 7: Show loading state while data is being loaded
+  if (isLoading) {
+    return (
+      <ProcessWrapper>
+        <div className="form-left">
+          <div className="pe-3 flex flex-col justify-center items-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading your saved data...</p>
+            </div>
+          </div>
+        </div>
+        <div className="sticky top-0">
+          <FormImg src="help-ai.png" />
+        </div>
+      </ProcessWrapper>
+    );
+  }
+
   return (
     <ProcessWrapper>
       <div className="form-left">
@@ -334,6 +423,8 @@ function HelpOurAi() {
             <HeroHeading data={data} />
           </div>
 
+          {/* 🔥 FIX 8: Debug Panel - Remove in production */}
+        
           <form className="form-container flex flex-col h-full justify-between">
             <div className="flex flex-col gap-4">
               {[0, 1, 2].map((row) => (
@@ -341,7 +432,7 @@ function HelpOurAi() {
                   {fields.slice(row * 2, row * 2 + 2).map((field) => (
                     <div className="w-full " key={field.name}>
                       <FormSelect
-                      className="text-xl"
+                        className="text-xl"
                         label={field.label}
                         name={field.name}
                         options={yesNoOptions}
@@ -354,6 +445,8 @@ function HelpOurAi() {
                         delay={100}
                         disabled={allDisabled}
                         placeholder="Select option"
+                        // 🔥 FIX 9: Force re-render key
+                        key={`${field.name}-${formValues[field.name]}`}
                       />
                     </div>
                   ))}

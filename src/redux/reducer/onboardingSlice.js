@@ -21,7 +21,8 @@ const initialState = {
     environmentalAmount: "",
     cybersecurityAmount: "",
   },
-  skippedInsurance: false, // ✅ NEW FLAG
+  skippedInsurance: false, // ✅ Skip flag
+  allNoInsurance: false,   // ✅ All "No" flag - NEW
 };
 
 const onboardingSlice = createSlice({
@@ -45,11 +46,13 @@ const onboardingSlice = createSlice({
       state.insuranceAmounts = { ...action.payload };
     },
 
-    // ✅ NEW ACTIONS:
+    // ✅ SKIP & ALL NO ACTIONS:
     setSkippedInsurance: (state, action) => {
       state.skippedInsurance = action.payload;
     },
-
+    setAllNoInsurance: (state, action) => {
+      state.allNoInsurance = action.payload;
+    },
 
     clearInsuranceData: (state) => {
       state.insuranceData = {
@@ -77,10 +80,11 @@ export const {
   saveIndustryCategory,
   saveInsuranceData,
   saveInsuranceAmounts,
-  clearInsuranceData,      // ✅ EXPORT THIS
+  clearInsuranceData,
   clearInsuranceAmounts,
   clearOnboardingData,
-  setSkippedInsurance, // ✅ EXPORT THIS TOO
+  setSkippedInsurance,   // ✅ EXPORT
+  setAllNoInsurance,     // ✅ EXPORT - NEW ACTION
 } = onboardingSlice.actions;
 
 export default onboardingSlice.reducer;
