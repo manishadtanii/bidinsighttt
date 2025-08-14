@@ -677,27 +677,27 @@ function Register() {
     setErrors((prev) => ({ ...prev, [name]: msg }));
   };
 
-  // useEffect(() => {
-  //   const ttlStart = sessionStorage.getItem("ttlStartTime");
-  //   if (!ttlStart) sessionStorage.setItem("ttlStartTime", Date.now());
+  // Add this useEffect back in your Register component (uncomment and fix it):
 
-  //   Object.entries(fields).forEach(([name, value]) => {
-  //     if (value) {
-  //       setTouched((prev) => ({ ...prev, [name]: true }));
-  //       validateField(name, value);
-  //     }
-  //   });
+useEffect(() => {
+  // Validate pre-filled fields and set them as touched
+  Object.entries(fields).forEach(([name, value]) => {
+    if (value && value.trim().length > 0) {
+      setTouched((prev) => ({ ...prev, [name]: true }));
+      validateField(name, value);
+    }
+  });
 
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (emailDebounceTimer.current) {
-  //       clearTimeout(emailDebounceTimer.current);
-  //     }
-  //     if (abortController.current) {
-  //       abortController.current.abort();
-  //     }
-  //   };
-  // }, []);
+  // Cleanup on unmount 
+  return () => {
+    if (emailDebounceTimer.current) {
+      clearTimeout(emailDebounceTimer.current);
+    }
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+  };
+}, []); // Empty dependency array - run only on mount
 
   const handleChange = (e) => {
     const { name, value } = e.target;

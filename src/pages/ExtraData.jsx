@@ -836,20 +836,21 @@ function ExtraData() {
   return (
     <ProcessWrapper>
       <div className="form-left">
-        <div className="pe-3 flex flex-col justify-between h-full">
+        <div className="pe-3 flex flex-col ">
           <div>
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
 
           {/* ✅ Form container with conditional overlay effects */}
-          <div className={`relative ${(showSkipModal || showAllNoModal) ? 'overflow-hidden' : ''}`}>
+          <div className={`relative ${(showSkipModal || showAllNoModal) ? 'overflow-hidden' : ''} `}>
             <form
               className={`form-container flex flex-col h-full justify-between transition-opacity duration-300 ${
                 (showSkipModal || showAllNoModal) ? 'opacity-30 pointer-events-none' : 'opacity-100'
               }`}
               onSubmit={handleSubmit}
             >
+
               <div className="flex flex-col gap-4">
                 {/* ✅ Render filtered fields based on mode */}
                 {getEnabledFieldsToRender.length > 0 ? (
@@ -868,6 +869,8 @@ function ExtraData() {
                 onSkip={handleSkip}
                 onBack={handleBack}
               />
+
+
             </form>
 
             {/* ✅ Skip Modal Overlay */}

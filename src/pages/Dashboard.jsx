@@ -510,70 +510,71 @@ function Dashboard() {
 
 
   // Handle selecting a saved search and applying filters
-  const handleSavedSearchSelect = async (searchId) => {
-    // 🔥 Handle "My Saved Searches" default option
-    if (searchId === "_default_" || !searchId) {
-      // Reset to default state
-      const defaultFilters = {
-        status: "Active",
-        keyword: { include: [], exclude: [] },
-        location: [],
-        UNSPSCCode: [],
-        solicitationType: [],
-        NAICSCode: [],
-        publishedDate: { after: "", before: "" },
-        closingDate: { after: "", before: "" },
-        ordering: "closing_date", // 🔥 FIXED: Added default ordering
-      };
+  // Fix the handleSavedSearchSelect function in Dashboard.js
 
-      console.log("🔥 Resetting to default dashboard state");
+const handleSavedSearchSelect = async (searchId) => {
+  // 🔥 Handle "My Saved Searches" default option
+  if (searchId === "_default_" || !searchId) {
+    // Reset to default state
+    const defaultFilters = {
+      status: "Active",
+      keyword: { include: [], exclude: [] },
+      location: [],
+      UNSPSCCode: [],
+      solicitationType: [],
+      NAICSCode: [],
+      publishedDate: { after: "", before: "" },
+      closingDate: { after: "", before: "" },
+      ordering: "closing_date",
+    };
 
-      setFilters(defaultFilters);
-      setAppliedFilters(defaultFilters);
-      setSelectedSavedSearch(null);
-      setSaveSearchFilters({});
-      setCurrentPage(1);
-      // setTopSearchTerm(""); // Clear search input too
+    console.log("🔥 Resetting to default dashboard state");
 
+    setFilters(defaultFilters);
+    setAppliedFilters(defaultFilters);
+    setSelectedSavedSearch(null);
+    setSaveSearchFilters({});
+    setCurrentPage(1);
+    setTopSearchTerm(""); // 🔥 FIX: Clear search term completely
 
-      const searchFromSaved = urlParams.get("search");
-    setTopSearchTerm(searchFromSaved || ""); 
+    // 🔥 FIX: Navigate to default URL immediately
+    navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
+    return;
+  }
 
-      // Navigate to default URL
-      navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
-      return;
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    const matched = savedSearches.find((item) => item.id === searchId);
+    console.log(matched.query_string, "🔥 Matched saved search");
+    if (!matched) return;
+
+    const urlParams = new URLSearchParams(matched.query_string);
+    const decodedFilters = decodeUrlToFilters(urlParams);
+    console.log(decodedFilters, "🔥 Decoded filters from saved search");
+
+    setSelectedSavedSearch({ id: matched.id, name: matched.name });
+    setSaveSearchFilters(matched.query_string);
+    setFilters(decodedFilters);
+    setAppliedFilters(decodedFilters);
+    setCurrentPage(1);
+    
+    // 🔥 FIX: Check if saved search has search term and set it
+    const searchFromSaved = urlParams.get("search");
+    setTopSearchTerm(searchFromSaved || "");
+
+    let cleanQueryString = matched.query_string;
+    if (cleanQueryString.startsWith('?')) {
+      cleanQueryString = cleanQueryString.substring(1);
     }
 
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-
-      const matched = savedSearches.find((item) => item.id === searchId);
-      console.log(matched.query_string, "🔥 Matched saved search");
-      if (!matched) return;
-
-      const urlParams = new URLSearchParams(matched.query_string);
-      const decodedFilters = decodeUrlToFilters(urlParams);
-      console.log(decodedFilters, "🔥 Decoded filters from saved search");
-
-      setSelectedSavedSearch({ id: matched.id, name: matched.name });
-      setSaveSearchFilters(matched.query_string);
-      setFilters(decodedFilters);
-      setAppliedFilters(decodedFilters);
-      setCurrentPage(1);
-      setTopSearchTerm(""); // Clear search input
-
-      let cleanQueryString = matched.query_string;
-      if (cleanQueryString.startsWith('?')) {
-        cleanQueryString = cleanQueryString.substring(1);
-      }
-
-      const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
-      navigate(fullURL);
-    } catch (err) {
-      console.error("Failed to load saved search filters", err);
-    }
-  };
+    const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}`;
+    navigate(fullURL);
+  } catch (err) {
+    console.error("Failed to load saved search filters", err);
+  }
+};
 
   // Handle saving or updating a saved search
   const handleSaveOrUpdate = (data) => {

@@ -65,8 +65,11 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleRowClick = (id) => navigate(`/summary/${id}`);
+    
+  const handleRowClick = (id) => {
+    console.log(id);
+    navigate(`/summary/${id}`);
+  };
 
   const exportToCSV = () => {
     const csv = convertToCSV(data);
@@ -132,7 +135,7 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
               </div>
             </th>
 
-            <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("bid_name", e)}>Bid Name</th>
+            <th className="px-4 py-4 font-inter text-lg cursor-pointer">Bid Name</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("open_date", e)}>Open Date {getSortIcon("open_date")}</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)}>Closed Date {getSortIcon("closing_date")}</th>
             <th className="px-4 py-4 font-inter text-lg cursor-pointer" onClick={(e) => handleHeaderClick("closing_date", e)} title="Sorted by closing date">Countdown {getSortIcon("closing_date")}</th>

@@ -376,6 +376,8 @@ function CompanyBuild() {
                 message={touched.companyWebsite || errors.companyWebsite ? errors.companyWebsite : ""}
                 messageType={getMessageType("companyWebsite")}
               />
+
+
               <div className="flex w-[100%] md:w-[90%] gap-4">
                 <FormSelect
                   label="Year in business"
@@ -388,8 +390,9 @@ function CompanyBuild() {
                     { value: 4, label: "4-7" },
                     { value: 8, label: "8+" },
                   ]}
+                  touched={touched.yearInBusiness}
                   delay={100}
-                  message={touched.yearInBusiness || errors.yearInBusiness ? errors.yearInBusiness : ""}
+                  message={touched.yearInBusiness ? errors.yearInBusiness : ""}
                   messageType={getMessageType("yearInBusiness")}
                 />
                 <FormSelect
@@ -403,11 +406,15 @@ function CompanyBuild() {
                     { value: "11-50", label: "11 to 50" },
                     { value: "50+", label: "50+" },
                   ]}
+                  touched={touched.numberOfEmployees}
                   delay={100}
-                  message={touched.numberOfEmployees || errors.numberOfEmployees ? errors.numberOfEmployees : ""}
+                  message={touched.numberOfEmployees ? errors.numberOfEmployees : ""}
                   messageType={getMessageType("numberOfEmployees")}
                 />
               </div>
+
+
+
               <div className="flex w-[100%] md:w-[90%] gap-4">
                 <FormSelect
                   label="State"
@@ -417,8 +424,9 @@ function CompanyBuild() {
                   onBlur={handleBlur}
                   options={stateOptions}
                   delay={100}
-                  message={touched.state || errors.state ? errors.state : ""}
+                  message={touched.state ? errors.state : ""}
                   messageType={getMessageType("state")}
+                  touched={touched.state}
                 />
                 <FormSelect
                   label="Target contract size"
@@ -432,8 +440,9 @@ function CompanyBuild() {
                     { value: "above-500000", label: "Above $500,000" },
                   ]}
                   delay={100}
-                  message={touched.targetContractSize || errors.targetContractSize ? errors.targetContractSize : ""}
+                  message={touched.targetContractSize ? errors.targetContractSize : ""}
                   messageType={getMessageType("targetContractSize")}
+                  touched={touched.targetContractSize}
                 />
               </div>
 

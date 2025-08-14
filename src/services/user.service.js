@@ -155,3 +155,14 @@ export const fetchIndustryCategories = async () => {
     return []; // Return empty array instead of throwing, to prevent UI crash
   }
 };
+
+export const similarBids = async (id) => {
+  try {
+    const response = await API.get(`/bids/similar/${id}`);
+    console.log(response.data, "🔥 Similar bids fetched");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching similar bids:", error);
+    throw error;
+  }
+}

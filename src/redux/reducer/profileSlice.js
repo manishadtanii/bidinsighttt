@@ -1,5 +1,4 @@
 // profileSlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getUserProfile } from "../../services/bid.service";
 
@@ -9,6 +8,16 @@ export const fetchUserProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await getUserProfile();
+      // console.log("Raw API Data:", data);
+
+      // ✅ Remove fein_or_ssn_number no matter where it is
+      if (data && typeof data === "object") {
+        const { fein_or_ssn_number, ...rest } = data;
+        // console.log(data);
+        return rest;
+      } 
+      
+
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching profile");
