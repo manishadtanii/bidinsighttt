@@ -392,7 +392,7 @@ function Dashboard() {
                 ) : (
                   <div className="flex gap-3 text-[1em]">
                     {middle.map((item) => (
-                      <BgCover key={item.id}>
+                      <BgCover key={item.id} description={item.description} title={item.title}>
                         <div className="flex gap-2">
                           <div className="text font-inter text-[#DBDBDB]">
                             {item.title}
@@ -423,7 +423,7 @@ function Dashboard() {
                     handleSavedSearchSelect={handleSavedSearchSelect}
                   />
 
-                  <BgCover>
+                  <BgCover >
                     <div
                       className="text-white cursor-pointer"
                       onClick={() => setSaveSearchToggle(true)}
