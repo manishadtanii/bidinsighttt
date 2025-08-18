@@ -3,24 +3,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-const similarBidsData = [
-  {
-    title: "Omnivex Annual Subscription",
-    org: "ODM",
-    postedDate: "Jun. 27",
-    deadline: "Jul. 11",
-    link: "#",
-  },
-  {
-    title: "Digital Display Maintenance",
-    org: "OH Medicaid Dept",
-    postedDate: "Jun. 20",
-    deadline: "Jul. 10",
-    link: "#",
-  },
-];
+function SimilarBids({ similarBids }) {
+  console.log(similarBids, "🔥 Bid Data in SimilarBids");
 
-function SimilarBids() {
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long", // full month name like "July"
+      day: "numeric", // day number
+    });
+  };
+
   return (
     <div className="summary">
       <div className="space-y-6 text-white container-fixed">
@@ -28,45 +23,53 @@ function SimilarBids() {
           Similar Bids
         </h1>
 
-        <div className="divide-y divide-white/20">
-          {similarBidsData.map((bid, index) => (
-            <div
-              key={index}
-              className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4"
-            >
-              <div className="space-y-1">
-                <p className="font-archivo text-p font-bold">{bid.title}</p>
-                <p className="text-xl text-[#DBDBDB]">{bid.org}</p>
-              </div>
-
-              <div className="text-sm space-y-1 sm:text-right">
-                <div className="flex items-center gap-1">
-                  <FontAwesomeIcon icon={faCalendarAlt} />
-                  <span>
-                    <span className="text-[#DBDBDB] ml-1">Posted: </span>
-                    {bid.postedDate}
-                  </span>
+        {similarBids.length > 0 ? (
+          <div className="divide-y divide-white/20 flex flex-col ">
+            {similarBids.map((bid, index) => (
+              <div
+                key={index}
+                className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4"
+              >
+                {/* Left Section */}
+                <div className="space-y-1 w-1/2">
+                  <p className="font-archivo text-p font-bold">
+                    {bid.bid_name || "Untitled Bid"}
+                  </p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <FontAwesomeIcon icon={faRedo} />
-                  <span>
-                    <span className="text-[#DBDBDB] ml-1">Deadline: </span>
-                    {bid.deadline}
-                  </span>
+
+                {/* Middle Section */}
+                <div className="text-sm space-y-1 sm:text-right">
+                  <div className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                    <span>
+                      <span className="text-[#DBDBDB] ml-1">Posted: </span>
+                      {formatDate(bid.open_date) || formatDate(bid.postedDate)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faRedo} />
+                    <span>
+                      <span className="text-[#DBDBDB] ml-1">Deadline: </span>
+                      {formatDate(bid.closing_date) || formatDate(bid.deadline)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right Section */}
+                <div>
+                  <Link
+                    to={bid.link || `/summary/${bid.id}`}
+                    className="text-white hover:text-[#DBDBDB] transition underline font-inter"
+                  >
+                    View
+                  </Link>
                 </div>
               </div>
-
-              <div>
-                <Link
-                  to={bid.link}
-                  className="text-white hover:text-[#DBDBDB] transition underline font-inter"
-                >
-                  View
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[#DBDBDB] italic">No similar bids found.</p>
+        )}
 
         <div className="text-right pt-2">
           <Link

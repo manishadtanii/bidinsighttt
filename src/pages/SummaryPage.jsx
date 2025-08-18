@@ -1,3 +1,4 @@
+// 1. UPDATED SummaryPage.js - Add similar bids API call
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BidHeader from "../sections/summary/BidHeader";
@@ -6,11 +7,19 @@ import BidTracking from "../sections/summary/BidTracking";
 import AiFeature from "../sections/summary/AiFeature";
 import SimilarBids from "../sections/summary/SimilarBids";
 import { getBids } from "../services/bid.service.js";
+import { similarBids } from "../services/user.service.js"; // 🔥 Import similar bids API
 
 function SummaryPage() {
   const { id } = useParams();
   const [bid, setBid] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // 🔥 NEW: State for similar bids
+  const [similarBidsData, setSimilarBidsData] = useState([]);
+  const [similarBidsLoading, setSimilarBidsLoading] = useState(false);
+  const [similarBidsError, setSimilarBidsError] = useState(null);
+  
+  console.log(id, "ID from URL");
 
   const fallback = {
     bid_name: "Unknown Bid",
@@ -21,6 +30,7 @@ function SummaryPage() {
     source: "#",
   };
 
+  // Existing bid fetch useEffect
   useEffect(() => {
     const fetchBid = async () => {
       try {
@@ -37,7 +47,33 @@ function SummaryPage() {
     fetchBid();
   }, [id]);
 
-  // if (loading) return <div className="text-white p-10">Loading...</div>;
+  // 🔥 NEW: Similar bids fetch useEffect
+  useEffect(() => {
+    const fetchSimilarBids = async () => {
+      if (!id) return;
+      
+      setSimilarBidsLoading(true);
+      setSimilarBidsError(null);
+      
+      try {
+        const data = await similarBids(id); // 🔥 API call with bid ID
+        console.log(data, "🔥 Similar bids fetched");
+        setSimilarBidsData(data);
+        console.log("🔥 Similar bids loaded:", data);
+      } catch (err) {
+        console.error("❌ Failed to fetch similar bids:", err);
+        setSimilarBidsError("Failed to load similar bids");
+        setSimilarBidsData([]); // Set empty array on error
+      } finally {
+        setSimilarBidsLoading(false);
+      }
+    };
+
+    // Only fetch similar bids after main bid is loaded
+    if (bid && id) {
+      fetchSimilarBids();
+    }
+  }, [id, bid]); // Depend on both id and bid
 
   const bidData = bid || fallback;
   console.log("Bid Data:", bidData);
@@ -73,8 +109,15 @@ function SummaryPage() {
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
                 <BidTracking bidData={bidData} />
               </div>
+              
+              {/* 🔥 UPDATED: Pass similar bids data as props */}
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-                <SimilarBids bidData={bidData} />
+                <SimilarBids 
+                  bidData={bidData}
+                  similarBids={similarBidsData.slice(0,2)} // 🔥 Similar bids array
+                  loading={similarBidsLoading}   // 🔥 Loading state
+                  error={similarBidsError}       // 🔥 Error state
+                />
               </div>
             </div>
 

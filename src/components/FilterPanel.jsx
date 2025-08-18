@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { getBids } from "../services/bid.service.js";
 
@@ -45,7 +31,7 @@ const FilterPanel = ({ onClose, filters: propFilters, setFilters: setPropFilters
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  
+
   // 🔥 FIXED: Get lastLogin from Redux
   const lastLogin = useSelector((state) => state.login?.user?.last_login);
 
@@ -160,10 +146,23 @@ const FilterPanel = ({ onClose, filters: propFilters, setFilters: setPropFilters
 
       // 🔥 FIXED: Check if this matches lastLogin pattern
       const loginDate = lastLogin ? lastLogin.split("T")[0] : "";
-      const today = new Date().toISOString().split("T")[0];
-      
-      if (decodedFilters.publishedDate.after === loginDate && 
-          decodedFilters.publishedDate.before === today) {
+      const today = new Date();
+
+      const todayString = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+      console.log("🔥 Date comparison debug:", {
+        loginDate,
+        todayString,
+        fromURL: decodedFilters.publishedDate.after,
+        toURL: decodedFilters.publishedDate.before,
+        isoToday: new Date().toISOString().split("T")[0]
+      });
+
+
+      if (decodedFilters.publishedDate.after === loginDate &&
+        decodedFilters.publishedDate.before === todayString) {
         // This is a lastLogin filter
         decodedFilters.publishedDate.type = "lastLogin";
         console.log("🔥 Detected lastLogin from URL");
