@@ -392,7 +392,7 @@ function CompanyBuild() {
                   ]}
                   touched={touched.yearInBusiness}
                   delay={100}
-                  message={touched.yearInBusiness ? errors.yearInBusiness : ""}
+                  message={errors.yearInBusiness}
                   messageType={getMessageType("yearInBusiness")}
                 />
                 <FormSelect
@@ -408,7 +408,7 @@ function CompanyBuild() {
                   ]}
                   touched={touched.numberOfEmployees}
                   delay={100}
-                  message={touched.numberOfEmployees ? errors.numberOfEmployees : ""}
+                  message={errors.numberOfEmployees} // ✅ CHANGED
                   messageType={getMessageType("numberOfEmployees")}
                 />
               </div>
@@ -424,7 +424,7 @@ function CompanyBuild() {
                   onBlur={handleBlur}
                   options={stateOptions}
                   delay={100}
-                  message={touched.state ? errors.state : ""}
+                   message={errors.state} // ✅ CHANGED
                   messageType={getMessageType("state")}
                   touched={touched.state}
                 />
@@ -440,7 +440,7 @@ function CompanyBuild() {
                     { value: "above-500000", label: "Above $500,000" },
                   ]}
                   delay={100}
-                  message={touched.targetContractSize ? errors.targetContractSize : ""}
+                 message={errors.targetContractSize} // ✅ CHANGED
                   messageType={getMessageType("targetContractSize")}
                   touched={touched.targetContractSize}
                 />

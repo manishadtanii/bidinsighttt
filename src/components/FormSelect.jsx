@@ -196,7 +196,6 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -220,11 +219,12 @@ function FormSelect({
   onBlur,
   message = "",
   messageType = "",
-  touched = false // This prop is not needed anymore in validation logic
+  touched = false
 }) {
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasInteracted, setHasInteracted] = useState(false); // ✅ Track user interaction
 
   // Sort options alphabetically A-Z
   const sortedOptions = [...options].sort((a, b) => 
@@ -273,15 +273,24 @@ function FormSelect({
 
   // Update parent on change
   useEffect(() => {
-    if (onChange) {
+    if (onChange && hasInteracted) { // ✅ Only trigger onChange after user interaction
       onChange({ target: { name, value: selected } });
     }
-  }, [selected]);
+  }, [selected, hasInteracted]);
+
+  // ✅ Set hasInteracted when dropdown is opened (user clicks on it)
+  const handleDropdownToggle = () => {
+    setIsOpen(!isOpen);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  };
 
   const handleSelect = (optValue) => {
     setSelected(optValue);
     setIsOpen(false);
     setSearchTerm("");
+    setHasInteracted(true); // ✅ Mark as interacted when user selects
     
     // Call onBlur if provided
     if (onBlur) {
@@ -302,7 +311,7 @@ function FormSelect({
       {/* Custom Dropdown */}
       <div
         className="relative font-t p-3 py-5 rounded-[20px] border border-gray-300 text-white cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleDropdownToggle} // ✅ Updated to use new handler
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -368,8 +377,8 @@ function FormSelect({
         )}
       </div>
 
-      {/* 🔥 FIX: Validation Message - Only show when message exists (parent handles touched logic) */}
-      {message && (
+      {/* ✅ FIXED: Show validation message only after user interaction AND when message exists */}
+      {message && hasInteracted && (
         <p
           className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${
             isSuccess ? "text-green-400" : "text-red-400"
