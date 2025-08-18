@@ -109,14 +109,45 @@ function Dashboard() {
     fetchBidCount();
   }, []);
 
-  // 🔥 MIDDLE SECTION DATA
+
   const middle = [
-    { id: 1, title: "Total Bids", num: bidCount?.count || 0 },
-    { id: 2, title: "Active Bids", num: bidsInfo?.count || 0 },
-    { id: 3, title: "New Bids", num: bidCount?.new_bids || 0 },
-    { id: 4, title: "Saved", num: "0" },
-    { id: 5, title: "Followed", num: "0/25" },
-  ];
+  {
+    id: 1,
+    title: "Total Bids",
+    num: bidCount?.count || 0,
+    tag: "FILTER",
+    description: "Narrow down bids by industry, status, location and more."
+  },
+  {
+    id: 2,
+    title: "Active Bids",
+    num: bidsInfo?.count || 0,
+    tag: "ACTIVE BIDS",
+    description: "Bids that haven’t been closed/awarded yet!"
+  },
+  {
+    id: 3,
+    title: "New Bids",
+    num: bidCount?.new_bids || 0,
+    tag: "NEW BIDS",
+    description: "Bids added in the last 24 hours."
+  },
+  {
+    id: 4,
+    title: "Saved",
+    num: "0",
+    tag: "SAVE",
+    description: "Bookmark bids you’re interested in so you can check them out later."
+  },
+  {
+    id: 5,
+    title: "Followed",
+    num: "0/25",
+    tag: "FOLLOW",
+    description: "Get instant updates on changes & deadlines for these bids."
+  }
+];
+
 
   // 🔥 FETCH BIDS FUNCTION
   const fetchBids = useCallback(async () => {

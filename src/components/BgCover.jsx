@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function BgCover({ children }) {
+function BgCover({ children, title, description }) {
   
   return (
     <div className="tooltip-wrapper relative">
@@ -11,11 +11,10 @@ function BgCover({ children }) {
       <div className="tooltip absolute right-[30%] bottom-[120%] w-[200px] rounded-[20px] p-3 bg-[#7180FF]">
         <div className="text-box">
           <h1 className="text-sm font-inter font-medium text-white">
-            Unlock the Export Bids
+           {title}
           </h1>
           <p className="text-[12px] font-inter font-light text-white mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan
-            eros non fringilla faucibus.{" "}
+           {description}
           </p>
         </div>
         <div className="text-end relative">
