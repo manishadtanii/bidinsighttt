@@ -6,7 +6,7 @@ function Hero() {
     title: "Bidding made easier. Insights made smarter.",
     para: "Revolutionizing government bidding. Powered by A.I. Fueled by Analytics.",
     btnText: "Get Started",
-    btnLink: "/bids",
+    btnLink: "/dashboard",
     variant:"dashboard",
     container: "max-w-4xl mx-auto text-center",
   };

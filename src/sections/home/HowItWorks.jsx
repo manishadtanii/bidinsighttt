@@ -64,9 +64,9 @@ function HowItWorks() {
     {
       number: "04:",
       title: "Start Bidding!",
-      para: "Dive into our real-time RFP feed, filter for your targets and submit winning proposals right from your dashboard.",
+      para: "Dive into our real-time bid feed, filter for your targets and go directly to the source site from your dashboard.",
       btnText: "Go to Bids",
-      link: "/",
+      link: "/dashboard",
       img: "work-img-4.jpg",
     },
   ];

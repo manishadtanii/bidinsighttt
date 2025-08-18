@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 // 1. UPDATED SummaryPage.js - Add similar bids API call
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
