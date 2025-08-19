@@ -9,6 +9,7 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
 import IndustryCategoriesSkeletonLeft from "./components/shimmereffects/IndustryCategoriesSkeletonLeft.jsx";
 import AiToolSet from "./pages/AiToolSet.jsx";
+import HelpCenter from "./pages/HelpCenter.jsx";
 // import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";  
 
 
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
                         <Route path="/company-build" element={<CompanyBuild />} />
+                        <Route path="/help" element={<HelpCenter />} />
             {/* <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} /> */}
             <Route path="/ai-toolset" element={<AiToolSet />} />
             <Route path="/plan" element={<Plan />} />
