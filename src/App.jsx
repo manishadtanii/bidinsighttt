@@ -8,6 +8,7 @@ import BidTableSkeleton from "./components/shimmereffects/BidTableSkeleton";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
 import IndustryCategoriesSkeletonLeft from "./components/shimmereffects/IndustryCategoriesSkeletonLeft.jsx";
+import AiToolSet from "./pages/AiToolSet.jsx";
 // import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";  
 
 
@@ -50,7 +51,8 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
                         <Route path="/company-build" element={<CompanyBuild />} />
-            <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} />
+            {/* <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} /> */}
+            <Route path="/ai-toolset" element={<AiToolSet />} />
             <Route path="/plan" element={<Plan />} />
             <Route path="/geographic-coverage" element={<ProtectedRoute> <GeographicCoverage /> </ProtectedRoute> } />
             <Route path="/industry-categories" element={<ProtectedRoute> <IndustryCategories /> </ProtectedRoute> } />
@@ -63,7 +65,7 @@ const App = () => {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/super-admin" element={<SuperAdmin />} />
-            <Route path="/bidskeleton" element={<BidTableSkeleton />} />
+            {/* <Route path="/bidskeleton" element={<BidTableSkeleton />} /> */}
             <Route path="/*" element={<Error404 />} />
           </Routes>
         </Suspense>
