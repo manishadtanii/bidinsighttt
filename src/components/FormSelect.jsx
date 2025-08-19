@@ -28,10 +28,10 @@
 //   const [searchTerm, setSearchTerm] = useState("");
 
 //   // Sort options alphabetically A-Z
-//   const sortedOptions = [...options].sort((a, b) => 
+//   const sortedOptions = [...options].sort((a, b) =>
 //     a.label.localeCompare(b.label, undefined, { sensitivity: 'base' })
 //   );
-  
+
 //   const fullOptions = [
 //     { value: "", label: placeholder },
 //     ...sortedOptions.filter((opt) => opt.value !== "")
@@ -83,7 +83,7 @@
 //     setSelected(optValue);
 //     setIsOpen(false);
 //     setSearchTerm("");
-    
+
 //     // Call onBlur if provided
 //     if (onBlur) {
 //       onBlur({ target: { name, value: optValue } });
@@ -138,7 +138,7 @@
 //                 />
 //               </div>
 //             )}
-            
+
 //             {/* Options List with scrolling */}
 //             <ul className="max-h-48 overflow-y-auto">
 //               {filteredOptions.map((opt, i) => (
@@ -189,13 +189,6 @@
 
 // export default FormSelect;
 
-
-
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -205,7 +198,7 @@ import {
   faUsers,
   faHandshake,
   faMapMarkerAlt,
-  faChevronDown
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 function FormSelect({
@@ -219,25 +212,37 @@ function FormSelect({
   onBlur,
   message = "",
   messageType = "",
-  touched = false
+  touched = false,
 }) {
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false); // ✅ Track user interaction
 
-  // Sort options alphabetically A-Z
+  /*   // Sort options alphabetically A-Z
   const sortedOptions = [...options].sort((a, b) => 
     a.label.localeCompare(b.label, undefined, { sensitivity: 'base' })
+  ); */
+
+  // Check if options match the "contract range" set
+  const isContractRange = options.every((opt) =>
+    ["upto-75000", "75000-500000", "above-500000"].includes(opt.value)
   );
-  
+
+  // Apply sorting only when NOT contract range
+  const sortedOptions = isContractRange
+    ? options // keep order as given
+    : [...options].sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: "base" })
+      );
+
   const fullOptions = [
     { value: "", label: placeholder },
-    ...sortedOptions.filter((opt) => opt.value !== "")
+    ...sortedOptions.filter((opt) => opt.value !== ""),
   ];
 
   // Filter options based on search term
-  const filteredOptions = fullOptions.filter(option =>
+  const filteredOptions = fullOptions.filter((option) =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -273,7 +278,8 @@ function FormSelect({
 
   // Update parent on change
   useEffect(() => {
-    if (onChange && hasInteracted) { // ✅ Only trigger onChange after user interaction
+    if (onChange && hasInteracted) {
+      // ✅ Only trigger onChange after user interaction
       onChange({ target: { name, value: selected } });
     }
   }, [selected, hasInteracted]);
@@ -291,7 +297,7 @@ function FormSelect({
     setIsOpen(false);
     setSearchTerm("");
     setHasInteracted(true); // ✅ Mark as interacted when user selects
-    
+
     // Call onBlur if provided
     if (onBlur) {
       onBlur({ target: { name, value: optValue } });
@@ -320,7 +326,8 @@ function FormSelect({
               className={`${iconColor(label)}`}
             />
             <span>
-              {fullOptions.find((o) => o.value === selected)?.label || placeholder}
+              {fullOptions.find((o) => o.value === selected)?.label ||
+                placeholder}
             </span>
           </div>
           <FontAwesomeIcon
@@ -346,7 +353,7 @@ function FormSelect({
                 />
               </div>
             )}
-            
+
             {/* Options List with scrolling */}
             <ul className="max-h-48 overflow-y-auto">
               {filteredOptions.map((opt, i) => (

@@ -73,7 +73,7 @@ function SimilarBids({ similarBids }) {
 
         <div className="text-right pt-2">
           <Link
-            to="/"
+            to="/dashboard"
             className="text-white hover:text-[#DBDBDB] font-medium transition underline"
           >
             View Dashboard

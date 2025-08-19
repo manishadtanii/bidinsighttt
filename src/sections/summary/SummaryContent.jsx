@@ -10,7 +10,7 @@ export default function SummaryContent({ bidData = {} }) {
     head: "Unlock the Bids to View Score",
     p: "To view source links, save opportunities, and track bid deadlines, you need to sign in or create an account.",
     container: "p-4",
-    link: "/",
+    link: "/pricing",
   };
 
   return (
