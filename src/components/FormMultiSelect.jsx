@@ -10,6 +10,8 @@ function FormMultiSelect({
   value = [],
   onChange,
 }) {
+
+  console.log(options);
   // Handler to restrict max 10 selections
   const handleChange = (selectedOptions) => {
     if (selectedOptions.length <= 10) {
@@ -48,8 +50,8 @@ function FormMultiSelect({
             backgroundColor: state.isFocused
               ? "#d1d1d1"
               : state.isSelected
-              ? "white"
-              : "white",
+                ? "white"
+                : "white",
             color: "black",
             cursor: "pointer",
             position: "relative",

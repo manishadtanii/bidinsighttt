@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,12 +26,7 @@ function FormSelect({
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [hasInteracted, setHasInteracted] = useState(false); // ✅ Track user interaction
-
-  /*   // Sort options alphabetically A-Z
-  const sortedOptions = [...options].sort((a, b) => 
-    a.label.localeCompare(b.label, undefined, { sensitivity: 'base' })
-  ); */
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Check if options match the "contract range" set
   const isContractRange = options.every((opt) =>
@@ -61,7 +51,12 @@ function FormSelect({
   );
 
   const [selected, setSelected] = useState(value || "");
-  const isSuccess = messageType === "success";
+  
+  // 🔥 FIX: Proper validation logic
+  const shouldShowValidation = hasInteracted || touched;
+  const hasValue = selected && selected !== "";
+  const showError = shouldShowValidation && required && !hasValue;
+  const showSuccess = shouldShowValidation && hasValue && !message.includes("required");
 
   const getIcon = (text) => {
     const lower = text.toLowerCase();
@@ -90,15 +85,18 @@ function FormSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Sync with parent value
+  useEffect(() => {
+    setSelected(value || "");
+  }, [value]);
+
   // Update parent on change
   useEffect(() => {
-    if (onChange && hasInteracted) {
-      // ✅ Only trigger onChange after user interaction
+    if (onChange && hasInteracted && selected !== value) {
       onChange({ target: { name, value: selected } });
     }
   }, [selected, hasInteracted]);
 
-  // ✅ Set hasInteracted when dropdown is opened (user clicks on it)
   const handleDropdownToggle = () => {
     setIsOpen(!isOpen);
     if (!hasInteracted) {
@@ -110,12 +108,60 @@ function FormSelect({
     setSelected(optValue);
     setIsOpen(false);
     setSearchTerm("");
-    setHasInteracted(true); // ✅ Mark as interacted when user selects
+    setHasInteracted(true);
+    
+    // Immediately call onChange
+    if (onChange) {
+      onChange({ target: { name, value: optValue } });
+    }
+    
     // Call onBlur if provided
     if (onBlur) {
       onBlur({ target: { name, value: optValue } });
     }
   };
+
+  // 🔥 FIX: Dynamic message generation
+  const getDisplayMessage = () => {
+    // If parent provides message, use it
+    if (message && shouldShowValidation) {
+      return message;
+    }
+    
+    // Generate our own validation messages
+    if (shouldShowValidation) {
+      if (required && !hasValue) {
+        return "This field is required";
+      } else if (hasValue) {
+        return "This field is valid";
+      }
+    }
+    
+    return "";
+  };
+
+  const getDisplayMessageType = () => {
+    // If parent provides messageType, use it
+    if (messageType && shouldShowValidation) {
+      return messageType;
+    }
+    
+    // Generate our own message type
+    if (shouldShowValidation) {
+      if (required && !hasValue) {
+        return "error";
+      } else if (hasValue) {
+        return "success";
+      }
+    }
+    
+    return "";
+  };
+
+  const displayMessage = getDisplayMessage();
+  const displayMessageType = getDisplayMessageType();
+  const isSuccess = displayMessageType === "success";
+  const isError = displayMessageType === "error";
 
   return (
     <div
@@ -130,7 +176,7 @@ function FormSelect({
       {/* Custom Dropdown */}
       <div
         className="relative font-t p-3 py-5 rounded-[20px] border border-gray-300 text-white cursor-pointer"
-        onClick={handleDropdownToggle} // ✅ Updated to use new handler
+        onClick={handleDropdownToggle}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -196,8 +242,8 @@ function FormSelect({
         )}
       </div>
 
-      {/* ✅ FIXED: Show validation message only after user interaction AND when message exists */}
-      {message && hasInteracted && (
+      {/* 🔥 FIX: Show validation message with proper logic */}
+      {displayMessage && (
         <p
           className={`text-sm flex items-center gap-1 mt-0.5 mb-1 ${
             isSuccess ? "text-green-400" : "text-red-400"
@@ -207,7 +253,7 @@ function FormSelect({
             icon={isSuccess ? faCheck : faXmark}
             className={isSuccess ? "text-green-400" : "text-red-400"}
           />
-          <span>{message}</span>
+          <span>{displayMessage}</span>
         </p>
       )}
     </div>
