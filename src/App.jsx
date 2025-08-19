@@ -43,35 +43,34 @@ const App = () => {
 
 
   return (
-      <LayoutWrapper>
-        <ScrollToTop />
-        <Suspense>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {/* <Route path="/loader" element={<Loader />} /> */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-                        <Route path="/company-build" element={<CompanyBuild />} />
-                        <Route path="/help" element={<HelpCenter />} />
-            {/* <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} /> */}
-            <Route path="/ai-toolset" element={<AiToolSet />} />
-            <Route path="/plan" element={<Plan />} />
-            <Route path="/geographic-coverage" element={<ProtectedRoute> <GeographicCoverage /> </ProtectedRoute> } />
-            <Route path="/industry-categories" element={<ProtectedRoute> <IndustryCategories /> </ProtectedRoute> } />
-            <Route path="/help-our-ai" element={<ProtectedRoute> <HelpOurAi /> </ProtectedRoute>} />
-            <Route path="/extra-data" element={<ProtectedRoute><ExtraData /></ProtectedRoute> } />
-            <Route path="/email-verification" element={<EmailVerification />} />
-            <Route path="/verification" element={<Verification />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/summary/:id" element={<Suspense fallback={<ShimmerSummaryCard />}> <ProtectedRoute><SummaryPage /></ProtectedRoute> </Suspense>} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/super-admin" element={<SuperAdmin />} />
-            {/* <Route path="/bidskeleton" element={<BidTableSkeleton />} /> */}
-            <Route path="/*" element={<Error404 />} />
-          </Routes>
-        </Suspense>
-      </LayoutWrapper>
+    <LayoutWrapper>
+      <ScrollToTop />
+      <Suspense>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/company-build" element={<CompanyBuild />} />
+          <Route path="/help" element={<ProtectedRoute><HelpCenter /> </ProtectedRoute>} />
+          {/* <Route path="/i" element={<IndustryCategoriesSkeletonLeft />} /> */}
+          <Route path="/ai-toolset" element={<ProtectedRoute> <AiToolSet /> </ProtectedRoute>} />
+          <Route path="/plan" element={<Plan />} />
+          <Route path="/geographic-coverage" element={<ProtectedRoute> <GeographicCoverage /> </ProtectedRoute>} />
+          <Route path="/industry-categories" element={<ProtectedRoute> <IndustryCategories /> </ProtectedRoute>} />
+          <Route path="/help-our-ai" element={<ProtectedRoute> <HelpOurAi /> </ProtectedRoute>} />
+          <Route path="/extra-data" element={<ProtectedRoute><ExtraData /></ProtectedRoute>} />
+          <Route path="/email-verification" element={<EmailVerification />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/summary/:id" element={<Suspense fallback={<ShimmerSummaryCard />}> <ProtectedRoute><SummaryPage /></ProtectedRoute> </Suspense>} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/super-admin" element={<SuperAdmin />} />
+          {/* <Route path="/bidskeleton" element={<BidTableSkeleton />} /> */}
+          <Route path="/*" element={<Error404 />} />
+        </Routes>
+      </Suspense>
+    </LayoutWrapper>
   );
 };
 

@@ -97,8 +97,8 @@ function HowItWorks() {
                 {item.number}
               </div>
               <div className="work-content grid lg:grid-cols-2 gap-5">
-                <div className="work-img rounded-[20px] overflow-hidden">
-                  <img src={item.img} alt="" />
+                <div className="work-img rounded-[20px] overflow-hidden max-h-[65vh]">
+                  <img src={item.img} className="w-full" alt="" />
                 </div>
                 <div className="work-text">
                   <div className="title font-h font-bold h2 text-white">

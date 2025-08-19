@@ -30,7 +30,6 @@ export const getBids = async (queryOrId, searchTerm = "") => {
 
 
 
-
 export const getBidCount = async () => {
   try {
     const token = localStorage.getItem("access_token");
@@ -44,7 +43,6 @@ export const getBidCount = async () => {
     throw error;
   }
 };
-
 
 
 
@@ -105,7 +103,6 @@ export const createSavedSearch = async (body) => {
     throw err;
   }
 };
-
 
 
 

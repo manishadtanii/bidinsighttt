@@ -35,7 +35,7 @@ function OurStory() {
   };
 
   return (
-    <div className='our-story bg-[url("./our-story.jpg")] bg-image h-[100vh]'>
+    <div className='our-story bg-[url("https://bid-insight.vercel.app/our-story.jpg")] bg-image h-[100vh]'>
       <div className="container-p flex flex-col justify-between h-full">
         <h1 className="text-topH font-archivo font-bold text-g mb-4" data-aos="fade-up" data-aos-delay="300">
           Our Story

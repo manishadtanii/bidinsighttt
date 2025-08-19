@@ -462,9 +462,9 @@ function ExtraData() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-  useEffect(() => {
-    checkTTLAndClear(navigate);
-  }, []);
+  // useEffect(() => {
+  //   checkTTLAndClear(navigate);
+  // }, []);
 
   // Field mapping with proper labels
   const insuranceFields = {

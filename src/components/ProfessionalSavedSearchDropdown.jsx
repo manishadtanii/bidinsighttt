@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const ProfessionalSavedSearchDropdown = ({ 
-  savedSearches = [], 
-  selectedSavedSearch, 
-  handleSavedSearchSelect 
+const ProfessionalSavedSearchDropdown = ({
+  savedSearches = [],
+  selectedSavedSearch,
+  handleSavedSearchSelect
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -51,22 +51,23 @@ const ProfessionalSavedSearchDropdown = ({
     if (!selectedSavedSearch || selectedSavedSearch === "_default_") {
       return "My Saved Searches";
     }
-    const selected = savedSearches.find(s => s.id === selectedSavedSearch?.id || s.id === selectedSavedSearch);
-    return selected?.name || "My Saved Searches";
+    // 🔑 Agar koi selected hai to Back to Dashboard show karega
+    return "Back to Dashboard";
   };
+
 
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Dropdown Trigger */}
-      <div 
+      <div
         className="saved-search bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-white truncate">{getDisplayText()}</span>
-        <svg 
+        <svg
           className={`w-4 h-4 text-white transition-transform duration-200 ml-2 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none" 
-          stroke="currentColor" 
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -78,20 +79,23 @@ const ProfessionalSavedSearchDropdown = ({
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-[40rem] overflow-hidden">
           {/* Default Option */}
           <div
-            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer font-inter border-b border-gray-100 ${
-              (!selectedSavedSearch || selectedSavedSearch === "_default_") 
-                ? 'bg-blue-50 text-blue-600 font-medium' 
-                : 'text-gray-900'
-            }`}
+            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer font-inter border-b border-gray-100 ${(!selectedSavedSearch || selectedSavedSearch === "_default_")
+              ? 'bg-blue-50 text-blue-600 font-medium'
+              : 'text-gray-900'
+              }`}
             onClick={() => handleSelect("_default_")}
           >
             <div className="flex items-center">
               <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              My Saved Searches
+              {/* 👇 yaha conditional text */}
+              {(!selectedSavedSearch || selectedSavedSearch === "_default_")
+                ? "My Saved Searches"
+                : "Back to Dashboard"}
             </div>
           </div>
+
 
           {/* Visible Searches */}
           {visibleSearches.length > 0 && (
@@ -99,11 +103,10 @@ const ProfessionalSavedSearchDropdown = ({
               {visibleSearches.map((search, index) => (
                 <div
                   key={search.id || index}
-                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between group ${
-                    (selectedSavedSearch?.id === search.id || selectedSavedSearch === search.id)
-                      ? 'bg-blue-50 text-blue-600 font-medium' 
-                      : 'text-gray-900'
-                  }`}
+                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between group ${(selectedSavedSearch?.id === search.id || selectedSavedSearch === search.id)
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-900'
+                    }`}
                   onClick={() => handleSelect(search.id)}
                 >
                   <div className="flex items-center flex-1 min-w-0">
@@ -136,10 +139,10 @@ const ProfessionalSavedSearchDropdown = ({
                   </svg> */}
                   <span className="font-medium">More ({hiddenSearches.length})</span>
                 </div>
-                <svg 
+                <svg
                   className={`w-4 h-4 transition-transform duration-200 ${showMore ? 'rotate-180' : ''}`}
-                  fill="none" 
-                  stroke="currentColor" 
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -156,11 +159,10 @@ const ProfessionalSavedSearchDropdown = ({
                     {hiddenSearches.map((search, index) => (
                       <div
                         key={search.id || `hidden-${index}`}
-                        className={`px-4 py-3 hover:bg-white cursor-pointer font-inter flex items-center transition-colors duration-150 ${
-                          (selectedSavedSearch?.id === search.id || selectedSavedSearch === search.id)
-                            ? 'bg-blue-50 text-blue-600 font-medium border-l-2 border-blue-500' 
-                            : 'text-gray-700'
-                        }`}
+                        className={`px-4 py-3 hover:bg-white cursor-pointer font-inter flex items-center transition-colors duration-150 ${(selectedSavedSearch?.id === search.id || selectedSavedSearch === search.id)
+                          ? 'bg-blue-50 text-blue-600 font-medium border-l-2 border-blue-500'
+                          : 'text-gray-700'
+                          }`}
                         onClick={() => handleSelect(search.id)}
                       >
                         <svg className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +171,7 @@ const ProfessionalSavedSearchDropdown = ({
                         <span className="truncate">{search.name}</span>
                       </div>
                     ))}
-                    
+
                     {/* Scroll indicator at bottom */}
                     {hiddenSearches.length > 4 && (
                       <div className="px-4 py-2 text-center text-xs text-gray-400 bg-gray-100">

@@ -206,7 +206,7 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
                   <td className="px-4 py-4 font-medium font-inter">{formatDate(bid.closing_date)}</td>
                   <td className="px-4 py-4 font-medium font-inter" title={countdownRaw}><span className="text-white">{countdownDisplay}</span></td>
                   <td className="px-4 py-4 font-medium font-inter">{statusLabel}</td>
-                  <td className="btn-box px-4 py-4 text-center">
+                  <td className="px-4 py-4 btn-box  text-center">
                     <button onClick={(e) => {
                       e.stopPropagation();
                       if (navigator.share) {

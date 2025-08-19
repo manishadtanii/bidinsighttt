@@ -246,9 +246,9 @@ function HelpOurAi() {
   // 🔥 FIX 2: Add loading state to prevent premature rendering
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    checkTTLAndClear(navigate);
-  }, []);
+  // useEffect(() => {
+  //   checkTTLAndClear(navigate);
+  // }, []);
 
   // 🔥 FIX 3: Enhanced session storage loading with proper state management
   useEffect(() => {
