@@ -165,7 +165,11 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
     }
 
     try {
-      const queryString = buildQueryString(filters);
+      const filtersWithOrdering = {
+        ...filters,
+        ordering: filters.ordering || "closing_date" // ✅ Ensure ordering is included
+      };
+      const queryString = buildQueryString(filtersWithOrdering);
       const savedSearchData = {
         name: savedSearch.name.trim(),
         query_string: `?${queryString}`,
@@ -203,18 +207,28 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
         // ✅ Apply its filters
         const urlParams = new URLSearchParams(newlyCreatedSearch.query_string);
         const parsedFilters = parseFiltersFromURL(urlParams);
+        if (!parsedFilters.ordering) {
+          parsedFilters.ordering = "closing_date";
+        }
         setFilters(parsedFilters);
 
         // ✅ Update the URL - ensure query_string has proper format
-        const queryString = newlyCreatedSearch.query_string.startsWith('?')
-          ? newlyCreatedSearch.query_string
-          : `?${newlyCreatedSearch.query_string}`;
-        navigate(`/dashboard${queryString}&id=${newlyCreatedSearch.id}`);
+        let queryString = newlyCreatedSearch.query_string.startsWith('?')
+          ? newlyCreatedSearch.query_string.substring(1)
+          : newlyCreatedSearch.query_string;
+
+        const urlParamsForNav = new URLSearchParams(queryString);
+        if (!urlParamsForNav.has('ordering')) {
+          urlParamsForNav.set('ordering', 'closing_date');
+        }
+        urlParamsForNav.set('page', '1');
+        urlParamsForNav.set('pageSize', '25');
+
+        navigate(`/dashboard?${urlParamsForNav.toString()}&id=${newlyCreatedSearch.id}`);
       } else {
-        // ✅ IMPROVED: Fallback with current filters
         console.warn("Could not find updated search, using current filters");
-        const queryString = buildQueryString(filters);
-        navigate(`/dashboard?${queryString}&id=${newlyCreatedSearch.id}`);
+        const queryString = buildQueryString(filtersWithOrdering);
+        navigate(`/dashboard?${queryString}&ordering=closing_date&id=${newlyCreatedSearch.id}`);
       }
 
       console.log(newlyCreatedSearch);

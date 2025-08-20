@@ -39,7 +39,7 @@ const convertToCSV = (rows) => {
     `"${formatDate(bid.open_date)}"`,
     `"${formatDate(bid.closing_date)}"`,
     `"${getCountdown(bid.closing_date)}"`,
-    `"${typeof bid.status === "boolean" ? (bid.status ? "Active" : "Inactive") : bid.status}"`,
+    `"${bid.bid_type || "Unknown"}"`, // ⭐ यहाँ change करें
   ]);
 
   return [headers.join(","), ...csvRows.map((r) => r.join(","))].join("\n");

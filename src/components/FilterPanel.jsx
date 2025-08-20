@@ -107,6 +107,10 @@ const FilterPanel = ({ onClose, filters: propFilters, setFilters: setPropFilters
       decodedFilters.status = searchParams.get('bid_type');
     }
 
+    if (searchParams.get('ordering')) {
+      decodedFilters.ordering = searchParams.get('ordering');
+    }
+
     // Decode state to location array
     if (searchParams.get('state')) {
       decodedFilters.location = searchParams.get('state').split(',');
@@ -313,6 +317,8 @@ const FilterPanel = ({ onClose, filters: propFilters, setFilters: setPropFilters
     params.append('page', '1');
     params.append('pageSize', '500');
 
+    params.append('ordering', 'closing_date');
+
     // Convert status (Active/Inactive)
     if (filters.status) {
       params.append('bid_type', filters.status);
@@ -374,9 +380,14 @@ const FilterPanel = ({ onClose, filters: propFilters, setFilters: setPropFilters
     try {
       console.log("🔥 Search clicked with filters:", filters);
 
+      const filtersWithOrdering = {
+        ...filters,
+        ordering: filters.ordering || "closing_date"
+      };
+
       // 🔥 Call the onApply callback from Dashboard
       if (onApply) {
-        onApply(filters); // Pass current filters to Dashboard
+        onApply(filtersWithOrdering); // Pass current filters to Dashboard
       }
 
       // Close the filter panel
