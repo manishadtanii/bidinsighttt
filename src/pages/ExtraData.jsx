@@ -429,14 +429,14 @@ function ExtraData() {
   return (
     <ProcessWrapper>
       <div className="form-left">
-        <div className="pe-3 flex flex-col ">
+        <div className="pe-3 flex flex-col h-full">
           <div>
             <FormHeader {...formHeader} />
             <HeroHeading data={data} />
           </div>
 
           {/* ✅ Form container with conditional overlay effects */}
-          <div className={`relative ${(showSkipModal || showAllNoModal) ? 'overflow-hidden' : ''} `}>
+          <div className={`relative h-full ${(showSkipModal || showAllNoModal) ? 'overflow-hidden' : ''} `}>
             <form
               className={`form-container flex flex-col h-full justify-between transition-opacity duration-300 ${(showSkipModal || showAllNoModal) ? 'opacity-30 pointer-events-none' : 'opacity-100'
                 }`}
@@ -456,13 +456,12 @@ function ExtraData() {
                 )}
               </div>
 
+
               <FormFooter
                 data={formFooter}
                 onSkip={handleSkip}
                 onBack={handleBack}
               />
-
-
             </form>
 
             {/* ✅ Skip Modal Overlay */}

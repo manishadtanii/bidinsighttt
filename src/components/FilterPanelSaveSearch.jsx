@@ -370,10 +370,8 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
             </button>
             <button
               type="submit"
-              className={`bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl transition-all hover:bg-blue-700 ${errors.name ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className="bg-primary text-white px-10 py-3 rounded-[20px] font-archivo text-xl transition-all hover:bg-blue-700"
               onClick={handleSaveSearch}
-              disabled={!!errors.name}
             >
               Save Search
             </button>

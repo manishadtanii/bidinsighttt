@@ -356,7 +356,7 @@ function CompanyBuild() {
                 label="Company FIEN or SSN"
                 type="text"
                 name="companyFienOrSsn"
-                placeholder="e.g. XX-XXXXXXX"
+                placeholder="e.g. XXXXXXXXX"
                 delay={100}
                 value={fields.companyFienOrSsn}
                 onChange={handleChange}

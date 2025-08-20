@@ -184,10 +184,10 @@ useEffect(() => {
 
 
   const formFooter = {
-    back: {
-      text: "Back",
-      link: "/plan",
-    },
+    // back: {
+    //   text: "Back",
+    //   link: "/plan",
+    // },
     next: {
       text: "Next",
     },

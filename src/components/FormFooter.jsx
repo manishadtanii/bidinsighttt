@@ -80,7 +80,7 @@ function FormFooter({ data, onNextClick, onSkipClick }) {
         )}
         {next && (
           <button
-            className="rounded-[20px] bg-[#273BE2] md:ms-5 text-white text-lg p-3 lg:py-4 lg:px-10 font-h border border-[rgba(255,255,255,0.5)] transition-all duration-300"
+            className="rounded-[20px] bg-[#273BE2]  text-white text-lg p-3 lg:py-4 lg:px-10 font-h border border-[rgba(255,255,255,0.5)] transition-all duration-300"
             type="submit"
             onClick={onNextClick}
           >
