@@ -60,6 +60,8 @@ function CompanyBuild() {
     targetContractSize: false,
     upload: false,
   });
+
+  
   const [errors, setErrors] = useState({
     companyName: "",
     companyFienOrSsn: "",

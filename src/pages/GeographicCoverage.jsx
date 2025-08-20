@@ -222,7 +222,7 @@ useEffect(() => {
               />
 
               <div className="form-label font-t my-5">Select region</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                 {regions.map((reg, i) => (
                   <FormRadio
                     key={i}
@@ -243,7 +243,7 @@ useEffect(() => {
                 name="industries"
                 placeholder="Choose State (Max 10)"
                 options={stateOptions}
-                value={selectedIndustries}
+                value={selectedIndustries}  
                 onChange={handleIndustryChange}
                 menuPlacement="auto"
               />
