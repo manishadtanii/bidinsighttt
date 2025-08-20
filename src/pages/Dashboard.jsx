@@ -86,19 +86,24 @@ function Dashboard() {
   const formattedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
   const data = { title: `${formattedName}'s Dashboard` };
 
+
+
   // 🔥 BROWSER HISTORY MANAGEMENT
   useEffect(() => {
     const handlePopState = (e) => {
-      window.history.pushState(null, '', window.location.href);
+      // Don't prevent the default back button behavior
+      // Let React Router handle the navigation properly
+      console.log("🔥 Browser back/forward detected");
     };
 
-    window.history.pushState(null, '', window.location.href);
     window.addEventListener('popstate', handlePopState);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
+
+
 
   // 🔥 FETCH BID COUNT
   useEffect(() => {
@@ -225,6 +230,30 @@ function Dashboard() {
     }
   }, [fetchBids, isInitialLoad]);
 
+  useEffect(() => {
+  const searchParams = new URLSearchParams(location.search);
+  const savedSearchId = searchParams.get("id");
+  
+  if (savedSearchId && savedSearches.length > 0) {
+    // Find the saved search by ID
+    const matchedSearch = savedSearches.find((item) => item.id.toString() === savedSearchId);
+    
+    if (matchedSearch) {
+      console.log("🔥 Restoring saved search from URL:", matchedSearch.name);
+      
+      // Set the selected saved search state
+      setSelectedSavedSearch({
+        id: matchedSearch.id,
+        name: matchedSearch.name,
+        query_string: matchedSearch.query_string
+      });
+    }
+  } else if (!savedSearchId) {
+    // Clear selection if no ID in URL
+    setSelectedSavedSearch(null);
+  }
+}, [location.search, savedSearches]);
+
   // 🔥 FETCH SAVED SEARCHES
   useEffect(() => {
     const fetchData = async () => {
@@ -252,39 +281,42 @@ function Dashboard() {
 
       console.log("🔥 Resetting to default dashboard state");
 
-
       setFilters(defaultFilters);
       setAppliedFilters(defaultFilters);
-      setSelectedSavedSearch(null);
+      setSelectedSavedSearch(null); // Clear the selection
       setSaveSearchFilters({});
       setCurrentPage(1);
       setTopSearchTerm("");
 
+      // Navigate without the ID parameter
       navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
       return;
     }
+
     try {
       const token = localStorage.getItem("access_token");
       if (!token) return;
 
       const matched = savedSearches.find((item) => item.id === searchId);
-      console.log(matched.query_string, "🔥 Matched saved search");
+      console.log(matched?.query_string, "🔥 Matched saved search");
       if (!matched) return;
 
       const urlParams = new URLSearchParams(matched.query_string);
       const decodedFilters = decodeUrlToFilters(urlParams);
 
-      // ✅ Ensure ordering is preserved or set default
+      // Ensure ordering is preserved or set default
       if (!decodedFilters.ordering) {
         decodedFilters.ordering = "closing_date";
       }
       console.log(decodedFilters, "🔥 Decoded filters from saved search");
 
+      // Set the selected saved search state BEFORE navigation
       setSelectedSavedSearch({
         id: matched.id,
         name: matched.name,
         query_string: matched.query_string
       });
+
       setSaveSearchFilters(matched.query_string);
       setFilters(decodedFilters);
       setAppliedFilters(decodedFilters);
@@ -304,22 +336,33 @@ function Dashboard() {
       }
       urlParamsForNav.set('page', '1');
       urlParamsForNav.set('pageSize', '25');
+      urlParamsForNav.set('id', matched.id); // Make sure ID is included
 
-
-      const fullURL = `/dashboard?page=1&pageSize=25&${cleanQueryString}&id=${matched.id}ordering=closing_date`;
+      // Navigate with the ID parameter
+      const fullURL = `/dashboard?${urlParamsForNav.toString()}`;
       navigate(fullURL);
     } catch (err) {
       console.error("Failed to load saved search filters", err);
     }
   };
 
+
+
+
+
+
+
+
+
+
+
   // 🔥 ENHANCED FILTER APPLY HANDLER (with search term clearing)
   const enhancedHandleFiltersApply = (newFilters) => {
 
     const filtersWithOrdering = {
-    ...newFilters,
-    ordering: newFilters.ordering || appliedFilters.ordering || "closing_date"
-  };
+      ...newFilters,
+      ordering: newFilters.ordering || appliedFilters.ordering || "closing_date"
+    };
 
     setTopSearchTerm(""); // Clear search term when filters are applied
     handleFiltersApply(newFilters);
