@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 
 const BidHeader = ({
   title = "No Title",
-  location = "Unknown Location",
+  org,
+  location,
   postedDate = "-",
   deadline = "2025-07-31T23:59:59Z",
-  sourceLink = "#",
+  sourceLink,
 }) => {
+
+  console.log(title, "Title from props");
+  console.log(org, "Organization from props");
+  console.log(location, "Location from props");
+  console.log(postedDate, "Posted Date from props");
+  console.log(deadline, "Deadline from props");
+  console.log(sourceLink, "Source Link from props");
+
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,

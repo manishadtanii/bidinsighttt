@@ -3,11 +3,22 @@ import React, { useState, useRef, useEffect } from 'react';
 const ProfessionalSavedSearchDropdown = ({
   savedSearches = [],
   selectedSavedSearch,
-  handleSavedSearchSelect
+  handleSavedSearchSelect,
+  customStyling = null // New prop for custom styling
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Default styling (for dashboard use)
+  const defaultStyling = {
+    trigger: "saved-search w-56 bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]",
+    triggerText: "text-white",
+    triggerIcon: "text-white"
+  };
+
+  // Use custom styling if provided, otherwise use default
+  const styling = customStyling || defaultStyling;
 
   // Sort saved searches by creation date (newest first)
   const sortedSearches = [...savedSearches].sort((a, b) => {
@@ -47,21 +58,21 @@ const ProfessionalSavedSearchDropdown = ({
     setShowMore(!showMore);
   };
 
-  // 🔥 FIXED: Corrected getDisplayText logic
+  // Fixed: Corrected getDisplayText logic
   const getDisplayText = () => {
-    console.log("🔥 DEBUG getDisplayText:", { selectedSavedSearch });
+    console.log("DEBUG getDisplayText:", { selectedSavedSearch });
     
     // If no selection or explicitly "_default_", show "My Saved Searches"  
     if (!selectedSavedSearch || selectedSavedSearch === "_default_") {
       return "My Saved Searches";
     }
     
-    // 🔥 FIX: If there's a selected search, show its name
+    // Fix: If there's a selected search, show its name
     if (selectedSavedSearch && selectedSavedSearch.name) {
       return selectedSavedSearch.name;
     }
     
-    // 🔥 FIX: If selectedSavedSearch is just an ID, find the search by ID
+    // Fix: If selectedSavedSearch is just an ID, find the search by ID
     if (typeof selectedSavedSearch === 'number' || typeof selectedSavedSearch === 'string') {
       const foundSearch = savedSearches.find(s => s.id === selectedSavedSearch || s.id === Number(selectedSavedSearch));
       if (foundSearch) {
@@ -69,7 +80,7 @@ const ProfessionalSavedSearchDropdown = ({
       }
     }
     
-    // 🔥 FIX: If selectedSavedSearch is an object but missing name, try to find by ID
+    // Fix: If selectedSavedSearch is an object but missing name, try to find by ID
     if (selectedSavedSearch && selectedSavedSearch.id) {
       const foundSearch = savedSearches.find(s => s.id === selectedSavedSearch.id);
       if (foundSearch) {
@@ -81,7 +92,7 @@ const ProfessionalSavedSearchDropdown = ({
     return "My Saved Searches";
   };
 
-  // 🔥 HELPER: Function to check if an item is selected
+  // Helper: Function to check if an item is selected
   const isSelected = (searchId) => {
     if (!selectedSavedSearch) return false;
     
@@ -102,12 +113,12 @@ const ProfessionalSavedSearchDropdown = ({
     <div className="relative" ref={dropdownRef}>
       {/* Dropdown Trigger */}
       <div
-        className="saved-search w-56 bg-btn p-4 px-6 rounded-[30px] border-none font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]"
+        className={styling.trigger}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-white truncate">{getDisplayText()}</span>
+        <span className={`${styling.triggerText} truncate`}>{getDisplayText()}</span>
         <svg
-          className={`w-4 h-4 text-white transition-transform duration-200 ml-2 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 ${styling.triggerIcon} transition-transform duration-200 ml-2 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -131,7 +142,7 @@ const ProfessionalSavedSearchDropdown = ({
               <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              {/* 🔥 FIXED: Dynamic text based on current state */}
+              {/* Fixed: Dynamic text based on current state */}
               {isSelected("_default_")
                 ? "My Saved Searches" 
                 : "Back to Dashboard"}

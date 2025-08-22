@@ -252,7 +252,7 @@ function GeographicCoverage() {
               </div>
 
               <FormMultiSelect
-                label="Or Select State"
+                label="Select State"
                 name="industries"
                 placeholder="Choose State (Max 10)"
                 options={stateOptions}

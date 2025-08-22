@@ -8,6 +8,7 @@ import React, {
   useRef
 } from "react";
 import { useNavigate } from "react-router-dom";
+import BlogShareButton from "./BlogShareButton"; 
 
 function formatDate(dateStr) {
   if (!dateStr) return "-";
@@ -39,7 +40,7 @@ const convertToCSV = (rows) => {
     `"${formatDate(bid.open_date)}"`,
     `"${formatDate(bid.closing_date)}"`,
     `"${getCountdown(bid.closing_date)}"`,
-    `"${bid.bid_type || "Unknown"}"`, // ⭐ यहाँ change करें
+    `"${bid.bid_type || "Unknown"}"`, 
   ]);
 
   return [headers.join(","), ...csvRows.map((r) => r.join(","))].join("\n");
@@ -207,20 +208,11 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
                   <td className="px-4 py-4 font-medium font-inter" title={countdownRaw}><span className="text-white">{countdownDisplay}</span></td>
                   <td className="px-4 py-4 font-medium font-inter">{statusLabel}</td>
                   <td className="px-4 py-4 btn-box  text-center">
-                    <button onClick={(e) => {
-                      e.stopPropagation();
-                      if (navigator.share) {
-                        navigator.share({
-                          title: `Bid: ${bid.bid_name}`,
-                          text: `Check out this bid from ${bid.jurisdiction}`,
-                          url: `${window.location.origin}/summary/${bid.id}`,
-                        }).catch((err) => console.error("Share failed:", err));
-                      } else {
-                        alert("Sharing is not supported on this device.");
-                      }
-                    }}>
-                      <i className="fas fa-share-alt"></i>
-                    </button>
+                    <BlogShareButton
+                      url={`${window.location.origin}/summary/${bid.id}`}
+                      onShare={() => console.log(`Shared bid: ${bid.bid_name}`)}
+                    />
+
                   </td>
                   <td className="px-4 py-4 text-center">
                     <button>

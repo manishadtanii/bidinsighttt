@@ -210,18 +210,44 @@ function Dashboard() {
 
   // 🔥 ENTITY TYPE CHANGE HANDLER
   const handleEntityTypeChange = (entityType) => {
-    const updatedFilters = {
-      ...appliedFilters,
-      entityType: entityType
-    };
-
-    setFilters(updatedFilters);
-    setAppliedFilters(updatedFilters);
-    setCurrentPage(1);
-
-    const queryString = buildQueryString(updatedFilters, 1, perPage);
-    navigate(`/dashboard?${queryString}`);
+  const updatedFilters = {
+    ...appliedFilters,
+    entityType: entityType
   };
+
+  setFilters(updatedFilters);
+  setAppliedFilters(updatedFilters);
+  setCurrentPage(1);
+
+  const searchParams = new URLSearchParams(location.search);
+  const queryString = buildQueryString(updatedFilters, 1, perPage);
+
+  // 🔥 Preserve saved search ID if it exists
+  const savedSearchId = searchParams.get("id");
+  
+  // 🔥 IMPORTANT: Preserve search term from URL 
+  const searchTerm = searchParams.get("search");
+
+  // 🔥 Build final URL with preserved parameters
+  let finalURL = `/dashboard?${queryString}`;
+  
+  const additionalParams = new URLSearchParams();
+  
+  if (savedSearchId) {
+    additionalParams.set("id", savedSearchId);
+  }
+  
+  // 🔥 Preserve search term in URL
+  if (searchTerm) {
+    additionalParams.set("search", searchTerm);
+  }
+  
+  if (additionalParams.toString()) {
+    finalURL += `&${additionalParams.toString()}`;
+  }
+
+  navigate(finalURL);
+};
 
   // 🔥 FETCH BIDS ON LOAD
   useEffect(() => {
@@ -233,26 +259,53 @@ function Dashboard() {
   useEffect(() => {
   const searchParams = new URLSearchParams(location.search);
   const savedSearchId = searchParams.get("id");
-  
+
+  console.log("🔍 Dashboard URL Effect - ID from URL:", savedSearchId);
+  console.log("🔍 Available saved searches:", savedSearches.length);
+
   if (savedSearchId && savedSearches.length > 0) {
     // Find the saved search by ID
     const matchedSearch = savedSearches.find((item) => item.id.toString() === savedSearchId);
-    
+
     if (matchedSearch) {
-      console.log("🔥 Restoring saved search from URL:", matchedSearch.name);
-      
-      // Set the selected saved search state
-      setSelectedSavedSearch({
+      console.log("✅ Found matching saved search:", matchedSearch.name);
+
+      // ✅ CRITICAL: Set the selected saved search state immediately
+      const searchObject = {
         id: matchedSearch.id,
         name: matchedSearch.name,
         query_string: matchedSearch.query_string
-      });
+      };
+
+      setSelectedSavedSearch(searchObject);
+      
+      // ✅ Also decode and apply the filters
+      const urlParams = new URLSearchParams(matchedSearch.query_string);
+      const decodedFilters = decodeUrlToFilters(urlParams);
+      
+      if (!decodedFilters.ordering) {
+        decodedFilters.ordering = "closing_date";
+      }
+      
+      console.log("✅ Applying filters from saved search:", decodedFilters);
+      setFilters(decodedFilters);
+      setAppliedFilters(decodedFilters);
+      
+      // ✅ Set search term if exists
+      const searchTerm = urlParams.get("search");
+      if (searchTerm) {
+        setTopSearchTerm(searchTerm);
+      }
+      
+    } else {
+      console.log("❌ No matching saved search found for ID:", savedSearchId);
     }
   } else if (!savedSearchId) {
-    // Clear selection if no ID in URL
+    // ✅ Clear selection if no ID in URL
+    console.log("🧹 Clearing saved search selection - no ID in URL");
     setSelectedSavedSearch(null);
   }
-}, [location.search, savedSearches]);
+}, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
 
   // 🔥 FETCH SAVED SEARCHES
   useEffect(() => {
@@ -364,8 +417,8 @@ function Dashboard() {
       ordering: newFilters.ordering || appliedFilters.ordering || "closing_date"
     };
 
-    setTopSearchTerm(""); // Clear search term when filters are applied
-    handleFiltersApply(newFilters);
+    // setTopSearchTerm(""); // Clear search term when filters are applied
+    handleFiltersApply(filtersWithOrdering);
   };
 
   // 🔥 REMAINING HANDLERS
@@ -516,7 +569,7 @@ function Dashboard() {
                 timezone={userTimezone}
                 bids={bidsInfo?.results || []}
                 onEntityTypeChange={handleEntityTypeChange}
-                currentEntityType={appliedFilters.entityType}
+                currentEntityType={appliedFilters.entityType || ""}
                 totalCount={bidsInfo?.count || 0}
                 currentSortField={appliedFilters.ordering || "closing_date"}
                 currentSortOrder={appliedFilters.ordering?.startsWith('-') ? 'desc' : 'asc'}

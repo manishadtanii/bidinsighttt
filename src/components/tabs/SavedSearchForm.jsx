@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import ProfessionalSavedSearchDropdown from "../ProfessionalSavedSearchDropdown"; // Import the dropdown component
 
 const SavedSearchForm = ({
   searchOption,
@@ -21,6 +22,13 @@ const SavedSearchForm = ({
   setErrors
 }) => {
   const { savedSearches } = useSelector((state) => state.savedSearches);
+
+  // Custom styling for SavedSearchForm dropdown
+  const customDropdownStyling = {
+    trigger: "w-56 bg-white p-4 px-6 rounded-lg border border-black font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]",
+    triggerText: "text-black",
+    triggerIcon: "text-black"
+  };
 
   const decodeQueryStringToFilters = (queryString) => {
     const clean = queryString.startsWith("?") ? queryString.substring(1) : queryString;
@@ -52,22 +60,36 @@ const SavedSearchForm = ({
     return filters;
   };
 
-  useEffect(() => {
-    // ✅ Only apply selectedSearch data if we're in replace mode or haven't explicitly switched to create
-    if (selectedSearch && searchOption === "replace") {
-      setSearchName(selectedSearch.name);
-      setSavedSearch((prev) => ({
-        ...prev,
-        name: selectedSearch.name,
-        id: selectedSearch.id,
-      }));
+useEffect(() => {
+  console.log("🔍 SavedSearchForm useEffect - selectedSearch:", selectedSearch);
+  console.log("🔍 SavedSearchForm useEffect - searchOption:", searchOption);
+  
+  // ✅ CRITICAL FIX: Dashboard से आने पर replace mode set करना चाहिए
+  if (selectedSearch && selectedSearch.id) {
+    console.log("✅ Setting replace mode because selectedSearch exists:", selectedSearch.name);
+    
+    // ✅ Set replace mode automatically when coming from dashboard
+    setSearchOption("replace");
+    
+    // ✅ Set the selected saved search properly
+    setSelectedSavedSearch(selectedSearch);
+    setSearchName(selectedSearch.name);
+    setSavedSearch((prev) => ({
+      ...prev,
+      name: selectedSearch.name,
+      id: selectedSearch.id,
+    }));
 
-      const savedSearchObj = savedSearches.find((s) => s.id === selectedSearch.id);
-      if (savedSearchObj?.query_string) {
-        setFilters(decodeQueryStringToFilters(savedSearchObj.query_string));
-      }
+    // ✅ Load filters from the selected search
+    const savedSearchObj = savedSearches.find((s) => s.id === selectedSearch.id);
+    if (savedSearchObj?.query_string) {
+      setFilters(decodeQueryStringToFilters(savedSearchObj.query_string));
     }
-  }, [selectedSearch, savedSearches, setFilters, setSavedSearch, searchOption]);
+    
+    // ✅ Clear any validation errors
+    setErrors({ name: "" });
+  }
+}, [selectedSearch, savedSearches, setFilters, setSavedSearch, setSearchOption, setSelectedSavedSearch, setSearchName, setErrors]);
 
   const handleCreateOption = () => {
     setSearchOption("create");
@@ -113,6 +135,9 @@ const SavedSearchForm = ({
     // ✅ Do not reset filters here; filters will load only when a saved search is selected
   };
 
+
+  
+
   const handleOnChangeInput = (e) => {
     const { value } = e.target;
     const trimmed = value.trim();
@@ -141,35 +166,72 @@ const SavedSearchForm = ({
     }));
   };
 
-  const handleDropdownChange = (e) => {
-    const id = parseInt(e.target.value);
-    setSelectedSavedSearch(id);
 
-    if (!id) {
+
+
+
+
+
+  // Handle dropdown selection from ProfessionalSavedSearchDropdown
+ const handleSavedSearchSelect = (searchId) => {
+  console.log("🔍 SavedSearchForm handleSavedSearchSelect - searchId:", searchId);
+  
+  // If user selects "back to dashboard" or default
+  if (searchId === "_default_" || !searchId) {
+    setSelectedSavedSearch("");
+    // ✅ FIXED: Only show error if in replace mode and user is trying to proceed
+    if (searchOption === "replace") {
       setErrors({ name: "Please select a saved search to replace" });
-      setSearchName("");
-      setSavedSearch((prev) => ({
-        ...prev,
-        name: "",
-        id: null,
-      }));
-      return;
     }
+    setSearchName("");
+    setSavedSearch((prev) => ({
+      ...prev,
+      name: "",
+      id: null,
+    }));
+    
+    // ✅ Also clear parent selection
+    if (setSelectedSearch) {
+      setSelectedSearch(null);
+    }
+    return;
+  }
 
-    const selected = savedSearches.find((s) => s.id === id);
-    if (selected) {
-      setSearchName(selected.name);
-      setSavedSearch((prev) => ({
-        ...prev,
-        name: selected.name,
-        id,
-      }));
-      if (selected.query_string) {
-        setFilters(decodeQueryStringToFilters(selected.query_string));
-      }
-      setErrors({ name: "" });
+  // Find the selected search
+  const selected = savedSearches.find((s) => s.id === searchId);
+  if (selected) {
+    console.log("✅ Found selected search in dropdown:", selected.name);
+    
+    // ✅ Create proper object and set in all relevant states
+    const searchObject = {
+      id: selected.id,
+      name: selected.name,
+      query_string: selected.query_string
+    };
+    
+    setSelectedSavedSearch(searchObject);
+    setSearchName(selected.name);
+    setSavedSearch((prev) => ({
+      ...prev,
+      name: selected.name,
+      id: searchId,
+    }));
+    
+    // ✅ Also inform parent component if setSelectedSearch is available
+    if (setSelectedSearch) {
+      setSelectedSearch(searchObject);
+      console.log("✅ Informed parent component of selection");
     }
-  };
+    
+    // Load filters if available
+    if (selected.query_string) {
+      setFilters(decodeQueryStringToFilters(selected.query_string));
+    }
+    
+    // ✅ Clear errors when valid selection is made
+    setErrors({ name: "" });
+  }
+};
 
   return (
     <form className="min-h-screen flex flex-col justify-between p-10 bg-white">
@@ -223,23 +285,20 @@ const SavedSearchForm = ({
             )}
           </div>
         ) : (
+          /* Replace Option with Professional Dropdown - Custom Styling */
           <div className="form-group mt-8">
             <label className="font-medium mb-2 font-inter text-p block">
               Replace an existing saved search
             </label>
-            <select
-              className={`form-control border rounded-lg px-4 py-2 font-inter text-xl w-[300px]
-                ${showValidation && errors.name ? "border-red-500" : "border-primary"}`}
-              value={selectedSavedSearch}
-              onChange={handleDropdownChange}
-            >
-              <option value="">Select saved search</option>
-              {savedSearches.map((search) => (
-                <option key={search.id} value={search.id}>
-                  {search.name}
-                </option>
-              ))}
-            </select>
+            
+            <div className="w-[300px]">
+              <ProfessionalSavedSearchDropdown
+                savedSearches={savedSearches}
+                selectedSavedSearch={selectedSavedSearch}
+                handleSavedSearchSelect={handleSavedSearchSelect}
+                customStyling={customDropdownStyling}
+              />
+            </div>
 
             {showValidation && errors.name && (
               <p className="text-red-600 font-semibold text-sm mt-1">{errors.name}</p>
