@@ -109,7 +109,7 @@ const BidTable = forwardRef(({ bids = [], totalCount = 0, currentSortField = "",
   return (
     <div className="bid-table rounded-2xl bg-btn text-white my-[50px] shadow-xl overflow-x-auto border-white border-2 border-solid relative max-h-screen overflow-y-auto">
       <table className="min-w-full table-auto text-sm text-center">
-        <thead className="sticky top-0 bg-white/5 backdrop-blur-sm">
+        <thead className="sticky z-10 top-0 bg-white/5 backdrop-blur-sm">
           <tr className="text-white/80 text-xs border-b border-white/20">
 
             <th className="px-4 py-4 font-inter text-lg relative">

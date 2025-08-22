@@ -32,7 +32,7 @@ const tabs = [
   "Solicitation Type",
 ];
 
-const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) => {
+const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch, handleSavedSearchSelect }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   // ✅ ADD: States for SavedSearchForm to manage in parent
@@ -233,37 +233,41 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
       
       newSearch = await createSavedSearch(savedSearchData);
     }
-
+    
     // ✅ Refresh saved searches list
     const updatedSearches = await getSavedSearches();
     dispatch(addSavedSearch(updatedSearches));
-
+    
     // ✅ CRITICAL: Set the selected search in parent component BEFORE navigation
     if (newSearch) {
       console.log("🚀 Setting selected search before navigation:", newSearch);
       setSelectedSearch(newSearch);
     }
-
+    
     // ✅ Navigate with proper URL structure
     let queryStringForNav = newSearch.query_string.startsWith('?')
       ? newSearch.query_string.substring(1)
       : newSearch.query_string;
+      
+      const urlParamsForNav = new URLSearchParams(queryStringForNav);
+      if (!urlParamsForNav.has('ordering')) {
+        urlParamsForNav.set('ordering', 'closing_date');
+      }
+      urlParamsForNav.set('page', '1');
+      urlParamsForNav.set('pageSize', '25');
+      
+      // ✅ MOST IMPORTANT: Add the ID parameter for dashboard to recognize
+      urlParamsForNav.set('id', newSearch.id);
+      
+      const finalURL = `/dashboard?${urlParamsForNav.toString()}`;
+      console.log("🚀 Navigating to:", finalURL);
+      
+      navigate(finalURL);
+      onClose(); // Close the panel
+      
+      handleSavedSearchSelect(newSearch.id)
 
-    const urlParamsForNav = new URLSearchParams(queryStringForNav);
-    if (!urlParamsForNav.has('ordering')) {
-      urlParamsForNav.set('ordering', 'closing_date');
-    }
-    urlParamsForNav.set('page', '1');
-    urlParamsForNav.set('pageSize', '25');
-    
-    // ✅ MOST IMPORTANT: Add the ID parameter for dashboard to recognize
-    urlParamsForNav.set('id', newSearch.id);
 
-    const finalURL = `/dashboard?${urlParamsForNav.toString()}`;
-    console.log("🚀 Navigating to:", finalURL);
-    
-    navigate(finalURL);
-    onClose(); // Close the panel
 
   } catch (error) {
     // Error handling...
@@ -329,6 +333,7 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch }) =
       case "Saved Searches":
         return (
           <SavedSearchForm
+          handleSavedSearchSelect={handleSavedSearchSelect} // ✅ ADD: Pass the handler
             // ✅ PASS: New props for state management
             searchOption={searchOption}
             setSearchOption={setSearchOption}

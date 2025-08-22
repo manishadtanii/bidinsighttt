@@ -19,7 +19,8 @@ const SavedSearchForm = ({
   setFilters,
   showValidation,
   errors,
-  setErrors
+  setErrors,
+  handleSavedSearchSelect
 }) => {
   const { savedSearches } = useSelector((state) => state.savedSearches);
 
@@ -173,65 +174,65 @@ useEffect(() => {
 
 
   // Handle dropdown selection from ProfessionalSavedSearchDropdown
- const handleSavedSearchSelect = (searchId) => {
-  console.log("🔍 SavedSearchForm handleSavedSearchSelect - searchId:", searchId);
+//  const handleSavedSearchSelect = (searchId) => {
+//   console.log("🔍 SavedSearchForm handleSavedSearchSelect - searchId:", searchId);
   
-  // If user selects "back to dashboard" or default
-  if (searchId === "_default_" || !searchId) {
-    setSelectedSavedSearch("");
-    // ✅ FIXED: Only show error if in replace mode and user is trying to proceed
-    if (searchOption === "replace") {
-      setErrors({ name: "Please select a saved search to replace" });
-    }
-    setSearchName("");
-    setSavedSearch((prev) => ({
-      ...prev,
-      name: "",
-      id: null,
-    }));
+//   // If user selects "back to dashboard" or default
+//   if (searchId === "_default_" || !searchId) {
+//     setSelectedSavedSearch("");
+//     // ✅ FIXED: Only show error if in replace mode and user is trying to proceed
+//     if (searchOption === "replace") {
+//       setErrors({ name: "Please select a saved search to replace" });
+//     }
+//     setSearchName("");
+//     setSavedSearch((prev) => ({
+//       ...prev,
+//       name: "",
+//       id: null,
+//     }));
     
-    // ✅ Also clear parent selection
-    if (setSelectedSearch) {
-      setSelectedSearch(null);
-    }
-    return;
-  }
+//     // ✅ Also clear parent selection
+//     if (setSelectedSearch) {
+//       setSelectedSearch(null);
+//     }
+//     return;
+//   }
 
-  // Find the selected search
-  const selected = savedSearches.find((s) => s.id === searchId);
-  if (selected) {
-    console.log("✅ Found selected search in dropdown:", selected.name);
+//   // Find the selected search
+//   const selected = savedSearches.find((s) => s.id === searchId);
+//   if (selected) {
+//     console.log("✅ Found selected search in dropdown:", selected.name);
     
-    // ✅ Create proper object and set in all relevant states
-    const searchObject = {
-      id: selected.id,
-      name: selected.name,
-      query_string: selected.query_string
-    };
+//     // ✅ Create proper object and set in all relevant states
+//     const searchObject = {
+//       id: selected.id,
+//       name: selected.name,
+//       query_string: selected.query_string
+//     };
     
-    setSelectedSavedSearch(searchObject);
-    setSearchName(selected.name);
-    setSavedSearch((prev) => ({
-      ...prev,
-      name: selected.name,
-      id: searchId,
-    }));
+//     setSelectedSavedSearch(searchObject);
+//     setSearchName(selected.name);
+//     setSavedSearch((prev) => ({
+//       ...prev,
+//       name: selected.name,
+//       id: searchId,
+//     }));
     
-    // ✅ Also inform parent component if setSelectedSearch is available
-    if (setSelectedSearch) {
-      setSelectedSearch(searchObject);
-      console.log("✅ Informed parent component of selection");
-    }
+//     // ✅ Also inform parent component if setSelectedSearch is available
+//     if (setSelectedSearch) {
+//       setSelectedSearch(searchObject);
+//       console.log("✅ Informed parent component of selection");
+//     }
     
-    // Load filters if available
-    if (selected.query_string) {
-      setFilters(decodeQueryStringToFilters(selected.query_string));
-    }
+//     // Load filters if available
+//     if (selected.query_string) {
+//       setFilters(decodeQueryStringToFilters(selected.query_string));
+//     }
     
-    // ✅ Clear errors when valid selection is made
-    setErrors({ name: "" });
-  }
-};
+//     // ✅ Clear errors when valid selection is made
+//     setErrors({ name: "" });
+//   }
+// };
 
   return (
     <form className="min-h-screen flex flex-col justify-between p-10 bg-white">
