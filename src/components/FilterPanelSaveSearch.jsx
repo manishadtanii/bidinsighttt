@@ -175,15 +175,6 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch, han
 };
 
 
-
-
-
-
-
-
-
-
-
   const handleSaveSearch = async (e) => {
   e.preventDefault();
   setShowValidation(true);
@@ -262,7 +253,7 @@ const FilterPanelSaveSearch = ({ onClose, selectedSearch, setSelectedSearch, han
       const finalURL = `/dashboard?${urlParamsForNav.toString()}`;
       console.log("🚀 Navigating to:", finalURL);
       
-      navigate(finalURL);
+      navigate(finalURL, { replace: true });
       onClose(); // Close the panel
       
       handleSavedSearchSelect(newSearch.id)

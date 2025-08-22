@@ -263,7 +263,7 @@ function Dashboard() {
 
 
   // 🔥 HANDLE SAVED SEARCH SELECTION FROM URL
-  useEffect(() => {
+useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const savedSearchId = searchParams.get("id");
 
@@ -271,13 +271,17 @@ function Dashboard() {
     console.log("🔍 Available saved searches:", savedSearches.length);
 
     if (savedSearchId && savedSearches.length > 0) {
-      // Find the saved search by ID
+      // ✅ ADD: Skip if already processing same search
+      if (selectedSavedSearch?.id?.toString() === savedSearchId) {
+        console.log("🔄 Same search already selected in useEffect, skipping");
+        return;
+      }
+
       const matchedSearch = savedSearches.find((item) => item.id.toString() === savedSearchId);
 
       if (matchedSearch) {
         console.log("✅ Found matching saved search:", matchedSearch.name);
 
-        // ✅ CRITICAL: Set the selected saved search state immediately
         const searchObject = {
           id: matchedSearch.id,
           name: matchedSearch.name,
@@ -286,7 +290,6 @@ function Dashboard() {
 
         setSelectedSavedSearch(searchObject);
 
-        // ✅ Also decode and apply the filters
         const urlParams = new URLSearchParams(matchedSearch.query_string);
         const decodedFilters = decodeUrlToFilters(urlParams);
 
@@ -298,7 +301,6 @@ function Dashboard() {
         setFilters(decodedFilters);
         setAppliedFilters(decodedFilters);
 
-        // ✅ Set search term if exists
         const searchTerm = urlParams.get("search");
         if (searchTerm) {
           setTopSearchTerm(searchTerm);
@@ -307,12 +309,19 @@ function Dashboard() {
       } else {
         console.log("❌ No matching saved search found for ID:", savedSearchId);
       }
-    } else if (!savedSearchId) {
-      // ✅ Clear selection if no ID in URL
+    } else if (!savedSearchId && selectedSavedSearch) {
+      // ✅ IMPROVED: Only clear if currently selected
       console.log("🧹 Clearing saved search selection - no ID in URL");
       setSelectedSavedSearch(null);
     }
-  }, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
+}, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
+
+
+
+
+
+
+
 
   console.log("location.search", location.search);
   console.log("savedSearches", savedSearches);
@@ -343,7 +352,7 @@ function Dashboard() {
   }, [dispatch]);
 
   // 🔥 SAVED SEARCH SELECT HANDLER
-  const handleSavedSearchSelect = async (searchId) => {
+ const handleSavedSearchSelect = async (searchId) => {
     if (searchId === "_default_" || !searchId) {
       const defaultFilters = { ...DASHBOARD_CONSTANTS.DEFAULT_FILTERS, ordering: "closing_date" };
 
@@ -351,13 +360,13 @@ function Dashboard() {
 
       setFilters(defaultFilters);
       setAppliedFilters(defaultFilters);
-      setSelectedSavedSearch(null); // Clear the selection
+      setSelectedSavedSearch(null);
       setSaveSearchFilters({});
       setCurrentPage(1);
       setTopSearchTerm("");
 
-      // Navigate without the ID parameter
-      navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date");
+      // ✅ ADD replace: true here
+      navigate("/dashboard?page=1&pageSize=25&bid_type=Active&ordering=closing_date", { replace: true });
       return;
     }
 
@@ -369,10 +378,15 @@ function Dashboard() {
       console.log(matched?.query_string, "🔥 Matched saved search");
       if (!matched) return;
 
+      // ✅ ADD: Check if already processing same search
+      if (selectedSavedSearch?.id === matched.id) {
+        console.log("🔄 Same search already selected, skipping duplicate processing");
+        return;
+      }
+
       const urlParams = new URLSearchParams(matched.query_string);
       const decodedFilters = decodeUrlToFilters(urlParams);
 
-      // Ensure ordering is preserved or set default
       if (!decodedFilters.ordering) {
         decodedFilters.ordering = "closing_date";
       }
@@ -404,15 +418,15 @@ function Dashboard() {
       }
       urlParamsForNav.set('page', '1');
       urlParamsForNav.set('pageSize', '25');
-      urlParamsForNav.set('id', matched.id); // Make sure ID is included
+      urlParamsForNav.set('id', matched.id);
 
-      // Navigate with the ID parameter
       const fullURL = `/dashboard?${urlParamsForNav.toString()}`;
-      navigate(fullURL);
+      // ✅ ADD replace: true here
+      navigate(fullURL, { replace: true });
     } catch (err) {
       console.error("Failed to load saved search filters", err);
     }
-  };
+};
 
 
 
