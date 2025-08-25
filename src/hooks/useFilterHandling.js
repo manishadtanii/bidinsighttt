@@ -10,7 +10,7 @@ export const useFilterHandling = (perPage) => {
   const location = useLocation();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
-  const [filters, setFilters] = useState(DASHBOARD_CONSTANTS.DEFAULT_FILTERS);
+  const [filters, setFilters] = useState({ ...DASHBOARD_CONSTANTS.DEFAULT_FILTERS});
   const [appliedFilters, setAppliedFilters] = useState(DASHBOARD_CONSTANTS.DEFAULT_FILTERS);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -21,6 +21,9 @@ export const useFilterHandling = (perPage) => {
     const hasFilterParams =
       searchParams.get("bid_type") ||
       searchParams.get("state") ||
+       searchParams.get("local") ||           // 🔥 ADD: local param check
+       searchParams.get("entity_type") || 
+      searchParams.getAll("entity_type").length > 0 || // 🔥 ADD: entity_type param check
       searchParams.get("solicitation") ||
       searchParams.get("include") ||
       searchParams.get("exclude") ||

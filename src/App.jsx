@@ -7,7 +7,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import BidTableSkeleton from "./components/shimmereffects/BidTableSkeleton";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
-import IndustryCategoriesSkeletonLeft from "./components/shimmereffects/IndustryCategoriesSkeletonLeft.jsx";
 import AiToolSet from "./pages/AiToolSet.jsx";
 import HelpCenter from "./pages/HelpCenter.jsx";
 // import CompanyBuildProtectedRoute from "./protectedRoute/CompanyBuildProtectedRoute";  

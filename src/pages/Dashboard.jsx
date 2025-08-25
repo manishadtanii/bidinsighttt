@@ -173,7 +173,11 @@ function Dashboard() {
     try {
       const hasActiveFilters =
         appliedFilters.status !== "Active" ||
-        (appliedFilters.location?.length > 0) ||
+        // (appliedFilters.location?.length > 0) ||
+         (appliedFilters.location?.federal) ||
+        (appliedFilters.location?.states?.length > 0) || // NEW: Check states array
+        (appliedFilters.location?.local?.length > 0) ||  // NEW: Check local array
+        (Array.isArray(appliedFilters.location) && appliedFilters.location.length > 0) ||
         (appliedFilters.solicitationType?.length > 0) ||
         (appliedFilters.keyword?.include?.length > 0) ||
         (appliedFilters.keyword?.exclude?.length > 0) ||
