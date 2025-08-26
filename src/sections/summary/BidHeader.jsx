@@ -111,6 +111,31 @@ const BidHeader = ({
                   </div>
                 </div>
               )}
+
+                 
+              {sourceLink && sourceLink !== "nd-bidder" ? (
+                <a
+                // href=""
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center flex-col text-center gap-2"
+                >
+                  <i className="fas text-xl fa-bookmark"></i>
+                  <div>
+                    <p className="font-inter text-xl text-[#DBDBDB]">Save</p>
+                  </div>
+                </a>
+              ) : (
+                <div className="flex items-center flex-col text-center gap-2 opacity-50 cursor-not-allowed">
+                   <i className="fa-solid text-xl fa-bookmark"></i>
+                  <div>
+                    <p className="font-inter text-xl text-[#DBDBDB]">Save</p>
+                  </div>
+                </div>
+              )}
+
+
+
             </div>
           </div>
 

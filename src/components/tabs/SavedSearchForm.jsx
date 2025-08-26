@@ -26,7 +26,7 @@ const SavedSearchForm = ({
 
   // Custom styling for SavedSearchForm dropdown
   const customDropdownStyling = {
-    trigger: "w-56 bg-white p-4 px-6 rounded-lg border border-black font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]",
+    trigger: "w-86 bg-white p-4 px-6 rounded-lg border border-black font-inter font-medium cursor-pointer select-none flex items-center justify-between min-w-[200px]",
     triggerText: "text-black",
     triggerIcon: "text-black"
   };

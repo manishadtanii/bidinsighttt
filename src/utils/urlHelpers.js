@@ -394,9 +394,9 @@ export const buildQueryString = (filters, currentPage, perPage) => {
   }
 
   // 🔥 REMOVED: This was causing conflict - entityType should be part of location handling
-  // if (filters.entityType) {
-  //   params.append("entity_type", filters.entityType);
-  // }
+  if (filters.entityType) {
+    params.append("entity_type", filters.entityType);
+  }
 
   // 🔥 Final URL string return करते हैं
   return params.toString();
