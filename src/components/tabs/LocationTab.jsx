@@ -888,7 +888,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
           {totalSelected > 0 && (
             <button
               onClick={clearAllSelections}
-              className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors duration-200"
+              className="px-4 py-2 text-sm font-medium text-blue-500 hover:text-blue-700  rounded-lg transition-colors duration-200"
             >
               Clear All ({totalSelected})
             </button>
@@ -898,7 +898,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
         {/* Selected items summary */}
         <div className="flex flex-wrap gap-2">
           {locationState.federal && (
-            <div className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+            <div className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-black rounded-full text-sm">
               <span>Federal</span>
               <button
                 onClick={toggleFederal}
@@ -911,11 +911,11 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
           )}
 
           {locationState.states.map((state) => (
-            <div key={state} className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+            <div key={state} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-black  rounded-full text-sm">
               <span>{state}</span>
               <button
                 onClick={() => toggleState(state)}
-                className="text-green-600 hover:text-green-800"
+                className="text-blue-600 hover:text-blue-800"
                 aria-label={`Remove ${state}`}
               >
                 <Trash2 size={12} />
@@ -924,7 +924,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
           ))}
 
           {locationState.local.map((entity) => (
-            <div key={entity} className="flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+            <div key={entity} className="flex items-center gap-1 px-3 py-1 bg-purple-100 text-black rounded-full text-sm">
               <span>{entity}</span>
               <button
                 onClick={() => toggleLocal(entity)}
@@ -940,7 +940,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
 
       <div className="space-y-6">
         {/* Federal Section */}
-        <div className="bg-white rounded-lg border-2 border-blue-200 p-4">
+        <div className="bg-white rounded-lg border-2 border-purple-400 p-4">
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -959,7 +959,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
         </div>
 
         {/* State Section */}
-        <div className="bg-white rounded-lg border-2 border-green-200">
+        <div className="bg-white rounded-lg border-2 border-purple-400">
           <div
             className="flex items-center justify-between p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
@@ -996,7 +996,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
                     e.stopPropagation();
                     clearStates();
                   }}
-                  className="text-sm text-red-600 hover:text-red-800 underline"
+                  className="text-sm text-blue-500 hover:text-blue-700 underline"
                 >
                   Clear All
                 </button>
@@ -1054,7 +1054,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
         </div>
 
         {/* Local Section */}
-        <div className="bg-white rounded-lg border-2 border-purple-200">
+        <div className="bg-white rounded-lg border-2 border-purple-400">
           <div
             className="flex items-center justify-between p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setLocalDropdownOpen(!localDropdownOpen)}
@@ -1091,7 +1091,7 @@ const LocationTab = ({ filters = {}, setFilters = () => { } }) => {
                     e.stopPropagation();
                     clearLocal();
                   }}
-                  className="text-sm text-red-600 hover:text-red-800 underline"
+                  className="text-sm text-blue-500 hover:text-blue-700 underline"
                 >
                   Clear All
                 </button>

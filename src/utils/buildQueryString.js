@@ -35,33 +35,38 @@ export const buildQueryString = (filters) => {
     params.append('bid_type', filters.status);
   }
 
-  // 🔥 UPDATED: Handle location with comma-separated entity_type
+  // 🔥 CORRECT: Handle location with proper structure
   if (filters.location) {
     const entityTypes = [];
 
-    // Collect all entity types
-    if (filters.location.federal) {
-      entityTypes.push('Federal');
-    }
+    // Check if it's the new structure or old array format
+    if (typeof filters.location === 'object' && !Array.isArray(filters.location)) {
+      // New structure: { federal: boolean, states: [], local: [] }
+      
+      if (filters.location.federal) {
+        entityTypes.push('Federal');
+      }
 
-    if (filters.location.states && filters.location.states.length > 0) {
+      if (filters.location.states && filters.location.states.length > 0) {
+        entityTypes.push('State');
+        params.append('state', filters.location.states.join(','));
+      }
+
+      if (filters.location.local && filters.location.local.length > 0) {
+        entityTypes.push('Local');
+        params.append('local', filters.location.local.join(','));
+      }
+
+      // Add single comma-separated entity_type parameter
+      if (entityTypes.length > 0) {
+        params.append('entity_type', entityTypes.join(','));
+      }
+      
+    } else if (Array.isArray(filters.location) && filters.location.length > 0) {
+      // 🔥 BACKWARD COMPATIBILITY: Handle old array format
       entityTypes.push('State');
-      params.append('state', filters.location.states.join(','));
-    }
-
-    if (filters.location.local && filters.location.local.length > 0) {
-      entityTypes.push('Local');
-      params.append('local', filters.location.local.join(','));
-    }
-
-    // Add single comma-separated entity_type parameter
-    if (entityTypes.length > 0) {
-      params.append('entity_type', entityTypes.join(','));
-    }
-
-    // 🔥 BACKWARD COMPATIBILITY: Handle old array format
-    if (Array.isArray(filters.location) && filters.location.length > 0) {
       params.append('state', filters.location.join(','));
+      params.append('entity_type', 'State');
     }
   }
 
@@ -92,21 +97,44 @@ export const buildQueryString = (filters) => {
     params.append('unspsc_codes', codes.join(','));
   }
 
-  // Add published date parameters
-  if (filters.publishedDate && filters.publishedDate.after) {
-    params.append('open_date_after', filters.publishedDate.after);
-  }
-  if (filters.publishedDate && filters.publishedDate.before) {
-    params.append('open_date_before', filters.publishedDate.before);
+  // 🔥 FIXED: Handle both publishedDate structures
+  if (filters.publishedDate) {
+    // Handle new structure with 'from' and 'to'
+    if (filters.publishedDate.from) {
+      params.append('open_date_after', filters.publishedDate.from);
+    }
+    if (filters.publishedDate.to) {
+      params.append('open_date_before', filters.publishedDate.to);
+    }
+    
+    // Handle old structure with 'after' and 'before' 
+    if (filters.publishedDate.after) {
+      params.append('open_date_after', filters.publishedDate.after);
+    }
+    if (filters.publishedDate.before) {
+      params.append('open_date_before', filters.publishedDate.before);
+    }
   }
 
-  // Add closing date parameters
-  if (filters.closingDate && filters.closingDate.after) {
-    params.append('closing_date_after', filters.closingDate.after);
-  }
-  if (filters.closingDate && filters.closingDate.before) {
-    params.append('closing_date_before', filters.closingDate.before);
+  // 🔥 FIXED: Handle both closingDate structures
+  if (filters.closingDate) {
+    // Handle new structure with 'from' and 'to'
+    if (filters.closingDate.from) {
+      params.append('closing_date_after', filters.closingDate.from);
+    }
+    if (filters.closingDate.to) {
+      params.append('closing_date_before', filters.closingDate.to);
+    }
+    
+    // Handle old structure with 'after' and 'before'
+    if (filters.closingDate.after) {
+      params.append('closing_date_after', filters.closingDate.after);
+    }
+    if (filters.closingDate.before) {
+      params.append('closing_date_before', filters.closingDate.before);
+    }
   }
 
   return params.toString();
+  
 };
