@@ -1,11 +1,11 @@
 import API from "../utils/axios.js";
 
-export const getErrorBids = async () => {
+export const getErrorBids = async (page = 1, pageSize = 50) => {
   try {
     // const token = localStorage.getItem("access_token");
     // const headers   = { Authorization: `Bearer ${token}` };
 
-    const response = await API.get(`/scrapping/logs/`);
+    const response = await API.get(`/scrapping/logs/?page=${page}&pageSize=${pageSize}`);
     console.log(response.data);
     return response.data;
   } catch (error) {

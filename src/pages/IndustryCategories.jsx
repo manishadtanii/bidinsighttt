@@ -58,7 +58,7 @@ function IndustryCategories() {
 
   // Initial setup and data fetching
   useEffect(() => {
-    checkTTLAndClear(navigate);
+    // checkTTLAndClear(navigate);
     loadIndustryCategories();
   }, []);
 

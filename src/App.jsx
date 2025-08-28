@@ -9,6 +9,7 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import ShimmerSummaryCard from "./components/shimmereffects/ShimmerSummaryCard.jsx";
 import AiToolSet from "./pages/AiToolSet.jsx";
 import HelpCenter from "./pages/HelpCenter.jsx";
+import OTPVerification from "./components/OTPVerification.jsx";
 
 
 
@@ -50,6 +51,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="forgot-password" element={<OTPVerification />} />
           <Route path="/register" element={<Register />} />
           <Route path="/company-build" element={<CompanyBuild />} />
           <Route path="/help" element={<ProtectedRoute><HelpCenter /> </ProtectedRoute>} />

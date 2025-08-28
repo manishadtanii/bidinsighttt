@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import AlertToggle from "../components/AlertToggle";
 import HeroHeading from "../components/HeroHeading";
@@ -79,13 +76,11 @@ function Dashboard() {
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { timezone, locationPermission } = useUserTimezone();
 
   const profile = useSelector((state) => state.profile.profile);
   const companyName = profile?.company_name || "";
   const formattedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
   const data = { title: `${formattedName}'s Dashboard` };
-
 
 
   // 🔥 BROWSER HISTORY MANAGEMENT
@@ -102,8 +97,6 @@ function Dashboard() {
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
-
-
 
   // 🔥 FETCH BID COUNT
   useEffect(() => {
@@ -261,18 +254,10 @@ function Dashboard() {
   }, [fetchBids, isInitialLoad]);
 
 
-
-
-
-
-
   // 🔥 HANDLE SAVED SEARCH SELECTION FROM URL
 useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const savedSearchId = searchParams.get("id");
-
-    console.log("🔍 Dashboard URL Effect - ID from URL:", savedSearchId);
-    console.log("🔍 Available saved searches:", savedSearches.length);
 
     if (savedSearchId && savedSearches.length > 0) {
       // ✅ ADD: Skip if already processing same search
@@ -319,20 +304,6 @@ useEffect(() => {
       setSelectedSavedSearch(null);
     }
 }, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
-
-
-
-
-
-
-
-
-  console.log("location.search", location.search);
-  console.log("savedSearches", savedSearches);
-  console.log("setfilters", setFilters);
-  console.log("setappliedfilter", setAppliedFilters);
-  console.log("setTopSearchTerm", setTopSearchTerm);
-
 
 
   // 🔥 FETCH SAVED SEARCHES
@@ -433,15 +404,6 @@ useEffect(() => {
 };
 
 
-
-
-
-
-
-
-
-
-
   // 🔥 ENHANCED FILTER APPLY HANDLER (with search term clearing)
   const enhancedHandleFiltersApply = (newFilters) => {
 
@@ -480,6 +442,8 @@ useEffect(() => {
   return (
     <>
       <div className="py-[120px] bg-blue">
+
+
         {sidebarToggle && (
           <FilterPanel
             filters={filters}
@@ -620,6 +584,8 @@ useEffect(() => {
             />
           </div>
         </div>
+
+
       </div>
     </>
   );
