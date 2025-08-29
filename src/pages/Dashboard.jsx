@@ -8,7 +8,7 @@ import Pagination from "../components/Pagination";
 import FilterPanel from "../components/FilterPanel";
 import FilterPanelSaveSearch from "../components/FilterPanelSaveSearch";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getBidCount, getBids, getSavedSearches } from "../services/bid.service";
+import { getBidCount, getBids, getSavedSearches, totalBookmarkedBids } from "../services/bid.service";
 import { useDispatch, useSelector } from "react-redux";
 import { setBids } from "../redux/reducer/bidSlice";
 import { addSavedSearch } from "../redux/reducer/savedSearchesSlice";
@@ -76,6 +76,7 @@ function Dashboard() {
   const [bidCount, setBidCount] = useState({ count: 0, new_bids: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [bookmarkedCount, setBookmarkedCount] = useState(0);
 
   const profile = useSelector((state) => state.profile.profile);
   const companyName = profile?.company_name || "";
@@ -111,6 +112,27 @@ function Dashboard() {
     fetchBidCount();
   }, []);
 
+  useEffect(() => {
+  const fetchBookmarkedBids = async () => {
+    try {
+      const data = await totalBookmarkedBids();
+      console.log(data, "🔥 Total bookmarked bids");
+      
+      // Array length extract karo
+      const count = Array.isArray(data) ? data.length : 0;
+      setBookmarkedCount(count);
+      
+    } catch (error) {
+      console.error("❌ Error fetching bookmarked bids:", error);
+      setBookmarkedCount(0);
+    }
+  };
+
+  fetchBookmarkedBids();
+}, []);
+
+
+
   const middle = [
     {
       id: 1,
@@ -136,9 +158,9 @@ function Dashboard() {
     {
       id: 4,
       title: "Saved",
-      num: "0",
+      num: bookmarkedCount, // 🔥 Dynamic count
       tag: "SAVE",
-      description: "Bookmark bids you’re interested in so you can check them out later."
+      description: "Bookmark bids you're interested in so you can check them out later."
     },
     {
       id: 5,
@@ -167,7 +189,7 @@ function Dashboard() {
       const hasActiveFilters =
         appliedFilters.status !== "Active" ||
         // (appliedFilters.location?.length > 0) ||
-         (appliedFilters.location?.federal) ||
+        (appliedFilters.location?.federal) ||
         (appliedFilters.location?.states?.length > 0) || // NEW: Check states array
         (appliedFilters.location?.local?.length > 0) ||  // NEW: Check local array
         (Array.isArray(appliedFilters.location) && appliedFilters.location.length > 0) ||
@@ -255,7 +277,7 @@ function Dashboard() {
 
 
   // 🔥 HANDLE SAVED SEARCH SELECTION FROM URL
-useEffect(() => {
+  useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const savedSearchId = searchParams.get("id");
 
@@ -303,7 +325,7 @@ useEffect(() => {
       console.log("🧹 Clearing saved search selection - no ID in URL");
       setSelectedSavedSearch(null);
     }
-}, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
+  }, [location.search, savedSearches, setFilters, setAppliedFilters, setTopSearchTerm]);
 
 
   // 🔥 FETCH SAVED SEARCHES
@@ -327,7 +349,7 @@ useEffect(() => {
   }, [dispatch]);
 
   // 🔥 SAVED SEARCH SELECT HANDLER
- const handleSavedSearchSelect = async (searchId) => {
+  const handleSavedSearchSelect = async (searchId) => {
     if (searchId === "_default_" || !searchId) {
       const defaultFilters = { ...DASHBOARD_CONSTANTS.DEFAULT_FILTERS, ordering: "closing_date" };
 
@@ -401,7 +423,7 @@ useEffect(() => {
     } catch (err) {
       console.error("Failed to load saved search filters", err);
     }
-};
+  };
 
 
   // 🔥 ENHANCED FILTER APPLY HANDLER (with search term clearing)

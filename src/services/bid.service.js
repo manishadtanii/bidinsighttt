@@ -127,4 +127,57 @@ export const updateSavedSearch = async (id, body) => {
 };
 
 
+export const getPricingPlans = async () => {
+  try {
+    const res = await API.get("/auth/plans/");
+    console.log(res.data, "🔥 Pricing plans fetched");
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching pricing plans:", err);
+    throw err;
+  }
+};
 
+
+
+export const BookMarkedBids = async (id) => {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("No access token found");
+  }
+
+  try {
+    const res = await API.post("/bids/bookmarks/", 
+      { bid_id: id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    console.log("Bookmarked bid:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error bookmarking bid:", err);
+    throw err;
+  }
+};
+
+export const totalBookmarkedBids = async () => {
+  const token = localStorage.getItem("access_token"); 
+  if (!token) {
+    throw new Error("No access token found");
+  }
+  try {
+    const res = await API.get("/bids/bookmarks/", {
+      headers: {  
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log(res.data, "🔥 Total bookmarked bids fetched");
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching total bookmarked bids:", err);
+    throw err;
+  } 
+};

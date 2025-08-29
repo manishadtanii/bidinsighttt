@@ -1,8 +1,10 @@
 // components/PricingCard.jsx
 import React from "react";
 
-function PricingCard({ title, price, features, delay, icon }) {
+function PricingCard({ title, price, features, delay, icon, planDetails }) {
+  console.log(planDetails, "🔥 Plan details in card");
   return (
+
     <div className="bg-blue text-white p-6 rounded-3xl shadow-lg flex flex-col border border-white border-1" data-aos="fade-up" data-aos-delay={delay}>
       <div className="mb-4 w-20 h-20">
         <img src={icon} className="w-full" alt="" />

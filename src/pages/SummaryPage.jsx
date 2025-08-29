@@ -6,19 +6,27 @@ import SummaryContent from "../sections/summary/SummaryContent";
 import BidTracking from "../sections/summary/BidTracking";
 import AiFeature from "../sections/summary/AiFeature";
 import SimilarBids from "../sections/summary/SimilarBids";
-import { getBids } from "../services/bid.service.js";
+import { BookMarkedBids, getBids } from "../services/bid.service.js";
 import { similarBids } from "../services/user.service.js"; // 🔥 Import similar bids API
+import BookmarkNotification from "../components/BookmarkNotification.jsx";
 
 function SummaryPage() {
   const { id } = useParams();
   const [bid, setBid] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   // 🔥 NEW: State for similar bids
   const [similarBidsData, setSimilarBidsData] = useState([]);
   const [similarBidsLoading, setSimilarBidsLoading] = useState(false);
   const [similarBidsError, setSimilarBidsError] = useState(null);
-  
+  const [isBookmarking, setIsBookmarking] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
+
   console.log(id, "ID from URL");
 
   const fallback = {
@@ -52,10 +60,10 @@ function SummaryPage() {
   useEffect(() => {
     const fetchSimilarBids = async () => {
       if (!id) return;
-      
+
       setSimilarBidsLoading(true);
       setSimilarBidsError(null);
-      
+
       try {
         const data = await similarBids(id); // 🔥 API call with bid ID
         console.log(data, "🔥 Similar bids fetched");
@@ -78,6 +86,52 @@ function SummaryPage() {
 
   const bidData = bid || fallback;
   console.log("Bid Data:", bidData);
+
+
+
+ const handleBookmark = async () => {
+  if (!id || isBookmarked) return; // Don't bookmark if already bookmarked
+
+  setIsBookmarking(true);
+  try {
+    const response = await BookMarkedBids(id);
+    console.log("✅ Bid bookmarked successfully:", response);
+    
+    // Success case
+    setIsBookmarked(true);
+    setNotification({
+      show: true,
+      message: "Bookmark added!",  // ✅ Correct message
+      type: 'success'
+    });
+
+  } catch (err) {
+    console.error("Failed to bookmark bid:", err);
+    
+    // Check if already bookmarked (400/409 status codes)
+    if (err.response?.status === 400 || err.response?.status === 409) {
+      setIsBookmarked(true); // Mark as bookmarked
+      setNotification({
+        show: true,
+        message: "Already bookmarked", // ✅ Correct message
+        type: 'already'
+      });
+    } else {
+      // Other errors
+      setNotification({
+        show: true,
+        message: "Failed to bookmark",
+        type: 'error'
+      });
+    }
+  } finally {
+    setIsBookmarking(false);
+  }
+};
+
+  const hideNotification = () => {
+    setNotification(prev => ({ ...prev, show: false }));
+  };
 
   // 🔥 Determine location based on entity_type
   const getLocation = () => {
@@ -105,6 +159,8 @@ function SummaryPage() {
               }
               deadline={bidData.closing_date || fallback.closing_date}
               sourceLink={bidData.source || fallback.source}
+              onBookmark={handleBookmark}
+              isBookmarking={isBookmarking}
             />
           </div>
 
@@ -119,12 +175,12 @@ function SummaryPage() {
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
                 <BidTracking bidData={bidData} />
               </div>
-              
+
               {/* 🔥 UPDATED: Pass similar bids data as props */}
               <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl">
-                <SimilarBids 
+                <SimilarBids
                   bidData={bidData}
-                  similarBids={similarBidsData.slice(0,2)} // 🔥 Similar bids array
+                  similarBids={similarBidsData.slice(0, 2)} // 🔥 Similar bids array
                   loading={similarBidsLoading}   // 🔥 Loading state
                   error={similarBidsError}       // 🔥 Error state
                 />
@@ -137,6 +193,17 @@ function SummaryPage() {
           </div>
         </div>
       </div>
+
+      <BookmarkNotification
+        show={notification.show}
+        message={notification.message}
+        type={notification.type}
+        onClose={hideNotification}
+        duration={2000}
+        position={{ top: '280px', right: '410px' }}
+      />
+
+
     </div>
   );
 }

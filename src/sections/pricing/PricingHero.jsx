@@ -1,12 +1,15 @@
 // sections/PricingSection.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PricingCard from "../../components/PricingCard";
 import { Link } from "react-router-dom";
 import Heading from "../../components/Heading";
 import HeroHeading from "../../components/HeroHeading";
+import { get } from "jquery";
+import { getPricingPlans } from "../../services/bid.service";
 
 function PricingHero() {
   const [billingCycle, setBillingCycle] = useState("Annual");
+  const [planDetails, setPlanDetails] = useState(null);
 
   const plans = [
     {
@@ -43,6 +46,7 @@ function PricingHero() {
       delay: "400",
     },
   ];
+
   const plansYear = [
     {
       title: "Regular",
@@ -78,6 +82,22 @@ function PricingHero() {
       delay: "400",
     },
   ];
+
+
+  useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const data = await getPricingPlans();
+        setPlanDetails(data);
+      } catch (error) {
+        console.error("Failed to fetch pricing plans:", error);
+      }
+    }
+    fetchPlans();
+  }, []);
+
+
+
   const data = {
     title: "Plans that grow with you",
     para: "Choose the subscription tier that fits your needs and enter your payment details securely to unlock full access.",
@@ -147,7 +167,7 @@ function PricingHero() {
                   index === 1 ? "lg:scale-[1.08] z-10" : "lg:scale-[.95]"
                 }`}
               >
-                <PricingCard {...plan} />
+                <PricingCard {...plan} planDetails={planDetails} />
               </div>
             ))}
       </div>
