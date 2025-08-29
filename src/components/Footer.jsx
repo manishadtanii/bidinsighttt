@@ -18,13 +18,14 @@ const Footer = () => {
           </div>
 
           {/* Middle Section: Navigation */}
-          <div className="flex flex-wrap flex-col sm:flex-row gap-8 md:gap-12 xl:gap-16 xl:justify-end md:col-span-2">
+          <div className="flex flex-wrap   flex-col sm:flex-row gap-8 md:gap-12 xl:gap-16 xl:justify-end md:col-span-2">
             {[
-              { title: "Home", links: ["Lorem", "Lorem", "Lorem", "Lorem"], delay:"100" },
-              { title: "AI Toolset", links: ["Lorem"], delay:"200" },
-              { title: "Bids", links: ["Lorem", "Lorem", "Lorem"], delay:"300" },
-              { title: "About Us", links: ["Lorem", "Lorem"], delay:"400" },
-              { title: "Help Center", links: ["Lorem", "Lorem"], delay:"500" },
+              { title: "Home", links: ["A.I. Toolkit", "Why BidInsight?", "Register Now!", "Plans & Pricing"], delay:"100" },
+              // { title: "AI Toolset", links: [""], delay:"200" },
+              // { title: "Bids", links: ["Lorem", "Lorem", "Lorem"], delay:"300" },
+               { title: "Plans & Pricing", links: ["Pricing", "Features","FAQs"], delay:"400" },
+              { title: "About Us", links: ["Mission", "Vision","Our Story","Core Values"], delay:"400" },
+              // { title: "Help Center", links: ["Lorem", "Lorem"], delay:"500" },
             ].map((section, idx) => (
               <div key={idx} data-aos="fade-left" data-aos-delay={section.delay}>
                 <h3 className="font-semibold mb-2 font-t body-t">
