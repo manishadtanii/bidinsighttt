@@ -181,3 +181,52 @@ export const totalBookmarkedBids = async () => {
     throw err;
   } 
 };
+
+
+
+
+// Export Bids to CSV via Backend API
+export const exportBidsToCSV = async (bidIds) => {
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      throw new Error("No access token found");
+    }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    const payload = {
+      bid_ids: bidIds
+    };
+
+    console.log("🔥 Exporting bids with payload:", payload);
+
+    const response = await API.post("/bids/export/", payload, {
+      headers,
+      responseType: 'blob', // Important for CSV download
+    });
+
+    // Create download link
+    const blob = new Blob([response.data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bids_export_${new Date().toISOString().split('T')[0]}.csv`;
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    console.log("✅ CSV export successful");
+    return response.data;
+
+  } catch (error) {
+    console.error("❌ Error exporting bids:", error);
+    throw error;
+  }
+};
